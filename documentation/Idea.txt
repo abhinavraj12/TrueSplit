@@ -1,0 +1,181 @@
+- Smart Expense Splitter for Groups
+- What it does: Splits bills among friends, tracks balances, and sends reminders on Whatsapp and text.
+- Web: Group management, reports
+- Mobile: Quick bill entry, notifications
+- Tech Stack: Spring Boot + MongoDB + Angular + Flutter I want to build this
+
+
+Name: TruSplit
+
+Structure: Login Way (No, Email, User ID) -> Home Page(Create Group Button), if already group created Show the group Details
+
+Note: If in group you're adding any member then need the permission of that person through Mobile No.
+
+# I want to create TrueSplit web and mobile Application where user can Split their expenses and Monthly rent through this app , suggest me how to build this and which technology we should use and how to build this which tools and technology required tell me from scratch We want to use Java for backend and MangoDB for database. rest we can use so suggest me to build faster and smooth and fast web and mobile Application I want to build
+
+
+
+# Backend
+Java 17+ with Spring Boot 3.x
+Spring Security for authentication
+Spring Data MongoDB for database operations
+JWT for token-based authentication
+Maven or Gradle for dependency management
+
+#Database
+MongoDB with MongoDB Atlas (cloud) for production
+MongoDB Compass for database management
+
+#Web Frontend
+React 18 with TypeScript
+Tailwind CSS for styling
+Axios for API calls
+React Query for state management
+
+#Mobile App
+React Native with TypeScript
+Expo for faster development
+React Navigation for navigation
+
+#Development & Deployment
+Docker for containerization
+Postman for API testing
+Git for version control
+AWS/Google Cloud etc... for deployment
+
+
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Web App   │    │ Mobile App  │    │  Third-party│
+│   (React)   │    │(React Native)│   │  Integrations│
+└─────────────┘    └─────────────┘    └─────────────┘
+       │                  │                  │
+       └──────────────────┼──────────────────┘
+                          │
+                 ┌─────────────────┐
+                 │   REST API      │
+                 │  Java Spring    │
+                 │     Boot        │
+                 └─────────────────┘
+                          │
+                 ┌─────────────────┐
+                 │   MongoDB       │
+                 │   Database      │
+                 └─────────────────┘
+
+
+
+1. Authentication Flow
+
+User Opens App → Login/Signup → JWT Token Generated → Token Stored → Authenticated Requests
+
+
+2. Group Management Flow
+
+User Logs In → Dashboard → Create/Join Group → Add Members → Group Ready for Expenses
+
+
+3. Expense Management Flow
+
+Select Group → Add Expense → Choose Split Type → Save → Balance Recalculated → Notifications
+
+
+
+
+📊 Detailed Application Flow
+Phase 1: Onboarding & Setup
+Web/Mobile Flow:
+
+// Both platforms follow same flow
+1. Landing Page → Sign Up → Email Verification → Login
+2. Dashboard Empty State → "Create Your First Group"
+3. Create Group → Add Group Name & Description → Invite Members
+4. Members Join via Email/Invite Link → Group Active
+
+Backend API Endpoints (used by both):
+java
+@PostMapping("/auth/register")     // Both web & mobile use same endpoint
+@PostMapping("/auth/login")        // Same authentication for both
+@PostMapping("/groups")           // Create group - same for both
+@PostMapping("/groups/{id}/invite") // Invite members - same for both
+
+
+
+Phase 2: Expense Management
+Adding Expense Flow:
+User Action → API Call → Database Update → Balance Calculation → Response
+
+sequenceDiagram
+    participant U as User
+    participant F as Frontend (Web/Mobile)
+    participant B as Backend
+    participant DB as MongoDB
+
+    U->>F: Clicks "Add Expense"
+    F->>B: POST /api/expenses
+    B->>DB: Save expense
+    B->>B: Calculate new balances
+    B->>DB: Update balances
+    B->>F: Return success + updated balances
+    F->>U: Show updated UI
+
+
+Phase 3: Balance Settlement
+Settlement Flow:
+text
+View Balances → See Who Owes Whom → Initiate Settlement → Mark as Paid → Update Balances
+
+
+1. Backend Development (Java Spring Boot)
+
+
+Tool	Purpose	Download Link
+Java JDK 17+	Java Development Kit	Oracle JDK or OpenJDK
+IntelliJ IDEA	IDE (Recommended)	IntelliJ Ultimate
+Eclipse	Alternative IDE	Eclipse IDE
+Spring Boot 3.x	Framework	Spring Initializr
+Maven 3.8+	Dependency Management	Maven Download
+Gradle	Alternative to Maven	Gradle
+
+### https://chat.deepseek.com/share/iutbrc1pltfpesln5g
+
+
+
+Code Quality & Formatting
+Tool	Purpose	Installation
+Prettier	Code formatting	npm install -D prettier
+ESLint	JavaScript linting	npm install -D eslint
+Checkstyle	Java code quality	Maven plugin
+SonarLint	Code quality	IDE plugin
+
+
+Testing Tools
+Tool	Purpose	Installation
+JUnit 5	Java unit testing	Spring Boot default
+Mockito	Java mocking	Spring Boot default
+Jest	React testing	npm install -D jest
+React Testing Library	Component testing	npm install -D @testing-library/react
+
+
+
+
+📱 Mobile Development Specific Tools
+Android Development
+bash
+# Install Android Studio
+# Set up Android SDK
+# Create virtual device in AVD Manager
+
+Expo Tools
+bash
+# Install Expo CLI
+npm install -g expo-cli
+
+# Expo Go app on your phone for testing
+🔌 Useful Browser Extensions
+For Development
+React Developer Tools (Chrome/Firefox)
+Redux DevTools (Chrome/Firefox)
+JSON Formatter (Chrome)
+Postman Interceptor (Chrome)
+
+
