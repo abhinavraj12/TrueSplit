@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class TrueSplitApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TrueSplitApplication.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(TrueSplitApplication.class, args);
         System.out.println("Backend Server Running");
-	}
+    }
 
 }
