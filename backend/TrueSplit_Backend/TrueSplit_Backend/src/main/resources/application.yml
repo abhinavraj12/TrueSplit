@@ -1,0 +1,50 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/truesplit
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: co.journeywithabhinav@gmail.com
+    password: qylv gspd bgpd arlq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+  security:
+    oauth2:
+          client:
+            registration:
+              google:
+                client-id: YOUR_GOOGLE_CLIENT_ID
+                client-secret: YOUR_GOOGLE_CLIENT_SECRET
+                scope:
+                  - openid
+                  - profile
+                  - email
+                redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+            provider:
+              google:
+                authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+                token-uri: https://oauth2.googleapis.com/token
+                user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+                user-name-attribute: sub
+
+server:
+  port: 8080
+
+jwt:
+  secret: bbdd7dbd88dbbddhd8debde80dend88end8nh
+  expiration-ms: 86400000 # 1 day
+
+
+frontend:
+  redirect-home: http://localhost:3000/home
+  redirect-signup: http://localhost:3000/signup
+
+
+otp:
+  validity-seconds: 300   # OTP expiry time in seconds (5 minutes)
+
+

@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import java.util.List;
+
 @Document(collection = "users")
 @Data
 @AllArgsConstructor
@@ -21,9 +23,6 @@ public class User {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @NotBlank(message = "Username is required")
-    private String username;
-
     @Email(message = "Email should be valid")
     @Indexed(unique = true)
     private String email;
@@ -32,4 +31,8 @@ public class User {
     private String password;
 
     private String phoneNumber;
+
+    private List<String> roles;
+
+    private String authProvider; // "local" or "google"
 }
