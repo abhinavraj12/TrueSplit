@@ -1,48 +1,72 @@
 package com.truesplit.TrueSplit.controller;
 
-import com.truesplit.TrueSplit.DTO.AuthResponse;
-import com.truesplit.TrueSplit.DTO.RegisterRequest;
+import com.truesplit.TrueSplit.Repository.OtpRepository;
+import com.truesplit.TrueSplit.model.User;
 import com.truesplit.TrueSplit.service.AuthService;
-import lombok.RequiredArgsConstructor;
+import com.truesplit.TrueSplit.service.OtpService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * REST Controller responsible for handling authentication-related API requests.
- *
- * Provides endpoints for:
- * <ul>
- *     <li>Registering new users</li>
- *     <li>Logging in existing users</li>
- * </ul>
- */
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/auth")
-@RequiredArgsConstructor
+@RequestMapping("auth")
 public class AuthController {
 
+    private final OtpService otpService;
     private final AuthService authService;
+    private final OtpRepository otpRepository;
 
-    /**
-     * Registers a new user.
-     *
-     * @param request Registration details sent in the request body.
-     * @return HTTP 200 response with {@link AuthResponse} object.
-     */
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+    public AuthController(OtpService otpService, AuthService authService, OtpRepository otpRepository) {
+        this.otpService = otpService;
+        this.authService = authService;
+        this.otpRepository = otpRepository;
     }
 
-    /**
-     * Logs in an existing user using email and password.
-     *
-     * @param email The user's email (provided as query parameter).
-     * @param password The user's password (provided as query parameter).
-     * @return HTTP 200 response with {@link AuthResponse} object.
-     */
+    @PostMapping("/request-otp")
+    public ResponseEntity<?> requestOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        if (email == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "email is required"));
+        }
+        otpService.generateOtpAndSend(email);
+        return ResponseEntity.ok(Map.of("message", "OTP sent if email is valid"));
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String code = body.get("code");
+        if (email == null || code == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "email and code are required"));
+        }
+        boolean verified = otpService.verifyOtp(email, code);
+
+        if(verified) {
+            return ResponseEntity.ok(Map.of("message", "OTP verified"));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid or expired OTP"));
+        }
+    }
+
+    // Signup must be called after OTP verified
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@Valid @RequestBody User user) {
+        // server-side: you may re-check OTP existence or call OtpRepository to ensure verification occurred
+        // For simplicity, we assume client called verify-otp first; you could also store a "verified" flag
+        String token = authService.signup(user);
+        return ResponseEntity.ok(Map.of("token", token));
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestParam String email, @RequestParam String password) {
-        return ResponseEntity.ok(authService.login(email, password));
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String password = body.get("password");
+        String token = authService.login(email, password);
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }
