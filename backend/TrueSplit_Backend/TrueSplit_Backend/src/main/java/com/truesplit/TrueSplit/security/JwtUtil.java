@@ -3,6 +3,7 @@ package com.truesplit.TrueSplit.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component
+@Slf4j
 public class JwtUtil {
     private final Key key;
     private final long expirationMS;
@@ -27,7 +29,7 @@ public class JwtUtil {
                 .claim("roles",roles)
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date((now + expirationMS)))
-                .signWith(key, SignatureAlgorithm.ES256)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
