@@ -45,6 +45,6 @@ frontend:
 
 
 otp:
-  validity-seconds: 100   # OTP expiry time in seconds (1 minute)
+  validity-seconds: 100   # OTP expiry time in seconds (60 second)
 
 
