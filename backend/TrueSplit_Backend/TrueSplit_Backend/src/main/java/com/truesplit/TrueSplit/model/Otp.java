@@ -21,4 +21,5 @@ public class Otp {
     private String email;
     private String code;
     private Instant expiresAt;
+    private boolean verified;
 }

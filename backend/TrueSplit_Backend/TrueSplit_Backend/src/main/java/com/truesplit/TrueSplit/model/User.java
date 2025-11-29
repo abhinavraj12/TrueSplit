@@ -35,4 +35,6 @@ public class User {
     private List<String> roles;
 
     private String authProvider; // "local" or "google"
+
+    private boolean emailVerified; // default false
 }

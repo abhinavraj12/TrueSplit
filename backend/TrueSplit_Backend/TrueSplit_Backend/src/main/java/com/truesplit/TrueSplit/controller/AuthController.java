@@ -5,6 +5,7 @@ import com.truesplit.TrueSplit.model.User;
 import com.truesplit.TrueSplit.service.AuthService;
 import com.truesplit.TrueSplit.service.OtpService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,16 +16,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("auth")
+@Slf4j
 public class AuthController {
 
     private final OtpService otpService;
     private final AuthService authService;
-    private final OtpRepository otpRepository;
 
-    public AuthController(OtpService otpService, AuthService authService, OtpRepository otpRepository) {
+    public AuthController(OtpService otpService, AuthService authService) {
         this.otpService = otpService;
         this.authService = authService;
-        this.otpRepository = otpRepository;
     }
 
     @PostMapping("/request-otp")
@@ -53,11 +53,8 @@ public class AuthController {
         }
     }
 
-    // Signup must be called after OTP verified
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody User user) {
-        // server-side: you may re-check OTP existence or call OtpRepository to ensure verification occurred
-        // For simplicity, we assume client called verify-otp first; you could also store a "verified" flag
         String token = authService.signup(user);
         return ResponseEntity.ok(Map.of("token", token));
     }
