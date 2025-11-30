@@ -12,5 +12,4 @@ public class TrueSplitApplication {
         SpringApplication.run(TrueSplitApplication.class, args);
         System.out.println("Backend Server Running");
     }
-
 }

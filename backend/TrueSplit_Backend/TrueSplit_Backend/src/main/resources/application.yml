@@ -17,13 +17,13 @@ spring:
           client:
             registration:
               google:
-                client-id: YOUR_GOOGLE_CLIENT_ID
-                client-secret: YOUR_GOOGLE_CLIENT_SECRET
+                client-id: 318685982642-o2iq4u0gd8cnn66ec719esoiiqtca0ld.apps.googleusercontent.com
+                client-secret: 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
                 scope:
                   - openid
                   - profile
                   - email
-                redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+                redirect-uri: "{baseUrl}/login/oauth2/code/google"
             provider:
               google:
                 authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
@@ -33,17 +33,9 @@ spring:
 
 server:
   port: 8080
-
 jwt:
   secret: bbdd7dbd88dbbddhd8debde80dend88end8nh
   expiration-ms: 86400000 # 1 day
-
-
-frontend:
-  redirect-home: http://localhost:3000/home
-  redirect-signup: http://localhost:3000/signup
-
-
 otp:
   validity-seconds: 100   # OTP expiry time in seconds (60 second)
 

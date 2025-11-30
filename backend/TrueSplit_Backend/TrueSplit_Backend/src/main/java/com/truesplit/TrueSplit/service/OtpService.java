@@ -22,13 +22,15 @@ public class OtpService {
     private final JavaMailSender javaMailSender;
     private final long otpValiditySeconds;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public OtpService(OtpRepository otpRepository, JavaMailSender javaMailSender,
-                      @Value("${otp.validity-seconds:60}") long otpValidityInSeconds, UserRepository userRepository) {
+                      @Value("${otp.validity-seconds:60}") long otpValidityInSeconds, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.otpRepository = otpRepository;
         this.javaMailSender = javaMailSender;
         this.otpValiditySeconds = otpValidityInSeconds;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String generateOtpAndSend(String email) {
@@ -41,7 +43,7 @@ public class OtpService {
 
         Otp otp = new Otp();
         otp.setEmail(email);
-        otp.setCode(code);
+        otp.setCode(passwordEncoder.encode(code));   // Store hashed OTP
         //otp.setExpiresAt(Instant.parse(String.valueOf(Instant.now().plusSeconds(otpValiditySeconds))));
         otp.setExpiresAt(Instant.now().plusSeconds(otpValiditySeconds));
         otpRepository.deleteByEmail(email);
@@ -58,9 +60,8 @@ public class OtpService {
     }
 
     public boolean verifyOtp(String email, String code) {
-        var o = otpRepository.findByEmailAndCode(email, code);
-
-        if(o.isEmpty()) return false;
+        var o = otpRepository.findByEmail(email);
+        if (o.isEmpty()) return false;
 
         Otp otp = o.get();
 
@@ -69,9 +70,13 @@ public class OtpService {
             return false;
         }
 
-        otp.setVerified(true);
-        otpRepository.save(otp); // Save verified
+        // Compare hashed OTP with user input
+        if (!passwordEncoder.matches(code, otp.getCode())) {
+            return false;
+        }
 
+        otp.setVerified(true);
+        otpRepository.save(otp);
         return true;
     }
 

@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 public interface OtpRepository extends MongoRepository<Otp, String> {
-    Optional<Otp> findByEmailAndCode(String email, String code);
+    //Optional<Otp> findByEmailAndCode(String email, String code);
     void deleteByEmail(String email);
 
     Optional<Otp> findByEmail(String email);

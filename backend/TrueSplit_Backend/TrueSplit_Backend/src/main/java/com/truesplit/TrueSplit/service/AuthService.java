@@ -41,6 +41,7 @@ public class AuthService {
         user.setPhoneNumber(String.valueOf(user.getPhoneNumber()));
         user.setRoles(List.of("ROLE_USER"));
         user.setAuthProvider("local");
+        user.setEmailVerified(true);
         userRepository.save(user);
 
         // OTP no longer needed, delete it
