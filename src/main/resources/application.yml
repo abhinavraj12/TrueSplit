@@ -30,9 +30,6 @@ spring:
                 token-uri: https://oauth2.googleapis.com/token
                 user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
                 user-name-attribute: sub
-
-server:
-  port: 8080
 jwt:
   secret: bbdd7dbd88dbbddhd8debde80dend88end8nh
   expiration-ms: 86400000 # 1 day
