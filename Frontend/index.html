@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueSplit | Stop Awkward Bill Splits</title>
+    
+    <!-- Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Noto+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Reusable Design System -->
+    <link rel="stylesheet" href="css/reusable.css">
+    
+    <!-- Page-Specific Styles -->
+    <link rel="stylesheet" href="css/landing.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✓</text></svg>">
+    
+    <meta name="description" content="TrueSplit makes bill splitting fair and simple.">
+</head>
+<body class="app-theme-transition">
+    
+    <!-- Main Container - All in first fold -->
+    <div class="app-first-fold-container">
+        
+        <!-- Minimal Header -->
+        <header class="app-header-minimal">
+            <div class="app-container app-flex app-items-center app-justify-between">
+                <div class="app-logo-minimal">TrueSplit</div>
+                <a href="/auth" class="app-button-minimal">Get Started</a>
+            </div>
+        </header>
+        
+        <!-- Main Content - Ultra Compact -->
+        <main class="app-main-compact">
+            <div class="app-container">
+                <div class="app-grid-compact">
+                    
+                    <!-- Left: Ultra-Compact Story -->
+                    <div class="app-story-ultra">
+                        <h1 class="app-headline-ultra">
+                            Bill arrives.<br>
+                            <span class="app-headline-emphasis">Awkwardness begins.</span>
+                        </h1>
+                        
+                        <p class="app-subtext-ultra">
+                            TrueSplit makes it fair.<br>
+                            Simple as that.
+                        </p>
+                        
+                        <!-- Micro Benefits -->
+                        <div class="app-micro-benefits">
+                            <div class="app-micro-item">
+                                <span class="app-micro-icon">→</span>
+                                <span>Enter bill</span>
+                            </div>
+                            <div class="app-micro-item">
+                                <span class="app-micro-icon">→</span>
+                                <span>We split</span>
+                            </div>
+                            <div class="app-micro-item">
+                                <span class="app-micro-icon">→</span>
+                                <span>Everyone pays</span>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA - Prominent -->
+                        <div class="app-cta-ultra">
+                            <a href="/auth" class="app-cta-button-main">
+                                Split a bill
+                            </a>
+                            <p class="app-cta-hint">30 seconds • No math</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Minimal Visual -->
+                    <div class="app-visual-minimal">
+                        <div class="app-bill-transformation">
+                            <!-- Before -->
+                            <div class="app-bill-before">
+                                <div class="app-bill-amount">$147.50</div>
+                                <div class="app-bill-label">Group bill</div>
+                            </div>
+                            
+                            <!-- Arrow -->
+                            <div class="app-transformation-arrow">
+                                <div class="app-arrow-icon">→</div>
+                            </div>
+                            
+                            <!-- After -->
+                            <div class="app-bill-after">
+                                <div class="app-split-container">
+                                    <div class="app-split-item">
+                                        <div class="app-split-amount">$49.17</div>
+                                        <div class="app-split-label">Fair share</div>
+                                    </div>
+                                    <div class="app-split-item">
+                                        <div class="app-split-amount">$49.17</div>
+                                        <div class="app-split-label">Fair share</div>
+                                    </div>
+                                    <div class="app-split-item">
+                                        <div class="app-split-amount">$49.17</div>
+                                        <div class="app-split-label">Fair share</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Visual Legend -->
+                        <div class="app-visual-legend">
+                            <div class="app-legend-item">
+                                <div class="app-legend-marker"></div>
+                                <span>Confusion → Clarity</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+        
+        <!-- Micro Footer -->
+        <footer class="app-footer-micro">
+            <div class="app-container">
+                <div class="app-footer-content-micro">
+                    <p>TrueSplit © <span id="currentYear"></span></p>
+                </div>
+            </div>
+        </footer>
+        
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/helper.js" type="module"></script>
+    <script src="js/landing.js" type="module"></script>
+    
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
