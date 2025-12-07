@@ -1,33 +1,18 @@
 import { defineConfig } from 'vite';
+import path from 'path';
 
 export default defineConfig({
   server: {
     port: 5000,
     host: true,
     open: true,
-    cors: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false
-      },
-      '/auth': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false
-      },
-      '/oauth2': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false
-      }
-    }
+    cors: true
   },
   build: {
-    outDir: 'dist',
+    outDir: path.resolve(__dirname, '../src/main/resources/static'),
     assetsDir: 'assets',
     sourcemap: false,
-    minify: 'terser'
+    minify: 'terser',
+    emptyOutDir: true
   }
 });
