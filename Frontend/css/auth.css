@@ -1,0 +1,999 @@
+/**
+ * auth.css - Professional Authentication Experience
+ * Clean, secure authentication with light 
+ * Production-ready code
+ */
+
+/* ==========================================================================
+    CONTAINER & SCENE SETUP - COMPACT
+   ========================================================================== */
+
+.app-auth {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: linear-gradient(
+    135deg,
+    var(--app-bg-primary) 0%,
+    var(--app-bg-secondary) 50%,
+    var(--app-bg-primary) 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.app-auth::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(
+      circle at 20% 80%,
+      rgba(157, 191, 158, 0.03) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(157, 191, 158, 0.02) 0%,
+      transparent 50%
+    );
+  z-index: 0;
+}
+
+/* ==========================================================================
+   AUTH HEADER WITH LOGO - RESPONSIVE FIXED
+   ========================================================================== */
+
+.app-auth-header {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 10;
+  opacity: 0;
+  animation: fadeIn 0.6s var(--app-ease-out) forwards;
+  animation-delay: 0.2s;
+  margin-bottom: 2rem;
+  padding-top: 1.5rem;
+}
+
+.app-auth-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--app-font-heading);
+  font-size: 1.25rem;
+  font-weight: var(--app-font-semibold);
+  color: var(--app-accent-green);
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.3s var(--app-ease-out);
+  padding: 0.75rem 1.5rem;
+  background: rgba(var(--app-bg-surface-rgb, 38, 38, 38), 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: var(--app-border-radius);
+  border: 1px solid rgba(157, 191, 158, 0.1);
+  margin: 0 auto;
+}
+
+.app-auth-logo:hover {
+  opacity: 1;
+  background: rgba(var(--app-bg-surface-rgb, 38, 38, 38), 0.2);
+}
+
+.app-logo-mark {
+  font-size: 1.5rem;
+  font-weight: var(--app-font-bold);
+  color: var(--app-accent-green);
+}
+
+.app-logo-text {
+  background: linear-gradient(
+    135deg,
+    var(--app-accent-green) 0%,
+    var(--app-text-secondary) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ==========================================================================
+    HEADER - FIXED WAVE ANIMATION
+   ========================================================================== */
+
+.app-story-header {
+  text-align: center;
+  margin-bottom: var(--app-space-8);
+  max-width: 500px;
+  position: relative;
+  margin-top: 0;
+  padding-top: 0;
+  width: 100%;
+}
+
+.app-story-headline {
+  font-family: var(--app-font-heading);
+  font-size: clamp(var(--app-text-xl), 3.5vw, var(--app-text-3xl));
+  font-weight: var(--app-font-light);
+  line-height: var(--app-leading-tight);
+  color: var(--app-text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--app-space-3);
+  opacity: 0;
+  animation: fadeSlideUp 0.8s var(--app-ease-out) forwards;
+  animation-delay: 0.5s;
+}
+
+/* FIXED: Wave animation - all words visible */
+.wave-word {
+  display: inline-block;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation-duration: 0.8s;
+  animation-timing-function: var(--app-ease-out);
+  animation-fill-mode: forwards;
+}
+
+/* Fixed: Explicitly set each word's animation */
+.word-1 {
+  animation: waveWordIn 0.8s var(--app-ease-out) 0.8s forwards;
+}
+
+.word-2 {
+  animation: waveWordIn 0.8s var(--app-ease-out) 1s forwards;
+}
+
+.word-3 {
+  animation: waveWordIn 0.8s var(--app-ease-out) 1.2s forwards;
+}
+
+.word-4 {
+  animation: waveWordIn 0.8s var(--app-ease-out) 1.4s forwards;
+}
+
+@keyframes waveWordIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-5px);
+    color: var(--app-accent-green);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    color: var(--app-text-primary);
+  }
+}
+
+/* Mobile break for better responsive layout */
+.mobile-break {
+  display: none;
+}
+
+/* FIXED: Responsive subhead styling */
+.app-story-subhead {
+  font-family: var(--app-font-body);
+  font-size: clamp(0.875rem, 1.8vw, 1.125rem);
+  font-weight: var(--app-font-light);
+  line-height: var(--app-leading-relaxed);
+  color: var(--app-text-secondary);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.8s var(--app-ease-out) forwards;
+  animation-delay: 2s;
+  max-width: 280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ==========================================================================
+   FLOATING ELEMENTS -  
+   ========================================================================== */
+
+.app-receipt-floating {
+  position: absolute;
+  background: var(--app-bg-surface);
+  border: var(--app-border-thin) solid var(--app-border-secondary);
+  border-radius: var(--app-border-radius-sm);
+  padding: var(--app-space-2) var(--app-space-3);
+  opacity: 0;
+  animation: floatIn 1.2s var(--app-ease-out) forwards;
+  z-index: 1;
+  box-shadow: var(--app-shadow-md);
+  pointer-events: none;
+  width: 140px;
+}
+
+.app-receipt-floating--1 {
+  top: 12%;
+  left: 8%;
+  transform: rotate(-8deg);
+  animation-delay: 0.5s;
+}
+
+.app-receipt-floating--2 {
+  top: 20%;
+  right: 12%;
+  transform: rotate(5deg);
+  animation-delay: 0.8s;
+}
+
+.app-receipt-floating--3 {
+  bottom: 40%;
+  left: 15%;
+  transform: rotate(-3deg);
+  animation-delay: 1.1s;
+}
+
+.app-receipt-floating__amount {
+  font-family: var(--app-font-heading);
+  font-size: var(--app-text-lg);
+  font-weight: var(--app-font-semibold);
+  color: var(--app-text-primary);
+  display: block;
+  text-align: center;
+}
+
+.app-receipt-floating__label {
+  font-family: var(--app-font-body);
+  font-size: var(--app-text-xs);
+  color: var(--app-text-tertiary);
+  text-align: center;
+  display: block;
+  margin-top: var(--app-space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Arrow connections */
+.app-connection-arrow {
+  position: absolute;
+  stroke: var(--app-accent-green);
+  stroke-width: 1.5;
+  stroke-dasharray: 5, 5;
+  opacity: 0;
+  animation: drawArrow 0.8s var(--app-ease-out) forwards;
+  z-index: 0;
+}
+
+.app-connection-arrow--1 {
+  top: 18%;
+  left: 20%;
+  width: 80px;
+  animation-delay: 1.3s;
+}
+
+.app-connection-arrow--2 {
+  top: 35%;
+  right: 20%;
+  width: 100px;
+  animation-delay: 1.6s;
+}
+
+/* ==========================================================================
+   CENTRAL AUTH SCENE - COMPACT VERSION
+   ========================================================================== */
+
+.app-auth-scene {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 var(--app-space-4) var(--app-space-8);
+  opacity: 0;
+  animation: sceneReveal 1s var(--app-ease-out) forwards;
+  animation-delay: 0.3s;
+}
+
+/* ==========================================================================
+   GOOGLE AUTH BUTTON - WITH FIXED ORB INSTRUCTION
+   ========================================================================== */
+
+.app-google-hero {
+  position: relative;
+  margin: var(--app-space-6) 0;
+  perspective: 1000px;
+}
+
+.app-google-portal {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: scale(0.8);
+  animation: portalReveal 1s var(--app-ease-out) forwards;
+  animation-delay: 1.5s;
+}
+
+/* Orbital rings */
+.app-orbital-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(157, 191, 158, 0.2);
+  border-radius: 50%;
+  animation: orbit 20s linear infinite;
+}
+
+.app-orbital-ring--1 {
+  width: 230px;
+  height: 230px;
+  animation-delay: -5s;
+}
+
+.app-orbital-ring--2 {
+  width: 210px;
+  height: 210px;
+  animation-delay: -10s;
+  border-style: dashed;
+  border-width: 1.5px;
+}
+
+/* Main button */
+.app-google-orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 150px;
+  background: var(--app-bg-surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s var(--app-ease-out);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.1),
+    inset 0 6px 12px rgba(255, 255, 255, 0.05);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.app-google-orb:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 20px 40px rgba(157, 191, 158, 0.25),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.1),
+    inset 0 6px 12px rgba(255, 255, 255, 0.1);
+}
+
+.app-google-orb:active {
+  transform: translate(-50%, -50%) scale(0.95);
+  transition: transform 0.1s var(--app-ease-out);
+}
+
+/* Pulsing glow effect */
+.app-google-orb::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  background: radial-gradient(
+    circle,
+    rgba(157, 191, 158, 0.1) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  z-index: -1;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Inner button content */
+.app-orb-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.app-google-icon {
+  width: 36px;
+  height: 36px;
+  margin-bottom: var(--app-space-2);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s var(--app-ease-out);
+}
+
+.app-google-orb:hover .app-google-icon {
+  transform: scale(1.1);
+}
+
+.app-orb-text {
+  font-family: var(--app-font-body);
+  font-size: var(--app-text-xs);
+  font-weight: var(--app-font-medium);
+  color: var(--app-text-primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: block;
+  line-height: 1.2;
+}
+
+/* FIXED: Responsive orb instruction */
+.app-orb-instruction {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--app-font-body);
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  color: var(--app-text-tertiary);
+  opacity: 0;
+  animation: fadeIn 0.6s var(--app-ease-out) forwards;
+  animation-delay: 2s;
+  padding: 0 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   SECURITY MONUMENT - PROFESSIONAL VERSION
+   ========================================================================== */
+
+.app-security-monument {
+  margin-top: var(--app-space-8);
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.8s var(--app-ease-out) forwards;
+  animation-delay: 1.8s;
+}
+
+.app-security-symbols {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-space-4);
+  margin-bottom: var(--app-space-2);
+  flex-wrap: wrap;
+}
+
+.app-security-symbol {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-1);
+  padding: var(--app-space-2) var(--app-space-3);
+  background: rgba(157, 191, 158, 0.05);
+  border-radius: var(--app-border-radius-sm);
+  border: 1px solid rgba(157, 191, 158, 0.1);
+}
+
+.app-symbol-icon {
+  color: var(--app-accent-green);
+  font-weight: var(--app-font-semibold);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--app-text-base);
+}
+
+.app-symbol-text {
+  font-family: var(--app-font-body);
+  font-size: var(--app-text-xs);
+  color: var(--app-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ==========================================================================
+   MICRO FOOTER - FROM LANDING.CSS (ADAPTED)
+   ========================================================================== */
+
+.app-footer-micro {
+  padding: var(--app-space-3) 0;
+  border-top: 1px solid var(--app-border-primary);
+  text-align: center;
+  flex-shrink: 0;
+  opacity: 0;
+  animation: fadeIn 0.6s var(--app-ease-out) forwards;
+  animation-delay: 3s;
+  position: relative;
+  z-index: 2;
+}
+
+.app-footer-content-micro {
+  text-align: center;
+}
+
+.app-footer-content-micro p {
+  font-family: var(--app-font-body);
+  font-size: var(--app-text-xs);
+  color: var(--app-text-tertiary);
+  margin: 0;
+}
+
+/* ==========================================================================
+   ANIMATIONS - PROFESSIONAL
+   ========================================================================== */
+
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) rotate(var(--initial-rotate, 0deg));
+  }
+  100% {
+    opacity: 0.7;
+    transform: translateY(0) rotate(var(--initial-rotate, 0deg));
+  }
+}
+
+@keyframes drawArrow {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+
+@keyframes sceneReveal {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes portalReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes successExplosion {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE FIXES - SPECIFIC BREAKPOINTS
+   ========================================================================== */
+
+/* Mobile: Below 767px */
+@media (max-width: 767px) {
+  .app-auth-header {
+    margin-bottom: 1rem;
+    padding-top: 1rem;
+  }
+
+  .app-auth-logo {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .app-story-header {
+    margin-bottom: var(--app-space-4);
+  }
+
+  .app-story-headline {
+    font-size: clamp(1.25rem, 5vw, 1.5rem);
+    line-height: 1.3;
+  }
+
+  .mobile-break {
+    display: block;
+  }
+
+  .wave-word {
+    margin-right: 0.15em;
+  }
+
+  /* Fixed: Ensure all wave words are visible on mobile */
+  .word-1 {
+    animation-delay: 0.5s;
+  }
+  .word-2 {
+    animation-delay: 0.7s;
+  }
+  .word-3 {
+    animation-delay: 0.9s;
+  }
+  .word-4 {
+    animation-delay: 1.1s;
+  }
+
+  .app-story-subhead {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    max-width: 240px;
+    padding: 0 0.5rem;
+  }
+
+  .app-receipt-floating {
+    display: none;
+  }
+
+  .app-connection-arrow {
+    display: none;
+  }
+
+  .app-google-portal {
+    width: 200px;
+    height: 200px;
+  }
+
+  .app-google-orb {
+    width: 120px;
+    height: 120px;
+  }
+
+  .app-orbital-ring--1 {
+    width: 180px;
+    height: 180px;
+  }
+
+  .app-orbital-ring--2 {
+    width: 160px;
+    height: 160px;
+  }
+
+  .app-google-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .app-orb-text {
+    font-size: 0.625rem;
+  }
+
+  /* FIXED: Orb instruction for mobile */
+  .app-orb-instruction {
+    top: -35px;
+    font-size: 0.75rem;
+    white-space: normal;
+    max-width: 180px;
+    margin: 0 auto;
+    padding: 0 0.25rem;
+  }
+
+  .app-security-symbols {
+    flex-direction: column;
+    gap: var(--app-space-3);
+  }
+
+  .app-security-symbol {
+    padding: var(--app-space-2);
+  }
+
+  .app-auth-scene {
+    padding: 0 var(--app-space-3) var(--app-space-6);
+  }
+}
+
+/* Tablet: 768px - 1023px */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .app-auth-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .app-story-headline {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .app-story-subhead {
+    font-size: 1rem;
+    max-width: 260px;
+  }
+
+  .app-google-portal {
+    width: 220px;
+    height: 220px;
+  }
+
+  .app-google-orb {
+    width: 130px;
+    height: 130px;
+  }
+
+  /* FIXED: Orb instruction for tablet */
+  .app-orb-instruction {
+    top: -45px;
+    font-size: 0.8125rem;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+}
+
+/* Small Desktop: 1024px - 1279px */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .app-story-headline {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+  }
+
+  /* FIXED: Orb instruction for small desktop */
+  .app-orb-instruction {
+    top: -45px;
+    font-size: 0.875rem;
+  }
+}
+
+/* Tall screens: 800px+ height */
+@media (min-height: 800px) {
+  .app-auth-scene {
+    justify-content: flex-start;
+    padding-top: 8vh;
+  }
+
+  .app-story-header {
+    margin-bottom: var(--app-space-10);
+  }
+
+  .app-google-hero {
+    margin: var(--app-space-10) 0;
+  }
+}
+
+/* Very short screens: Below 700px height */
+@media (max-height: 700px) {
+  .app-auth-header {
+    padding-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .app-auth-logo {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .app-story-header {
+    margin-bottom: var(--app-space-4);
+  }
+
+  .app-story-headline {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    line-height: 1.3;
+    margin-bottom: var(--app-space-2);
+  }
+
+  .app-story-subhead {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  /* Adjust wave animation timing for small screens */
+  .word-1 {
+    animation-delay: 0.4s;
+  }
+  .word-2 {
+    animation-delay: 0.6s;
+  }
+  .word-3 {
+    animation-delay: 0.8s;
+  }
+  .word-4 {
+    animation-delay: 1s;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION SUPPORT
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .app-receipt-floating,
+  .app-connection-arrow,
+  .app-story-headline,
+  .app-story-subhead,
+  .app-google-portal,
+  .app-orbital-ring,
+  .app-google-orb::before,
+  .app-security-symbol,
+  .app-orb-instruction,
+  .app-security-monument,
+  .app-auth-header,
+  .app-auth-scene,
+  .wave-word {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  .app-orbital-ring {
+    display: none;
+  }
+
+  .app-google-orb:hover {
+    transform: translate(-50%, -50%);
+  }
+
+  /* Ensure wave words are visible without animation */
+  .wave-word {
+    opacity: 1;
+    transform: translateY(0);
+    color: var(--app-text-primary);
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ========================================================================== */
+
+.app-google-orb:focus-visible {
+  outline: 3px solid var(--app-accent-green);
+  outline-offset: 6px;
+}
+
+.app-auth-logo:focus-visible {
+  outline: 2px solid var(--app-accent-green);
+  outline-offset: 4px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .app-google-orb {
+    border: 2px solid var(--app-accent-green);
+  }
+
+  .app-receipt-floating {
+    border-width: 2px;
+  }
+
+  .app-security-symbol {
+    border-width: 2px;
+  }
+
+  .wave-word {
+    text-decoration: underline;
+  }
+}
+
+/* ==========================================================================
+   DARK/LIGHT THEME ADJUSTMENTS
+   ========================================================================== */
+
+[data-theme="light"] .app-google-orb {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.05),
+    inset 0 4px 8px rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .app-google-orb:hover {
+  box-shadow: 0 20px 40px rgba(157, 191, 158, 0.15),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.05),
+    inset 0 4px 8px rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .app-auth-logo {
+  background: rgba(var(--app-bg-surface-rgb, 255, 255, 255), 0.1);
+  border: 1px solid rgba(157, 191, 158, 0.2);
+}
+
+/* ==========================================================================
+   LOADING STATES & TRANSITIONS
+   ========================================================================== */
+
+.app-loading-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(157, 191, 158, 0.1) 0%,
+    transparent 70%
+  );
+  animation: loadingPulse 1.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes loadingPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Success animation */
+.app-success-explosion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.app-success-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  background: var(--app-accent-green);
+  border-radius: 50%;
+  animation: successExplosion 0.6s var(--app-ease-out) forwards;
+}
+
+.app-success-particle:nth-child(1) {
+  animation-delay: 0s;
+}
+.app-success-particle:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.app-success-particle:nth-child(3) {
+  animation-delay: 0.2s;
+}
