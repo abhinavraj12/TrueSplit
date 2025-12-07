@@ -39,4 +39,7 @@ jwt:
 otp:
   validity-seconds: 100   # OTP expiry time in seconds (60 second)
 
+frontend:
+  redirect-home: http://localhost:5000
+
 
