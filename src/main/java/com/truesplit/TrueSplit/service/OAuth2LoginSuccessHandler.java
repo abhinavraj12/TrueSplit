@@ -30,6 +30,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String jwt = authService.createOrGetUserFromOauth2(name, email);
 
-        response.sendRedirect("http://localhost:3000/oauth2/success?token=" + jwt);
+        response.sendRedirect("http://localhost:5000/dashboard/?token=" + jwt);
     }
 }
