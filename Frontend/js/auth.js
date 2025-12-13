@@ -74,7 +74,7 @@ class AuthManager {
             this.showSuccessAnimation();
             
             setTimeout(() => {
-                window.location.href = '/dashboard';
+                window.location.href = 'http://localhost:8080/oauth2/authorization/google';
             }, 800);
             
         } catch (error) {

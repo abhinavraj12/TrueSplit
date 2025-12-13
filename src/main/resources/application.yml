@@ -23,7 +23,6 @@ spring:
                   - openid
                   - profile
                   - email
-                redirect-uri: "http://localhost:5000/auth/google/callback"
             provider:
               google:
                 authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
