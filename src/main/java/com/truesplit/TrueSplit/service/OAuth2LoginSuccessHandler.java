@@ -1,6 +1,7 @@
 package com.truesplit.TrueSplit.service;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,6 @@ import java.io.IOException;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
-    
-    @Value("${frontend.redirect-home}")
-    private String frontendUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -30,12 +28,24 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String email = oauthUser.getAttribute("email");
         String name = oauthUser.getAttribute("name");
+        String picture = oauthUser.getAttribute("picture");
+        String googleId = oauthUser.getAttribute("sub");
 
-        String jwt = authService.createOrGetUserFromOauth2(name, email);
-        
-        // Redirect to a token handler page instead of directly to dashboard
-        // The token handler will store the token in localStorage and redirect to dashboard
-        String redirectUrl = frontendUrl + "/oauth-callback.html?token=" + jwt;
-        response.sendRedirect(redirectUrl);
+        String jwt = authService.createOrGetUserFromOauth2(name, email,picture, googleId);
+
+        // Store JWT in HttpOnly cookie
+        Cookie cookie = new Cookie("TS_AUTH", jwt);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // true in HTTPS (prod)
+        cookie.setPath("/");
+        cookie.setMaxAge(24 * 60 * 60); // 1 day
+
+        response.addCookie(cookie);
+
+        //  CLEAR OAuth2 SESSION
+        request.getSession().invalidate();
+
+        // Redirect WITHOUT token
+        response.sendRedirect("http://localhost:5000/dashboard");
     }
 }
