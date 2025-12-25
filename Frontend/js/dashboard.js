@@ -6,6 +6,28 @@
  * Version: 1.0
  */
 
+
+/**
+ * AUTH GUARD
+ * Prevent dashboard access without login
+ */
+(function authGuard() {
+    fetch("http://localhost:8080/api/me", {
+        method: "GET",
+        credentials: "include" // IMPORTANT: send HttpOnly cookie
+    })
+    .then(response => {
+        if (response.status === 401 || response.status === 403) {
+            //  Not authenticated → kick out
+            window.location.replace("/");
+        }
+    })
+    .catch(() => {
+        // Backend unreachable → fail safe
+        window.location.replace("/");
+    });
+})();
+
 (function() {
     'use strict';
     
