@@ -133,12 +133,25 @@
         
     </div>
     
-    <!-- Scripts -->
-    <script src="js/helper.js" type="module"></script>
-    <script src="js/landing.js" type="module"></script>
+  
+<script src="js/global-auth.js"></script>
+
+<script>
+    // Update current year
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
     
-    <script>
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-    </script>
+    // Optional: Update Get Started button if logged in
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            const getStartedBtn = document.querySelector('a[href="/auth"]');
+            if (getStartedBtn) {
+                getStartedBtn.href = '/dashboard';
+                getStartedBtn.textContent = 'Go to Dashboard';
+            }
+        }
+    });
+</script>
+
 </body>
 </html>

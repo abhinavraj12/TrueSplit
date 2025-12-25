@@ -6,7 +6,7 @@
  * Version: 1.0
  */
 
-;(function() {
+(function() {
     'use strict';
     
     // Dashboard module
