@@ -154,6 +154,34 @@
     justify-content: center;
 }
 
+/* Logout button styling */
+.app-logout-btn {
+    background: transparent;
+    border: 1px solid var(--app-border-primary);
+    color: var(--app-text-secondary);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s var(--app-ease-out);
+    margin-left: 8px;
+}
+
+.app-logout-btn:hover {
+    background: var(--app-bg-hover);
+    color: var(--app-accent-red);
+    border-color: var(--app-accent-red);
+    transform: translateY(-2px);
+}
+
+.app-logout-btn:focus {
+    outline: 2px solid var(--app-accent-red);
+    outline-offset: 2px;
+}
+
 /* Secondary Nav Bar */
 .app-dashboard-nav--secondary {
     background: var(--app-bg-secondary);

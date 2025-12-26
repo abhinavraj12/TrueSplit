@@ -165,6 +165,7 @@
     </div>
 
     <!--  Authentication Script -->
+    <script src="js/auth-guard.js"></script>
     <script src="js/auth.js" type="module"></script>
 
     <!-- Inline  effects -->
@@ -193,7 +194,7 @@
           document.querySelector(".app-google-portal").appendChild(explosion);
 
           setTimeout(() => {
-            window.location.href = "/dashboard";
+            window.location.href = "http://localhost:8080/oauth2/authorization/google";
           }, 800);
         });
 

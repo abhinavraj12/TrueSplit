@@ -59,7 +59,7 @@ public class AuthService {
     }
 
     // create user (for OAuth2) if not present, return JWT
-    public String createOrGetUserFromOauth2(String name, String email) {
+    public String createOrGetUserFromOauth2(String name, String email, String picture, String googleId) {
         var existing = userRepository.findByEmail(email);
         if (existing.isPresent()) {
             return jwtUtil.generateToken(email, existing.get().getRoles());
@@ -68,6 +68,8 @@ public class AuthService {
             User u = new User();
             u.setName(name != null ? name : "GoogleUser");
             u.setEmail(email);
+            u.setGoogleId(googleId);
+            u.setPicture(picture);
             u.setPassword(passwordEncoder.encode("oauth2-placeholder"));
             u.setRoles(List.of("ROLE_USER"));
             u.setAuthProvider("google");

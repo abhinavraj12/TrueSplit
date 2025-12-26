@@ -37,4 +37,7 @@ public class User {
     private String authProvider; // "local" or "google"
 
     private boolean emailVerified; // default false
+
+    private String picture;
+    private String googleId;
 }
