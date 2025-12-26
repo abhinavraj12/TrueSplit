@@ -5,8 +5,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: co.journeywithabhinav@gmail.com
-    password: qylv gspd bgpd arlq
+    username: ${FROM_EMAIL_USERNAME}
+    password: ${FROM_EMAIL_Password}
     properties:
       mail:
         smtp:
@@ -17,8 +17,8 @@ spring:
           client:
             registration:
               google:
-                client-id: 318685982642-o2iq4u0gd8cnn66ec719esoiiqtca0ld.apps.googleusercontent.com
-                client-secret: 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
+                client-id: ${GOOGLE_CLIENT_ID}
+                client-secret: ${GOOGLE_CLIENT_SECRET}
                 scope:
                   - openid
                   - profile
@@ -33,7 +33,7 @@ spring:
 server:
   port: 8080
 jwt:
-  secret: bbdd7dbd88dbbddhd8debde80dend88end8nh
+  secret: ${JWT_SECRET}
   expiration-ms: 86400000 # 1 day
 otp:
   validity-seconds: 100   # OTP expiry time in seconds (60 second)
