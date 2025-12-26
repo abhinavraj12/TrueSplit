@@ -35,7 +35,8 @@
             toastContainer: null,
             addExpenseBtn: null,
             settleUpBtn: null,
-            themeToggle: null
+            themeToggle: null,
+            logoutBtn: null
         },
         
         // Initialize dashboard
@@ -58,6 +59,7 @@
             this.dom.addExpenseBtn = document.getElementById('addExpenseBtn');
             this.dom.settleUpBtn = document.getElementById('settleUpBtn');
             this.dom.themeToggle = document.querySelector('.app-theme-toggle');
+            this.dom.logoutBtn = document.getElementById('logoutBtn');
         },
         
         // Setup event listeners
@@ -145,12 +147,138 @@
                     }
                 });
             }
+
+            // Logout button
+            if (this.dom.logoutBtn) {
+                this.dom.logoutBtn.addEventListener('click', this.handleLogout.bind(this));
+                
+                this.dom.logoutBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.dom.logoutBtn.click();
+                    }
+                });
+            }                       
             
             // Keyboard shortcuts
             document.addEventListener('keydown', this.handleKeyboardShortcuts.bind(this));
             
             // Window resize
             window.addEventListener('resize', this.debounce(this.handleResize.bind(this), 250));
+        },
+        
+        // Handle logout
+        handleLogout: async function(e) {
+            e.preventDefault();
+            
+            const confirmed = await this.showConfirmationDialog(
+                'Logout Confirmation',
+                'Are you sure you want to logout?',
+                'Logout',
+                'Cancel'
+            );
+            
+            if (confirmed && window.AuthGuard) {
+                window.AuthGuard.logout();
+            }
+        },
+        
+        // Show confirmation dialog
+        showConfirmationDialog: function(title, message, confirmText, cancelText) {
+            return new Promise((resolve) => {
+                // Create modal overlay
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                    backdrop-filter: blur(4px);
+                `;
+                
+                // Create dialog
+                const dialog = document.createElement('div');
+                dialog.style.cssText = `
+                    background: var(--app-bg-surface);
+                    border-radius: var(--app-border-radius);
+                    padding: 24px;
+                    max-width: 400px;
+                    width: 90%;
+                    box-shadow: var(--app-shadow-xl);
+                    border: 1px solid var(--app-border-primary);
+                `;
+                
+                dialog.innerHTML = `
+                    <h3 style="margin: 0 0 12px 0; color: var(--app-text-primary); font-weight: 600;">${title}</h3>
+                    <p style="margin: 0 0 24px 0; color: var(--app-text-secondary); line-height: 1.5;">${message}</p>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button id="cancelBtn" style="
+                            padding: 8px 16px;
+                            background: transparent;
+                            border: 1px solid var(--app-border-primary);
+                            color: var(--app-text-secondary);
+                            border-radius: var(--app-border-radius);
+                            cursor: pointer;
+                            font-weight: 500;
+                        ">${cancelText}</button>
+                        <button id="confirmBtn" style="
+                            padding: 8px 16px;
+                            background: var(--app-accent-red);
+                            border: 1px solid var(--app-accent-red);
+                            color: white;
+                            border-radius: var(--app-border-radius);
+                            cursor: pointer;
+                            font-weight: 500;
+                        ">${confirmText}</button>
+                    </div>
+                `;
+                
+                overlay.appendChild(dialog);
+                document.body.appendChild(overlay);
+                
+                // Focus the cancel button by default
+                const cancelBtn = dialog.querySelector('#cancelBtn');
+                const confirmBtn = dialog.querySelector('#confirmBtn');
+                cancelBtn.focus();
+                
+                // Handle cancel
+                cancelBtn.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve(false);
+                });
+                
+                // Handle confirm
+                confirmBtn.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve(true);
+                });
+                
+                // Handle ESC key
+                const handleEscape = (e) => {
+                    if (e.key === 'Escape') {
+                        document.body.removeChild(overlay);
+                        document.removeEventListener('keydown', handleEscape);
+                        resolve(false);
+                    }
+                };
+                
+                document.addEventListener('keydown', handleEscape);
+                
+                // Handle overlay click
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        document.body.removeChild(overlay);
+                        document.removeEventListener('keydown', handleEscape);
+                        resolve(false);
+                    }
+                });
+            });
         },
         
         // Setup tooltip system
