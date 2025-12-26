@@ -133,24 +133,12 @@
         
     </div>
     
-  
-
-<script>
-    // Update current year
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    <!-- Scripts -->
+    <!-- <script src="js/helper.js" type="module"></script>
+    <script src="js/landing.js" type="module"></script> -->
     
-    // Optional: Update Get Started button if logged in
-    document.addEventListener('DOMContentLoaded', function() {
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-            const getStartedBtn = document.querySelector('a[href="/auth"]');
-            if (getStartedBtn) {
-                getStartedBtn.href = '/dashboard';
-                getStartedBtn.textContent = 'Go to Dashboard';
-            }
-        }
-    });
-</script>
-
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
