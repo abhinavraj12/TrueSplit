@@ -48,8 +48,7 @@
             this.setupResponsiveBehavior();
             this.animateElements();
             this.loadUserPreferences();
-            
-            console.log('Dashboard initialized');
+            this.loadUserProfile();
         },
         
         // Cache DOM elements
@@ -814,6 +813,105 @@
                 }
             } catch (e) {
                 console.warn('Could not load preferences:', e);
+            }
+        },
+        
+        // Load user profile from API
+        loadUserProfile: async function() {
+            try {
+                const response = await fetch('http://localhost:8080/api/me', {
+                    method: 'GET',
+                    credentials: 'include', 
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const userData = await response.json();
+                    this.updateUserUI(userData);
+                }
+            } catch (error) {
+                console.error('Failed to load user profile:', error);
+                // Keep default "Welcome, Alex" text if API fails
+            }
+        },
+
+        // Update UI with user data
+        updateUserUI: function(userData) {
+            if (!userData) return;
+            
+            // 1. Update welcome message with user's name
+            const userNameElements = document.querySelectorAll('.app-user-name');
+            if (userNameElements.length > 0 && userData.name) {
+                const formattedName = userData.name
+                    .toLowerCase()
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                
+                userNameElements.forEach(el => {
+                    el.textContent = `Welcome, ${formattedName}`;
+                });
+            }
+            
+            // 2. Update profile picture - FIXED URL VERSION
+            const userAvatarElements = document.querySelectorAll('.app-user-avatar');
+            if (userAvatarElements.length > 0 && userData.picture) {
+                userAvatarElements.forEach(avatarEl => {
+                    // Remove the icon
+                    avatarEl.innerHTML = '';
+                    
+                    // Try different URL formats for Google profile pictures
+                    let pictureUrl = userData.picture;
+                    
+                    // Option 1: Remove size parameter for larger image
+                    pictureUrl = pictureUrl.replace(/=s\d+-c$/, '');
+                    
+                    // Create image with error handling
+                    const img = new Image();
+                    img.alt = 'User Profile';
+                    img.style.cssText = `
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        background-color: var(--app-bg-secondary);
+                    `;
+                    
+                    // Try the modified URL first
+                    img.src = pictureUrl;
+                    
+                    img.onerror = () => {
+                        // Fallback to original URL
+                        img.src = userData.picture;
+                        
+                        img.onerror = () => {
+                            // Ultimate fallback: use initials
+                            const initials = userData.name
+                                .split(' ')
+                                .map(n => n[0])
+                                .join('')
+                                .toUpperCase()
+                                .substring(0, 2);
+                            
+                            avatarEl.innerHTML = `<div style="
+                                width: 100%;
+                                height: 100%;
+                                border-radius: 50%;
+                                background: var(--app-accent-green);
+                                color: white;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-weight: bold;
+                                font-size: 14px;
+                            ">${initials}</div>`;
+                        };
+                    };
+                    
+                    avatarEl.appendChild(img);
+                });
             }
         },
         
