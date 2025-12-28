@@ -4,6 +4,7 @@ import com.truesplit.TrueSplit.Repository.UserRepository;
 import com.truesplit.TrueSplit.dto.UserProfileResponse;
 import com.truesplit.TrueSplit.model.User;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,15 +56,16 @@ public class HomeController {
     }
 
     @PostMapping("/auth/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = new Cookie("TS_AUTH", "");
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
+
+        // Invalidate session
+        request.getSession().invalidate();
         return ResponseEntity.ok().build();
     }
-
-
 }
