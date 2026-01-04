@@ -43,8 +43,12 @@
                             <span class="app-logo-mark" aria-hidden="true">✓</span>
                             <span class="app-logo-text">TrueSplit</span>
                         </a>
-                        <span class="app-dashboard-divider" aria-hidden="true"></span>
-                        <!-- User Info -->
+                        
+                        <!-- Mobile Menu Toggle -->
+                        <button class="app-mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu" aria-expanded="false">
+                            <i class="fas fa-bars" aria-hidden="true"></i>
+                        </button>
+                        
                         <div class="app-dashboard-user">
                             <div class="app-user-avatar" aria-hidden="true">
                                 <i class="fas fa-user-circle" aria-hidden="true"></i>
@@ -68,65 +72,23 @@
                     </div>
                 </div>
             </nav>
-            
-            <!-- Secondary Nav Bar: Stats -->
-            <!-- <nav class="app-dashboard-nav app-dashboard-nav--secondary" aria-label="Financial stats">
-                <div class="app-container">
-                    <div class="app-dashboard-stats">
-                        <div class="app-stat-item" data-tooltip="Your total balance">
-                            <span class="app-stat-label">Balance</span>
-                            <span class="app-stat-value positive" aria-label="Balance: $245.50">$245.50</span>
-                        </div>
-                        <span class="app-stat-divider" aria-hidden="true"></span>
-                        <div class="app-stat-item" data-tooltip="Amount you owe others">
-                            <span class="app-stat-label">You Owe</span>
-                            <span class="app-stat-value negative" aria-label="You owe: $127.00">$127.00</span>
-                        </div>
-                        <span class="app-stat-divider" aria-hidden="true"></span>
-                        <div class="app-stat-item" data-tooltip="Amount owed to you">
-                            <span class="app-stat-label">You're Owed</span>
-                            <span class="app-stat-value positive" aria-label="You are owed: $372.50">$372.50</span>
-                        </div>
-                    </div>
-                </div>
-            </nav> -->
-            
-            <!-- Tertiary Nav Bar: Quick Actions -->
-            <!-- <nav class="app-dashboard-nav app-dashboard-nav--tertiary" aria-label="Quick actions">
-                <div class="app-container">
-                    <div class="app-dashboard-quick-actions">
-                        <button class="app-quick-action" data-tooltip="Search expenses" aria-label="Search">
-                            <i class="fas fa-search" aria-hidden="true"></i>
-                            <span>Search</span>
-                        </button>
-                        <button class="app-quick-action" data-tooltip="View recent activity" aria-label="Recent activity">
-                            <i class="fas fa-history" aria-hidden="true"></i>
-                            <span>Recent</span>
-                        </button>
-                        <button class="app-quick-action" data-tooltip="Create new group" aria-label="New group">
-                            <i class="fas fa-users" aria-hidden="true"></i>
-                            <span>New Group</span>
-                        </button>
-                    </div>
-                </div>
-            </nav> -->
         </div>
         
         <!-- Main Content -->
         <main class="app-dashboard-main" id="main-content">
-            <!-- Left Gutter (Reserved) -->
-            <div class="app-dashboard-gutter app-dashboard-gutter--left" aria-hidden="true"></div>
-            
             <!-- Center Content Area -->
             <div class="app-dashboard-content-area">
                 <div class="app-dashboard-columns">
-                    <!-- Left Column: Settings (30%) -->
-                    <aside class="app-dashboard-sidebar" aria-label="Navigation menu">
+                    <!-- Left Column: Settings (Hidden on mobile) -->
+                    <aside class="app-dashboard-sidebar" id="sidebar" aria-label="Navigation menu">
                         <div class="app-sidebar-header">
                             <h2 class="app-sidebar-title">
                                 <i class="fas fa-sliders-h" aria-hidden="true"></i>
                                 Navigation
                             </h2>
+                            <button class="app-sidebar-close" id="sidebarClose" aria-label="Close menu">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                         
                         <nav class="app-sidebar-nav" aria-label="Main navigation">
@@ -215,28 +177,33 @@
                         </div>
                     </aside>
                     
-                    <!-- Right Column: Main Content (70%) -->
+                    <!-- Right Column: Main Content -->
                     <div class="app-dashboard-main-content">
-                        <!-- Action Bar -->
-                        <!-- <div class="app-action-bar">
-                            <h1 class="app-action-bar-title">Expenses</h1>
+                        <!-- Action Bar (Hidden on mobile, shown as floating button) -->
+                        <div class="app-action-bar">
+                            <h1 class="app-action-bar-title">Dashboard</h1>
                             <div class="app-action-bar-actions">
                                 <button class="app-button app-button--primary" 
                                         id="addExpenseBtn"
                                         data-tooltip="Add new expense"
                                         aria-label="Add new expense">
                                     <i class="fas fa-plus" aria-hidden="true"></i>
-                                    <span>Add Expense</span>
+                                    <span class="app-button-text">&nbsp;Add Expense</span>
                                 </button>
                                 <button class="app-button app-button--secondary" 
                                         id="settleUpBtn"
                                         data-tooltip="Settle all balances"
                                         aria-label="Settle up">
                                     <i class="fas fa-handshake" aria-hidden="true"></i>
-                                    <span> Settle Up</span>
+                                    <span class="app-button-text">&nbsp; Settle Up</span>
                                 </button>
                             </div>
-                        </div> -->
+                        </div>
+                        
+                        <!-- Floating Action Button for Mobile -->
+                        <button class="app-fab" id="mobileFab" aria-label="Add expense">
+                            <i class="fas fa-plus" aria-hidden="true"></i>
+                        </button>
                         
                         <!-- Content Grid -->
                         <div class="app-content-grid">
@@ -309,22 +276,49 @@
                                         <i class="fas fa-chart-pie" aria-hidden="true"></i>
                                         Balance Overview
                                     </h2>
-                                    <button class="app-card-action" 
+                                    <!-- <button class="app-card-action" 
                                             data-tooltip="More options"
                                             aria-label="More balance options">
                                         <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
-                                    </button>
+                                    </button> -->
                                 </div>
                                 <div class="app-card-content">
                                     <div class="app-balance-chart">
                                         <div class="app-chart-visual" aria-hidden="true">
-                                            <div class="app-chart-circle">
-                                                <div class="app-chart-progress" style="--progress: 65%;"></div>
-                                            </div>
-                                            <div class="app-chart-stats">
-                                                <div class="app-chart-stat">
-                                                    <span class="app-stat-label">Settled</span>
-                                                    <span class="app-stat-value">65%</span>
+                                            <div class="app-chart-circle" 
+                                                role="img" 
+                                                aria-label="Balance overview chart showing 65% settled. Hover to see detailed breakdown."
+                                                tabindex="0">
+                                                <!-- Default view: Overall settlement -->
+                                                <div class="app-chart-default">
+                                                    <div class="app-chart-progress" style="--progress: 65%;"></div>
+                                                </div>
+                                                
+                                                <!-- Hover view: Split breakdown -->
+                                                <div class="app-chart-breakdown">
+                                                    <div class="app-chart-portion app-chart-portion--owe" style="--portion: 25%;"></div>
+                                                    <div class="app-chart-portion app-chart-portion--owed" style="--portion: 40%;"></div>
+                                                </div>
+                                                
+                                                <!-- Center percentage display -->
+                                                <div class="app-chart-center">
+                                                    <!-- Default view text -->
+                                                    <div class="app-chart-center-default">
+                                                        <span class="app-chart-percentage">65%</span>
+                                                        <span class="app-chart-label">Settled</span>
+                                                    </div>
+                                                    
+                                                    <!-- Hover view text -->
+                                                    <div class="app-chart-center-hover">
+                                                        <div class="app-chart-breakdown-item">
+                                                            <span class="app-chart-breakdown-label">You Owe</span>
+                                                            <span class="app-chart-breakdown-value owe-value">25%</span>
+                                                        </div>
+                                                        <div class="app-chart-breakdown-item">
+                                                            <span class="app-chart-breakdown-label">You're Owed</span>
+                                                            <span class="app-chart-breakdown-value owed-value">40%</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -347,123 +341,35 @@
                                     </div>
                                 </div>
                             </section>
-                            
-                            <!-- Friends Activity Card -->
-                            <!-- <section class="app-card app-content-card" aria-labelledby="friends-activity-title">
-                                <div class="app-card-header">
-                                    <h2 id="friends-activity-title" class="app-card-title">
-                                        <i class="fas fa-user-friends" aria-hidden="true"></i>
-                                        Friends Activity
-                                    </h2>
-                                    <button class="app-card-action" 
-                                            data-tooltip="Refresh"
-                                            aria-label="Refresh activity">
-                                        <i class="fas fa-sync-alt" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                <div class="app-card-content">
-                                    <div class="app-activity-list" role="list">
-                                        <div class="app-activity-item" role="listitem">
-                                            <div class="app-activity-avatar" aria-hidden="true">
-                                                <i class="fas fa-user-circle"></i>
-                                            </div>
-                                            <div class="app-activity-details">
-                                                <div class="app-activity-text">
-                                                    <strong>Sarah</strong> added a new expense
-                                                </div>
-                                                <div class="app-activity-time">2 hours ago</div>
-                                            </div>
-                                            <div class="app-activity-amount" aria-label="Amount: $58.75">$58.75</div>
-                                        </div>
-                                        
-                                        <div class="app-activity-item" role="listitem">
-                                            <div class="app-activity-avatar" aria-hidden="true">
-                                                <i class="fas fa-user-circle"></i>
-                                            </div>
-                                            <div class="app-activity-details">
-                                                <div class="app-activity-text">
-                                                    <strong>Mike</strong> settled up with you
-                                                </div>
-                                                <div class="app-activity-time">5 hours ago</div>
-                                            </div>
-                                            <div class="app-activity-amount positive" aria-label="Amount: $42.50">+$42.50</div>
-                                        </div>
-                                        
-                                        <div class="app-activity-item" role="listitem">
-                                            <div class="app-activity-avatar" aria-hidden="true">
-                                                <i class="fas fa-user-circle"></i>
-                                            </div>
-                                            <div class="app-activity-details">
-                                                <div class="app-activity-text">
-                                                    <strong>Emma</strong> joined Weekend Crew
-                                                </div>
-                                                <div class="app-activity-time">1 day ago</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section> -->
-                            
-                            <!-- Quick Stats Card -->
-                            <!-- <section class="app-card app-content-card" aria-labelledby="quick-stats-title">
-                                <div class="app-card-header">
-                                    <h2 id="quick-stats-title" class="app-card-title">
-                                        <i class="fas fa-chart-line" aria-hidden="true"></i>
-                                        Quick Stats
-                                    </h2>
-                                </div>
-                                <div class="app-card-content">
-                                    <div class="app-stats-grid">
-                                        <div class="app-stat-card">
-                                            <div class="app-stat-card-icon" style="background: rgba(var(--app-accent-green-rgb, 157, 191, 158), 0.1);" aria-hidden="true">
-                                                <i class="fas fa-wallet" style="color: var(--app-accent-green);" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="app-stat-card-content">
-                                                <div class="app-stat-card-value">$2,847</div>
-                                                <div class="app-stat-card-label">Total Spent</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="app-stat-card">
-                                            <div class="app-stat-card-icon" style="background: rgba(var(--app-accent-blue-rgb, 74, 119, 144), 0.1);" aria-hidden="true">
-                                                <i class="fas fa-exchange-alt" style="color: var(--app-accent-blue);" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="app-stat-card-content">
-                                                <div class="app-stat-card-value">47</div>
-                                                <div class="app-stat-card-label">Transactions</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="app-stat-card">
-                                            <div class="app-stat-card-icon" style="background: rgba(var(--app-accent-green-rgb, 157, 191, 158), 0.1);" aria-hidden="true">
-                                                <i class="fas fa-users" style="color: var(--app-accent-green);" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="app-stat-card-content">
-                                                <div class="app-stat-card-value">4</div>
-                                                <div class="app-stat-card-label">Active Groups</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="app-stat-card">
-                                            <div class="app-stat-card-icon" style="background: rgba(var(--app-accent-green-dark-rgb, 58, 90, 73), 0.1);" aria-hidden="true">
-                                                <i class="fas fa-check-circle" style="color: var(--app-accent-green-dark);" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="app-stat-card-content">
-                                                <div class="app-stat-card-value">82%</div>
-                                                <div class="app-stat-card-label">Settled</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section> -->
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Right Gutter (Reserved) -->
-            <div class="app-dashboard-gutter app-dashboard-gutter--right" aria-hidden="true"></div>
         </main>
+        
+        <!-- Mobile Bottom Navigation -->
+        <nav class="app-mobile-bottom-nav" aria-label="Mobile navigation">
+            <a href="#" class="app-mobile-nav-item app-mobile-nav-item--active" aria-label="Dashboard" aria-current="page">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="app-mobile-nav-item" aria-label="Activity">
+                <i class="fas fa-history"></i>
+                <span>Activity</span>
+            </a>
+            <a href="#" class="app-mobile-nav-item" aria-label="Expenses">
+                <i class="fas fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="#" class="app-mobile-nav-item" aria-label="Groups">
+                <i class="fas fa-users"></i>
+                <span>Groups</span>
+            </a>
+            <a href="#" class="app-mobile-nav-item" aria-label="Profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
         
         <!-- Global Tooltip -->
         <div class="app-tooltip" id="globalTooltip" role="tooltip" aria-hidden="true"></div>
@@ -475,5 +381,85 @@
     <!-- Dashboard Scripts -->
     <script src="js/auth-guard.js"></script>
     <script src="js/dashboard.js" type="module"></script>
+    
+    <!-- Mobile Responsive Script -->
+    <script>
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const mobileFab = document.getElementById('mobileFab');
+            const addExpenseBtn = document.getElementById('addExpenseBtn');
+            
+            // Toggle sidebar on mobile
+            if (mobileMenuToggle && sidebar) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    sidebar.classList.toggle('sidebar-open');
+                    
+                    // Update icon
+                    const icon = this.querySelector('i');
+                    if (icon) {
+                        icon.className = isExpanded ? 'fas fa-bars' : 'fas fa-times';
+                    }
+                });
+                
+                // Close sidebar when clicking close button
+                if (sidebarClose) {
+                    sidebarClose.addEventListener('click', function() {
+                        sidebar.classList.remove('sidebar-open');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        const icon = mobileMenuToggle.querySelector('i');
+                        if (icon) {
+                            icon.className = 'fas fa-bars';
+                        }
+                    });
+                }
+                
+                // Close sidebar when clicking outside on mobile
+                document.addEventListener('click', function(event) {
+                    if (window.innerWidth <= 768 && 
+                        sidebar.classList.contains('sidebar-open') &&
+                        !sidebar.contains(event.target) &&
+                        !mobileMenuToggle.contains(event.target)) {
+                        sidebar.classList.remove('sidebar-open');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        const icon = mobileMenuToggle.querySelector('i');
+                        if (icon) {
+                            icon.className = 'fas fa-bars';
+                        }
+                    }
+                });
+            }
+            
+            // Mobile FAB functionality
+            if (mobileFab && addExpenseBtn) {
+                mobileFab.addEventListener('click', function() {
+                    // Trigger the same action as the Add Expense button
+                    addExpenseBtn.click();
+                });
+            }
+            
+            // Handle window resize
+            function handleResize() {
+                if (window.innerWidth > 768) {
+                    // On desktop, ensure sidebar is visible and mobile nav is hidden
+                    if (sidebar) sidebar.classList.remove('sidebar-open');
+                    if (mobileMenuToggle) {
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        const icon = mobileMenuToggle.querySelector('i');
+                        if (icon) {
+                            icon.className = 'fas fa-bars';
+                        }
+                    }
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            handleResize(); // Initial check
+        });
+    </script>
 </body>
 </html>
