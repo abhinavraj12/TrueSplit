@@ -49,6 +49,7 @@
             this.animateElements();
             this.loadUserPreferences();
             this.loadUserProfile();
+            this.enhanceBalanceChart(); 
         },
         
         // Cache DOM elements
@@ -835,6 +836,192 @@
                 console.error('Failed to load user profile:', error);
                 // Keep default "Welcome, Alex" text if API fails
             }
+        },
+
+        enhanceBalanceChart: function() {
+            const chartCircle = document.querySelector('.app-chart-circle');
+            if (!chartCircle) return;
+            
+            // Get values from the UI (these would normally come from an API)
+            const settleUpAmount = 245.50; // Total settled
+            const youOweAmount = 127.00;   // Amount you owe
+            const youAreOwedAmount = 372.50; // Amount you're owed
+            
+            // Calculate percentages
+            const totalAmount = youOweAmount + youAreOwedAmount;
+            const settledPercentage = totalAmount > 0 ? Math.min(100, Math.round((settleUpAmount / totalAmount) * 100)) : 100;
+            const youOwePercentage = totalAmount > 0 ? Math.round((youOweAmount / totalAmount) * 100) : 0;
+            const youAreOwedPercentage = totalAmount > 0 ? Math.round((youAreOwedAmount / totalAmount) * 100) : 0;
+            
+            // Calculate the rotation for the "You're Owed" portion (starts after "You Owe")
+            const oweRotation = (youOwePercentage / 100) * 360;
+            
+            // Update all chart elements
+            this.updateChartElements(
+                settledPercentage,
+                youOwePercentage,
+                youAreOwedPercentage,
+                oweRotation,
+                youOweAmount,
+                youAreOwedAmount
+            );
+            
+            // Set up hover interactions
+            this.setupChartHoverInteractions(
+                youOwePercentage,
+                youAreOwedPercentage,
+                youOweAmount,
+                youAreOwedAmount
+            );
+        },
+
+        updateChartElements: function(settledPercentage, youOwePercentage, youAreOwedPercentage, oweRotation, youOweAmount, youAreOwedAmount) {
+            const chartCircle = document.querySelector('.app-chart-circle');
+            
+            // Update default progress
+            const defaultProgress = chartCircle.querySelector('.app-chart-default .app-chart-progress');
+            if (defaultProgress) {
+                defaultProgress.style.setProperty('--progress', `${settledPercentage}%`);
+            }
+            
+            // Update portions with proper positioning
+            const owePortion = chartCircle.querySelector('.app-chart-portion--owe');
+            const owedPortion = chartCircle.querySelector('.app-chart-portion--owed');
+            
+            if (owePortion) {
+                owePortion.style.setProperty('--portion', `${youOwePercentage}%`);
+                owePortion.style.setProperty('--owe-amount', `$${youOweAmount.toFixed(2)}`);
+            }
+            
+            if (owedPortion) {
+                owedPortion.style.setProperty('--portion', `${youAreOwedPercentage}%`);
+                owedPortion.style.setProperty('--owe-portion', `${oweRotation}deg`);
+                owedPortion.style.setProperty('--owed-amount', `$${youAreOwedAmount.toFixed(2)}`);
+            }
+            
+            // Update default view text
+            const defaultPercentage = chartCircle.querySelector('.app-chart-center-default .app-chart-percentage');
+            const defaultLabel = chartCircle.querySelector('.app-chart-center-default .app-chart-label');
+            
+            if (defaultPercentage) {
+                defaultPercentage.textContent = `${settledPercentage}%`;
+            }
+            
+            // Update hover view text
+            const oweValue = chartCircle.querySelector('.owe-value');
+            const owedValue = chartCircle.querySelector('.owed-value');
+            
+            if (oweValue) {
+                oweValue.textContent = `${youOwePercentage}%`;
+                oweValue.setAttribute('aria-label', `You owe: $${youOweAmount.toFixed(2)}`);
+            }
+            
+            if (owedValue) {
+                owedValue.textContent = `${youAreOwedPercentage}%`;
+                owedValue.setAttribute('aria-label', `You're owed: $${youAreOwedAmount.toFixed(2)}`);
+            }
+            
+            // Update accessibility
+            chartCircle.setAttribute('aria-label', 
+                `Balance overview chart showing ${settledPercentage}% settled. ` +
+                `You owe $${youOweAmount.toFixed(2)} (${youOwePercentage}%), ` +
+                `you're owed $${youAreOwedAmount.toFixed(2)} (${youAreOwedPercentage}%). ` +
+                `Hover or focus to see detailed breakdown.`
+            );
+        },
+
+        setupChartHoverInteractions: function(youOwePercentage, youAreOwedPercentage, youOweAmount, youAreOwedAmount) {
+            const chartCircle = document.querySelector('.app-chart-circle');
+            const defaultText = chartCircle.querySelector('.app-chart-center-default');
+            const hoverText = chartCircle.querySelector('.app-chart-center-hover');
+            const oweValue = chartCircle.querySelector('.owe-value');
+            const owedValue = chartCircle.querySelector('.owed-value');
+            
+            // Update text on hover/focus
+            const updateHoverText = () => {
+                if (oweValue) {
+                    oweValue.textContent = `$${youOweAmount.toFixed(2)}`;
+                    oweValue.setAttribute('data-original-text', `${youOwePercentage}%`);
+                }
+                
+                if (owedValue) {
+                    owedValue.textContent = `$${youAreOwedAmount.toFixed(2)}`;
+                    owedValue.setAttribute('data-original-text', `${youAreOwedPercentage}%`);
+                }
+                
+                // Show hover text, hide default
+                if (defaultText) defaultText.style.opacity = '0';
+                if (hoverText) hoverText.style.opacity = '1';
+                
+                // Update aria for screen readers
+                chartCircle.setAttribute('aria-label', 
+                    `Detailed breakdown: You owe $${youOweAmount.toFixed(2)} (${youOwePercentage}%), ` +
+                    `you're owed $${youAreOwedAmount.toFixed(2)} (${youAreOwedPercentage}%)`
+                );
+            };
+            
+            const resetHoverText = () => {
+                // Restore original percentage text
+                if (oweValue && oweValue.hasAttribute('data-original-text')) {
+                    oweValue.textContent = oweValue.getAttribute('data-original-text');
+                }
+                
+                if (owedValue && owedValue.hasAttribute('data-original-text')) {
+                    owedValue.textContent = owedValue.getAttribute('data-original-text');
+                }
+                
+                // Show default text, hide hover
+                if (defaultText) defaultText.style.opacity = '1';
+                if (hoverText) hoverText.style.opacity = '0';
+                
+                // Restore default aria label
+                const settledPercentage = Math.round((245.50 / (127.00 + 372.50)) * 100);
+                chartCircle.setAttribute('aria-label', 
+                    `Balance overview chart showing ${settledPercentage}% settled. ` +
+                    `Hover or focus to see detailed breakdown.`
+                );
+            };
+            
+            // Mouse events
+            chartCircle.addEventListener('mouseenter', updateHoverText);
+            chartCircle.addEventListener('mouseleave', resetHoverText);
+            
+            // Focus events for accessibility
+            chartCircle.addEventListener('focus', updateHoverText);
+            chartCircle.addEventListener('blur', resetHoverText);
+            
+            // Touch events for mobile
+            chartCircle.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                updateHoverText();
+                
+                // Auto-reset after 3 seconds on touch devices
+                setTimeout(() => {
+                    if (!chartCircle.matches(':hover') && !chartCircle.matches(':focus')) {
+                        resetHoverText();
+                    }
+                }, 3000);
+            });
+            
+            // Keyboard toggle support
+            chartCircle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    
+                    if (chartCircle.classList.contains('chart-expanded')) {
+                        chartCircle.classList.remove('chart-expanded');
+                        resetHoverText();
+                        this.announceToScreenReader('Showing overall settlement percentage');
+                    } else {
+                        chartCircle.classList.add('chart-expanded');
+                        updateHoverText();
+                        this.announceToScreenReader(
+                            `Showing detailed breakdown: You owe $${youOweAmount.toFixed(2)}, ` +
+                            `you're owed $${youAreOwedAmount.toFixed(2)}`
+                        );
+                    }
+                }
+            });
         },
 
         // Update UI with user data
