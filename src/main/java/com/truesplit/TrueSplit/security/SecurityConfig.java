@@ -55,7 +55,8 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/login/**",
                                 "/error**",
-                                "/api/me"       // needed for authGuard
+                                "/api/me",
+                                "/api/v1/expenses/**"// needed for authGuard
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
