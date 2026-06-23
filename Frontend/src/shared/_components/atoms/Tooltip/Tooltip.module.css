@@ -1,0 +1,113 @@
+/* Tooltip.module.css */
+
+/* ============================================================
+   Trigger Container
+   ============================================================ */
+
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+/* ============================================================
+   Tooltip
+   ============================================================ */
+
+.tooltip {
+  position: absolute;
+  z-index: var(--z-index-tooltip, 1060);
+  background-color: var(--color-tooltip-bg, #ffffff);
+  color: var(--color-tooltip-text, #2c241e);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  padding: var(--space-sm, 12px) var(--space-md, 16px);
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  max-width: 360px;
+  min-width: 150px;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: center;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Visibility States
+   ============================================================ */
+
+.tooltipVisible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tooltipHidden {
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+
+/* ============================================================
+   Arrow
+   ============================================================ */
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-tooltip-bg, #ffffff);
+  border: 1px solid var(--color-border);
+  transform: rotate(45deg);
+}
+
+/* Placement arrow positions */
+.tooltip-top::after {
+  top: 100%;
+  left: 50%;
+  margin-left: -4px;
+  margin-top: -4px;
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+
+.tooltip-bottom::after {
+  bottom: 100%;
+  left: 50%;
+  margin-left: -4px;
+  margin-bottom: -4px;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+}
+
+.tooltip-left::after {
+  left: 100%;
+  top: 50%;
+  margin-left: -4px;
+  margin-top: -4px;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.tooltip-right::after {
+  right: 100%;
+  top: 50%;
+  margin-right: -4px;
+  margin-top: -4px;
+  border-right-color: transparent;
+  border-top-color: transparent;
+}
+
+/* ============================================================
+   Dark Mode Adjustments (CSS variables handle it automatically)
+   ============================================================ */
+
+/* 
+   The tooltip uses:
+   --color-tooltip-bg (light: #ffffff, dark: #2f382e)
+   --color-tooltip-text (light: #2c241e, dark: #eceeeb)
+   --color-border (light: #e6ddd4, dark: #3a4238)
+   --shadow-md (light: 0 4px 12px rgba(44,36,30,0.08), dark: 0 4px 12px rgba(0,0,0,0.35))
+*/

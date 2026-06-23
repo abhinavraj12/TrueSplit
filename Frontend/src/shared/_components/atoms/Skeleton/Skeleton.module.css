@@ -1,0 +1,218 @@
+/* Skeleton.module.css */
+
+/* ============================================================
+   Shimmer Animation
+   ============================================================ */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================================
+   Base Skeleton
+   ============================================================ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-skeleton-base, #e6ddd4) 25%,
+    var(--color-skeleton-highlight, #ffffff) 37%,
+    var(--color-skeleton-base, #e6ddd4) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+  min-height: 8px;
+}
+
+/* ============================================================
+   Variants
+   ============================================================ */
+
+/* Text */
+.text {
+  height: var(--font-size-md);
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+/* Avatar */
+.avatar {
+  width: var(--avatar-md, 40px);
+  height: var(--avatar-md, 40px);
+  border-radius: var(--radius-full);
+}
+
+/* Avatar Small (for expense cards) */
+.avatarSmall {
+  width: var(--avatar-sm, 32px);
+  height: var(--avatar-sm, 32px);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* Avatar Group (for group cards) */
+.avatarGroup {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* Card */
+.card {
+  height: 120px;
+  width: 100%;
+  border-radius: var(--radius-md);
+}
+
+/* Custom */
+.custom {
+  /* height and width are set via inline style */
+}
+
+/* ============================================================
+   Line Sizes (for text skeletons)
+   ============================================================ */
+
+.line {
+  height: var(--font-size-md);
+  border-radius: var(--radius-sm);
+  min-height: 8px;
+}
+
+.lineShort {
+  width: 30%;
+}
+
+.lineMedium {
+  width: 60%;
+}
+
+.lineSmall {
+  width: 40%;
+}
+
+/* Size variants for text lines */
+.text-sm .line {
+  height: var(--font-size-sm);
+}
+
+.text-lg .line {
+  height: var(--font-size-lg);
+}
+
+/* ============================================================
+   User Card Layout
+   ============================================================ */
+
+.userCardLayout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md, 16px);
+  padding: var(--space-md, 16px);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.userCardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+}
+
+.userCardContent .line {
+  height: var(--font-size-md);
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   Expense Card Layout
+   ============================================================ */
+
+.expenseCardLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md, 16px);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  gap: var(--space-md, 16px);
+}
+
+.expenseCardLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 12px);
+  flex: 1;
+  min-width: 0;
+}
+
+.expenseCardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+}
+
+.expenseCardContent .line {
+  height: var(--font-size-md);
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   Group Card Layout
+   ============================================================ */
+
+.groupCardLayout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 12px);
+  padding: var(--space-md, 16px);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.groupCardTop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 12px);
+}
+
+.groupCardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+}
+
+.groupCardContent .line {
+  height: var(--font-size-md);
+  border-radius: var(--radius-sm);
+}
+
+.groupCardBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-xs, 8px);
+  border-top: 1px solid var(--color-divider);
+}
+
+.groupCardBottom .line {
+  height: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   Dark Mode Adjustments (CSS variables handle it automatically)
+   ============================================================ */

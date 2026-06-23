@@ -1,0 +1,170 @@
+/* Switch.module.css */
+
+/* ============================================================
+   Container
+   ============================================================ */
+
+.switchContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  cursor: pointer;
+  font-family: var(--font-checkbox);
+  color: var(--color-text-primary);
+  user-select: none;
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+.switchContainer.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Hidden Native Input (accessible)
+   ============================================================ */
+
+.switchInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Switch Track
+   ============================================================ */
+
+.switchTrack {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--color-switch-off, #d5cbc0);
+  transition: background-color var(--duration-fast) var(--easing-standard);
+  cursor: pointer;
+  box-sizing: content-box;
+}
+
+/* Size variants */
+.sm .switchTrack {
+  width: 28px;
+  height: 16px;
+}
+
+.md .switchTrack {
+  width: 36px;
+  height: 20px;
+}
+
+.lg .switchTrack {
+  width: 44px;
+  height: 24px;
+}
+
+/* Hover state (only when not disabled) */
+.switchContainer:not(.disabled):hover .switchTrack {
+  background-color: var(--color-switch-off, #d5cbc0);
+}
+
+.switchContainer:not(.disabled):hover .switchInput:checked ~ .switchTrack {
+  background-color: var(--color-switch-on, #6e8b6b);
+}
+
+/* Checked state */
+.switchInput:checked ~ .switchTrack {
+  background-color: var(--color-switch-on, #6e8b6b);
+}
+
+/* ============================================================
+   Switch Thumb
+   ============================================================ */
+
+.switchThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  border-radius: 50%;
+  background-color: var(--color-switch-handle, #ffffff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform var(--duration-fast) var(--easing-standard);
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+}
+
+/* Size-specific thumb adjustments */
+.sm .switchThumb {
+  width: 12px;
+  height: 12px;
+  top: 2px;
+  left: 2px;
+}
+
+.md .switchThumb {
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 2px;
+}
+
+.lg .switchThumb {
+  width: 20px;
+  height: 20px;
+  top: 2px;
+  left: 2px;
+}
+
+/* Checked: slide thumb to the right */
+.switchInput:checked ~ .switchTrack .switchThumb {
+  transform: translateX(100%);
+}
+
+/* ============================================================
+   Focus-visible
+   ============================================================ */
+
+.switchInput:focus-visible ~ .switchTrack {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ============================================================
+   Error State
+   ============================================================ */
+
+.switchContainer.error .switchTrack {
+  border-color: var(--color-input-error-border, #a86a6a);
+}
+
+.switchContainer.error .switchInput:checked ~ .switchTrack {
+  background-color: var(--color-input-error-border, #a86a6a);
+}
+
+/* ============================================================
+   Label
+   ============================================================ */
+
+.switchLabel {
+  line-height: 1.4;
+  font-size: inherit;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.switchContainer.disabled .switchLabel {
+  color: var(--color-input-disabled-text, #b5a99c);
+  cursor: not-allowed;
+}
+
+/* Size-specific label font sizes */
+.sm .switchLabel {
+  font-size: var(--font-size-sm);
+}
+.md .switchLabel {
+  font-size: var(--font-size-md);
+}
+.lg .switchLabel {
+  font-size: var(--font-size-lg);
+}

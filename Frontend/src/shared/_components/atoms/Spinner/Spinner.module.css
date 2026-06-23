@@ -1,0 +1,154 @@
+/* Spinner.module.css */
+
+/* ============================================================
+   Spinner Container
+   ============================================================ */
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Spinner Circle (the rotating element)
+   ============================================================ */
+
+.spinnerCircle {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid currentColor;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  animation: spinnerRotate var(--spinner-duration, 0.8s) linear infinite;
+  will-change: transform;
+}
+
+/* ============================================================
+   Sizes
+   ============================================================ */
+
+.size-xs {
+  width: var(--icon-xs, 12px);
+  height: var(--icon-xs, 12px);
+}
+
+.size-xs .spinnerCircle {
+  border-width: 2px;
+}
+
+.size-sm {
+  width: var(--icon-sm, 16px);
+  height: var(--icon-sm, 16px);
+}
+
+.size-sm .spinnerCircle {
+  border-width: 2.5px;
+}
+
+.size-md {
+  width: var(--icon-md, 20px);
+  height: var(--icon-md, 20px);
+}
+
+.size-md .spinnerCircle {
+  border-width: 3px;
+}
+
+.size-lg {
+  width: var(--icon-lg, 24px);
+  height: var(--icon-lg, 24px);
+}
+
+.size-lg .spinnerCircle {
+  border-width: 3.5px;
+}
+
+.size-xl {
+  width: var(--icon-xl, 32px);
+  height: var(--icon-xl, 32px);
+}
+
+.size-xl .spinnerCircle {
+  border-width: 4px;
+}
+
+/* ============================================================
+   Colors
+   ============================================================ */
+
+.color-default {
+  color: var(--color-icon-default);
+}
+
+.color-primary {
+  color: var(--color-text-primary);
+}
+
+.color-success {
+  color: var(--color-success-text);
+}
+
+.color-warning {
+  color: var(--color-warning-text);
+}
+
+.color-error {
+  color: var(--color-error-text);
+}
+
+.color-info {
+  color: var(--color-info-text);
+}
+
+.color-link {
+  color: var(--color-text-link);
+}
+
+/* ============================================================
+   Speeds
+   ============================================================ */
+
+.speed-slow {
+  --spinner-duration: 1.2s;
+}
+
+.speed-normal {
+  --spinner-duration: 0.8s;
+}
+
+.speed-fast {
+  --spinner-duration: 0.5s;
+}
+
+/* ============================================================
+   Animation
+   ============================================================ */
+
+@keyframes spinnerRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================
+   Accessibility – Screen Reader Only
+   ============================================================ */
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

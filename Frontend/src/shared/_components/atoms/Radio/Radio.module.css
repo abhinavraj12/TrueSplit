@@ -1,0 +1,173 @@
+/* Radio.module.css */
+
+/* ============================================================
+   Container Label
+   ============================================================ */
+
+.radioContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  cursor: pointer;
+  font-family: var(--font-checkbox);
+  color: var(--color-text-primary);
+  user-select: none;
+  transition: all var(--duration-fast) var(--easing-standard);
+  position: relative;
+}
+
+.radioContainer:not(.disabled):hover .radioControl {
+  border-color: var(--color-input-focus);
+}
+
+/* ============================================================
+   Hidden Native Input (accessible)
+   ============================================================ */
+
+.radioInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Custom Radio Visual
+   ============================================================ */
+
+.radioControl {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid var(--color-input-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-radio-bg, #ffffff);
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+/* Size variants */
+.sm .radioControl {
+  width: 16px;
+  height: 16px;
+}
+
+.md .radioControl {
+  width: 20px;
+  height: 20px;
+}
+
+.lg .radioControl {
+  width: 24px;
+  height: 24px;
+}
+
+/* ============================================================
+   Focus State
+   ============================================================ */
+
+.radioInput:focus-visible + .radioControl {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ============================================================
+   Checked State
+   ============================================================ */
+
+.radioControl.checked {
+  border-color: var(--color-radio-checked, #6e8b6b);
+}
+
+.radioDot {
+  display: block;
+  border-radius: var(--radius-full);
+  background-color: var(--color-radio-checked, #6e8b6b);
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+/* Size-specific dot sizes */
+.sm .radioDot {
+  width: 8px;
+  height: 8px;
+}
+
+.md .radioDot {
+  width: 10px;
+  height: 10px;
+}
+
+.lg .radioDot {
+  width: 14px;
+  height: 14px;
+}
+
+/* ============================================================
+   Disabled State
+   ============================================================ */
+
+.radioContainer.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.radioContainer.disabled .radioControl {
+  background-color: var(--color-input-disabled-bg);
+  border-color: var(--color-input-disabled-border, #d5cbc0);
+}
+
+.radioContainer.disabled .radioControl.checked {
+  border-color: var(--color-input-disabled-border, #d5cbc0);
+}
+
+.radioContainer.disabled .radioDot {
+  background-color: var(--color-input-disabled-text, #b5a99c);
+}
+
+/* ============================================================
+   Error State
+   ============================================================ */
+
+.radioContainer.error .radioControl {
+  border-color: var(--color-input-error-border, #a86a6a);
+}
+
+.radioContainer.error .radioInput:focus-visible + .radioControl {
+  outline-color: var(--color-input-error-border, #a86a6a);
+}
+
+.radioContainer.error .radioControl.checked {
+  border-color: var(--color-input-error-border, #a86a6a);
+}
+
+.radioContainer.error .radioDot {
+  background-color: var(--color-input-error-border, #a86a6a);
+}
+
+/* ============================================================
+   Label
+   ============================================================ */
+
+.radioLabel {
+  line-height: 1.4;
+  font-size: inherit;
+  color: var(--color-text-primary);
+}
+
+.radioContainer.disabled .radioLabel {
+  color: var(--color-input-disabled-text, #b5a99c);
+}
+
+/* Size-specific label font sizes */
+.sm .radioLabel {
+  font-size: var(--font-size-sm);
+}
+.md .radioLabel {
+  font-size: var(--font-size-md);
+}
+.lg .radioLabel {
+  font-size: var(--font-size-lg);
+}

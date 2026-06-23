@@ -1,4 +1,4 @@
-@import 'https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
+/* Remove the Google Fonts @import - now handled by Next.js fonts */
 @import './themes/light.css';
 @import './themes/dark.css';
 
@@ -86,8 +86,26 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  --font-family-base: 'Commissioner', 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+
+  /* ===== Font Families ===== */
+  --font-family-base: var(--font-outfit), system-ui, -apple-system, sans-serif;
+  --font-family-heading: var(--font-commissioner), system-ui, -apple-system, sans-serif;
+  --font-family-ui: var(--font-plus-jakarta), system-ui, -apple-system, sans-serif;
   --font-family-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* ===== Component-Specific Fonts ===== */
+  --font-typography: var(--font-outfit);
+  --font-button: var(--font-plus-jakarta);
+  --font-input: var(--font-outfit);
+  --font-textarea: var(--font-outfit);
+  --font-avatar: var(--font-plus-jakarta);
+  --font-badge: var(--font-plus-jakarta);
+  --font-checkbox: var(--font-outfit);
+  --font-switch: var(--font-outfit);
+  --font-radio: var(--font-outfit);
+  --font-skeleton: var(--font-outfit);
+  --font-spinner: var(--font-outfit);
+  --font-tooltip: var(--font-plus-jakarta);
 
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;

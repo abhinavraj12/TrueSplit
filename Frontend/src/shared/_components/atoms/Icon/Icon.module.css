@@ -1,0 +1,85 @@
+/* Icon.module.css */
+
+/* ========== Base Icon Styles ========== */
+
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+  line-height: 0;
+  vertical-align: middle;
+  /* Inherit color by default */
+  color: currentColor;
+  /* Ensure SVG fills and strokes use currentColor unless overridden */
+}
+
+/* Force all SVG children to inherit the icon's color */
+.icon svg,
+.icon svg * {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* ========== Sizes ========== */
+
+.size-xs {
+  width: var(--icon-xs, 12px);
+  height: var(--icon-xs, 12px);
+}
+
+.size-sm {
+  width: var(--icon-sm, 16px);
+  height: var(--icon-sm, 16px);
+}
+
+.size-md {
+  width: var(--icon-md, 20px);
+  height: var(--icon-md, 20px);
+}
+
+.size-lg {
+  width: var(--icon-lg, 24px);
+  height: var(--icon-lg, 24px);
+}
+
+.size-xl {
+  width: var(--icon-xl, 32px);
+  height: var(--icon-xl, 32px);
+}
+
+/* ========== Theme Colors ========== */
+
+.color-default {
+  color: var(--color-icon-default);
+}
+
+.color-muted {
+  color: var(--color-icon-muted);
+}
+
+.color-interactive {
+  color: var(--color-icon-interactive);
+}
+
+.color-primary {
+  color: var(--color-text-primary);
+}
+
+.color-success {
+  color: var(--color-success-text);
+}
+
+.color-warning {
+  color: var(--color-warning-text);
+}
+
+.color-error {
+  color: var(--color-error-text);
+}
+
+.color-info {
+  color: var(--color-info-text);
+}
+
+.color-link {
+  color: var(--color-text-link);
+}
