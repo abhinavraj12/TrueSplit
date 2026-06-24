@@ -228,4 +228,15 @@
   --shadow-sm: 0 2px 4px rgba(44, 36, 30, 0.06);
   --shadow-md: 0 4px 12px rgba(44, 36, 30, 0.08);
   --shadow-lg: 0 8px 24px rgba(44, 36, 30, 0.12);
+
+  --color-highlight-success-bg: rgba(77, 107, 68, 0.15);
+  --color-highlight-success-text: var(--color-success-text);
+  --color-highlight-warning-bg: rgba(123, 74, 26, 0.15);
+  --color-highlight-warning-text: var(--color-warning-text);
+  --color-highlight-danger-bg: rgba(168, 106, 106, 0.15);
+  --color-highlight-danger-text: var(--color-error-text);
+  --color-highlight-pending-bg: rgba(74, 99, 70, 0.10);
+  --color-highlight-pending-text: var(--color-info-text);
+  --color-highlight-info-bg: rgba(74, 99, 70, 0.12);
+  --color-highlight-info-text: var(--color-info-text);
 }

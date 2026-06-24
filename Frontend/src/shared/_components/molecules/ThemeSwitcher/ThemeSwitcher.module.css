@@ -1,0 +1,48 @@
+/* Placeholder to prevent layout shift */
+.placeholder {
+  width: 2.5rem;
+  height: 2.5rem;
+  visibility: hidden;
+}
+
+/* Base theme button styles (overrides Button ghost variant) */
+.themeButton {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-input-border) !important;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md, 10px);
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+.themeButton:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  border-color: var(--color-input-focus) !important;
+}
+
+.themeButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Icon-only variant */
+.iconOnly {
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  padding: 0 !important;
+}
+
+/* Text-only variant */
+.textOnly {
+  padding: 0 1rem;
+}
+
+/* Both icon + text variant */
+.both {
+  padding: 0 1rem;
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

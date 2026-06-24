@@ -1,0 +1,318 @@
+/* SelectDropdown.module.css */
+
+/* ============================================================
+   Container
+   ============================================================ */
+
+.dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+  width: 100%;
+  position: relative;
+}
+
+/* ============================================================
+   Label
+   ============================================================ */
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.labelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.required {
+  color: var(--color-error-text);
+  font-weight: var(--font-weight-bold);
+  margin-left: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Trigger
+   ============================================================ */
+
+.triggerWrapper {
+  position: relative;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm, 12px);
+  padding: 0 var(--space-sm, 12px);
+  background-color: var(--color-input-bg);
+  border: 2px solid var(--color-input-border);
+  border-radius: var(--radius-md, 10px);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing-standard);
+  width: 100%;
+  min-height: 44px;
+}
+
+.trigger:hover:not(.triggerDisabled) {
+  border-color: var(--color-input-focus);
+}
+
+.trigger.open {
+  border-color: var(--color-input-focus);
+  box-shadow: 0 0 0 2px rgba(var(--color-input-focus-rgb, 110, 139, 107), 0.15);
+}
+
+.trigger:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Size variants */
+.size-sm .trigger {
+  min-height: var(--input-height-sm, 36px);
+  font-size: var(--font-size-sm);
+  padding: 0 var(--space-xs, 8px);
+}
+
+.size-md .trigger {
+  min-height: var(--input-height-md, 44px);
+  font-size: var(--font-size-md);
+  padding: 0 var(--space-sm, 12px);
+}
+
+.size-lg .trigger {
+  min-height: var(--input-height-lg, 52px);
+  font-size: var(--font-size-lg);
+  padding: 0 var(--space-md, 16px);
+}
+
+/* Error state */
+.triggerError {
+  border-color: var(--color-input-error-border);
+}
+
+.triggerError.open {
+  border-color: var(--color-input-error-border);
+  box-shadow: 0 0 0 2px rgba(168, 106, 106, 0.15);
+}
+
+/* Disabled state */
+.triggerDisabled {
+  background-color: var(--color-input-disabled-bg);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================================
+   Value
+   ============================================================ */
+
+.value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 8px);
+}
+
+.placeholder {
+  color: var(--color-placeholder);
+}
+
+/* ============================================================
+   Actions
+   ============================================================ */
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  flex-shrink: 0;
+}
+
+.chevron {
+  transition: transform var(--duration-fast) var(--easing-standard);
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.clearButton {
+  color: var(--color-icon-muted);
+  padding: var(--space-xxs, 2px);
+  min-height: auto;
+  width: 20px;
+  height: 20px;
+}
+
+.clearButton:hover {
+  color: var(--color-icon-hover);
+}
+
+/* ============================================================
+   Dropdown Panel
+   ============================================================ */
+
+.dropdownPanel {
+  position: absolute;
+  top: calc(100% + var(--space-xs, 8px));
+  left: 0;
+  right: 0;
+  background-color: var(--color-dropdown-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-dropdown, 1000);
+  max-height: 260px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Search Input
+   ============================================================ */
+
+.searchWrapper {
+  padding: var(--space-xs, 8px);
+  border-bottom: 1px solid var(--color-divider);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-sm, 6px);
+  min-height: 32px;
+  font-size: var(--font-size-sm);
+}
+
+.searchInput:focus {
+  border-color: var(--color-input-focus);
+}
+
+/* ============================================================
+   Options List
+   ============================================================ */
+
+.optionsList {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-xxs, 4px);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ============================================================
+   Options
+   ============================================================ */
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs, 8px) var(--space-sm, 12px);
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing-standard);
+  gap: var(--space-sm, 12px);
+  min-height: 36px;
+}
+
+.option:hover:not(.optionDisabled) {
+  background-color: var(--color-dropdown-hover);
+}
+
+.optionFocused:not(.optionDisabled) {
+  background-color: var(--color-dropdown-hover);
+}
+
+.optionSelected {
+  background-color: var(--color-dropdown-hover);
+  font-weight: var(--font-weight-medium);
+}
+
+.optionSelected .optionLabel {
+  color: var(--color-text-primary);
+}
+
+.optionDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.optionContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 8px);
+  flex: 1;
+  min-width: 0;
+}
+
+.optionIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: var(--font-size-md);
+}
+
+.optionLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+/* ============================================================
+   No Options
+   ============================================================ */
+
+.noOptions {
+  padding: var(--space-md, 16px);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================================
+   Error & Helper Text
+   ============================================================ */
+
+.errorText {
+  color: var(--color-error-text);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+}
+
+.helperText {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

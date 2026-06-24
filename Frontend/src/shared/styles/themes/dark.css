@@ -229,4 +229,15 @@ body.dark,
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  --color-highlight-success-bg: rgba(157, 192, 148, 0.25);
+  --color-highlight-success-text: #a8d4a0;
+  --color-highlight-warning-bg: rgba(226, 201, 155, 0.25);
+  --color-highlight-warning-text: #f0d8a0;
+  --color-highlight-danger-bg: rgba(212, 170, 170, 0.25);
+  --color-highlight-danger-text: #e0b8b8;
+  --color-highlight-pending-bg: rgba(146, 168, 142, 0.20);
+  --color-highlight-pending-text: #b0c8aa;
+  --color-highlight-info-bg: rgba(146, 168, 142, 0.20);
+  --color-highlight-info-text: #b0c8aa;
 }

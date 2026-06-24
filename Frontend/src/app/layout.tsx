@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { commissioner, outfit, plusJakartaSans } from './fonts';
 import './globals.css';
+import { RootLayoutClient } from '@/providers';
 
 export const metadata: Metadata = {
   title: 'TrueSplit',
@@ -19,9 +20,11 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${commissioner.variable} ${outfit.variable} ${plusJakartaSans.variable}`}
-      data-theme="light"
+      suppressHydrationWarning
     >
-      <body>{children}</body>
+      <body>
+        <RootLayoutClient>{children}</RootLayoutClient>
+      </body>
     </html>
   );
 }

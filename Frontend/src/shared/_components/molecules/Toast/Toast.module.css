@@ -1,0 +1,129 @@
+/* Toast.module.css */
+
+/* ============================================================
+   Individual Toast - Clean Modern Design
+   ============================================================ */
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 12px);
+  padding: var(--space-sm, 12px) var(--space-sm, 12px) var(--space-sm, 12px) var(--space-md, 16px);
+  border-radius: var(--radius-md, 10px);
+  background-color: var(--color-toast-bg, #ffffff);
+  color: var(--color-text-primary);
+  font-family: var(--font-typography);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  box-shadow: var(--shadow-md);
+  max-width: 360px;
+  width: 100%;
+  pointer-events: auto;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  min-height: 48px;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   Variant Backgrounds - Clean and Subtle
+   ============================================================ */
+
+.success {
+  background-color: var(--color-toast-success-bg, #f2f6ed);
+}
+
+.error {
+  background-color: var(--color-toast-error-bg, #f9f0f0);
+}
+
+.info {
+  background-color: var(--color-toast-info-bg, #f0f3ec);
+}
+
+.warning {
+  background-color: var(--color-toast-warning-bg, #f0e4ce);
+}
+
+/* ============================================================
+   Icon - Clean and Consistent
+   ============================================================ */
+
+.icon {
+  flex-shrink: 0;
+  font-size: var(--font-size-lg);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.success .icon {
+  color: var(--color-toast-success-border, #4d6b44);
+}
+.error .icon {
+  color: var(--color-toast-error-border, #a86a6a);
+}
+.info .icon {
+  color: var(--color-toast-info-border, #4a6346);
+}
+.warning .icon {
+  color: var(--color-toast-warning-border, #7b4a1a);
+}
+
+/* ============================================================
+   Message - Clean Typography
+   ============================================================ */
+
+.message {
+  flex: 1;
+  word-break: break-word;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  padding: var(--space-xxs, 4px) 0;
+}
+
+/* ============================================================
+   Close Button - Minimal and Clean
+   ============================================================ */
+
+.closeButton {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-icon-muted);
+  cursor: pointer;
+  padding: var(--space-xxs, 4px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm, 6px);
+  transition: all var(--duration-fast) var(--easing-standard);
+  margin: -2px -2px -2px 0;
+  width: 24px;
+  height: 24px;
+}
+
+.closeButton:hover,
+.closeButton:focus-visible {
+  color: var(--color-icon-hover);
+  background-color: var(--color-surface-hover);
+}
+
+.closeButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.closeButton svg {
+  width: var(--icon-sm, 16px);
+  height: var(--icon-sm, 16px);
+}
