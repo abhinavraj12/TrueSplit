@@ -1,17 +1,9 @@
 /* Tooltip.module.css */
 
-/* ============================================================
-   Trigger Container
-   ============================================================ */
-
 .tooltipContainer {
   position: relative;
   display: inline-block;
 }
-
-/* ============================================================
-   Tooltip
-   ============================================================ */
 
 .tooltip {
   position: absolute;
@@ -31,13 +23,10 @@
   word-wrap: break-word;
   text-align: center;
   transition: opacity 0.15s ease, transform 0.15s ease;
-  pointer-events: none;
+  pointer-events: auto; /* allow hover on tooltip itself */
 }
 
-/* ============================================================
-   Visibility States
-   ============================================================ */
-
+/* Visibility states */
 .tooltipVisible {
   opacity: 1;
   transform: scale(1);
@@ -49,10 +38,7 @@
   pointer-events: none;
 }
 
-/* ============================================================
-   Arrow
-   ============================================================ */
-
+/* Arrow (pseudo) */
 .tooltip::after {
   content: '';
   position: absolute;
@@ -63,7 +49,6 @@
   transform: rotate(45deg);
 }
 
-/* Placement arrow positions */
 .tooltip-top::after {
   top: 100%;
   left: 50%;
@@ -100,14 +85,10 @@
   border-top-color: transparent;
 }
 
-/* ============================================================
-   Dark Mode Adjustments (CSS variables handle it automatically)
-   ============================================================ */
-
-/* 
-   The tooltip uses:
-   --color-tooltip-bg (light: #ffffff, dark: #2f382e)
-   --color-tooltip-text (light: #2c241e, dark: #eceeeb)
-   --color-border (light: #e6ddd4, dark: #3a4238)
-   --shadow-md (light: 0 4px 12px rgba(44,36,30,0.08), dark: 0 4px 12px rgba(0,0,0,0.35))
-*/
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition: none !important;
+    animation: none !important;
+  }
+}

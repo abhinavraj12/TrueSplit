@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { forwardRef, memo } from 'react';
+import clsx from 'clsx';
 import styles from './Typography.module.css';
 
 export type TypographyVariant =
@@ -26,15 +27,66 @@ export type TypographyWeight = 'normal' | 'medium' | 'semibold' | 'bold';
 
 export type TypographyAlign = 'left' | 'center' | 'right' | 'justify';
 
+export type TypographyTransform = 'none' | 'uppercase' | 'lowercase' | 'capitalize';
+
 export interface TypographyProps
   extends React.HTMLAttributes<HTMLElement> {
+  /**
+   * Visual variant
+   * @default 'body'
+   */
   variant?: TypographyVariant;
+  /**
+   * Text color
+   * @default 'primary'
+   */
   color?: TypographyColor;
+  /**
+   * Font weight
+   * @default 'normal'
+   */
   weight?: TypographyWeight;
+  /**
+   * Text alignment
+   * @default 'left'
+   */
   align?: TypographyAlign;
+  /**
+   * Single-line truncation with ellipsis
+   * @default false
+   */
   truncate?: boolean;
+  /**
+   * Multi-line truncation (number of lines to show)
+   * When set, overrides `truncate`
+   */
+  lineClamp?: number;
+  /**
+   * Text transformation
+   * @default 'none'
+   */
+  transform?: TypographyTransform;
+  /**
+   * Letter spacing (use design tokens: tight, normal, wide)
+   * @default 'normal'
+   */
+  letterSpacing?: 'tight' | 'normal' | 'wide';
+  /**
+   * Override the rendered HTML element
+   */
   as?: React.ElementType;
-  children?: React.ReactNode;
+  /**
+   * For label elements: associates the label with an input
+   */
+  htmlFor?: string;
+  /**
+   * Children content
+   */
+  children: React.ReactNode;
+  /**
+   * Additional CSS classes
+   */
+  className?: string;
 }
 
 const variantElementMap: Record<TypographyVariant, React.ElementType> = {
@@ -55,24 +107,36 @@ const buildClassName = (
   weight: TypographyWeight,
   align: TypographyAlign,
   truncate: boolean,
+  transform: TypographyTransform,
+  letterSpacing: 'tight' | 'normal' | 'wide',
+  lineClamp?: number,
   className?: string,
 ): string => {
-  const classes = [
+  return clsx(
     styles.root,
     styles[variant],
     styles[`color-${color}`],
     styles[`weight-${weight}`],
     styles[`align-${align}`],
     truncate && styles.truncate,
+    transform !== 'none' && styles[`transform-${transform}`],
+    styles[`letterSpacing-${letterSpacing}`],
+    lineClamp && lineClamp > 0 && styles.lineClamp,
     className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  return classes;
+  );
 };
 
-export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
+const getLineClampStyle = (lineClamp: number): React.CSSProperties => {
+  if (!lineClamp || lineClamp <= 0) return {};
+  return {
+    display: '-webkit-box',
+    WebkitLineClamp: lineClamp,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+  } as React.CSSProperties;
+};
+
+export const Typography = forwardRef<HTMLElement, TypographyProps>(
   (
     {
       variant = 'body',
@@ -80,6 +144,9 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       weight = 'normal',
       align = 'left',
       truncate = false,
+      lineClamp,
+      transform = 'none',
+      letterSpacing = 'normal',
       as,
       className,
       children,
@@ -89,21 +156,33 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
   ) => {
     const Component = as || variantElementMap[variant] || 'p';
 
+    // If lineClamp is provided, it overrides truncate
+    const shouldTruncate = lineClamp !== undefined && lineClamp > 0 ? false : truncate;
+
     const classNames = buildClassName(
       variant,
       color,
       weight,
       align,
-      truncate,
+      shouldTruncate,
+      transform,
+      letterSpacing,
+      lineClamp,
       className,
     );
 
-    // Cast ref to HTMLElement because the underlying element is always an HTML element.
-    // This is safe because all possible components are HTML elements.
+    const lineClampStyle = getLineClampStyle(lineClamp || 0);
+
+    // If truncate or lineClamp is set, add title attribute for accessibility
+    const shouldHaveTitle = shouldTruncate || (lineClamp !== undefined && lineClamp > 0);
+    const titleText = shouldHaveTitle && typeof children === 'string' ? children : undefined;
+
     return (
       <Component
         ref={ref as React.Ref<HTMLElement>}
         className={classNames}
+        style={lineClampStyle}
+        title={titleText}
         {...restProps}
       >
         {children}
@@ -113,3 +192,5 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
 );
 
 Typography.displayName = 'Typography';
+
+export default memo(Typography);

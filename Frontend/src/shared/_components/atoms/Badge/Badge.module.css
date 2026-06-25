@@ -140,8 +140,8 @@
   border-color: var(--color-badge-info-bg);
 }
 
-/* ============================================================
-   Dark Mode Adjustments (if needed)
-   ============================================================ */
-
-/* All colors are already CSS variables, so they adapt automatically */
+.iconOnly {
+  padding: 0 var(--space-xxs, 4px) !important;
+  min-width: auto;
+  /* Adjust as needed, but keep it compact */
+}

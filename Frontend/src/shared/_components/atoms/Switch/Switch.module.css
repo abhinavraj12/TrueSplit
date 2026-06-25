@@ -1,9 +1,18 @@
-/* Switch.module.css */
+/* Switch.module.css – enhanced with better touch area and consistent labels */
 
 /* ============================================================
-   Container
+   Wrapper – to contain label and messages
    ============================================================ */
+.switchWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs, 4px);
+  width: 100%;
+}
 
+/* ============================================================
+   Container Label – increased touch area
+   ============================================================ */
 .switchContainer {
   display: inline-flex;
   align-items: center;
@@ -13,17 +22,21 @@
   color: var(--color-text-primary);
   user-select: none;
   transition: all var(--duration-fast) var(--easing-standard);
+  position: relative;
+  padding: var(--space-xxs, 4px) 0; /* increase click area */
+  width: fit-content;
 }
 
-.switchContainer.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.switchContainer:not(.disabled):hover .switchTrack {
+  background-color: var(--color-switch-off, #d5cbc0);
+}
+.switchContainer:not(.disabled):hover .switchInput:checked ~ .switchTrack {
+  background-color: var(--color-switch-on, #6e8b6b);
 }
 
 /* ============================================================
    Hidden Native Input (accessible)
    ============================================================ */
-
 .switchInput {
   position: absolute;
   opacity: 0;
@@ -36,7 +49,6 @@
 /* ============================================================
    Switch Track
    ============================================================ */
-
 .switchTrack {
   position: relative;
   display: inline-block;
@@ -53,24 +65,13 @@
   width: 28px;
   height: 16px;
 }
-
 .md .switchTrack {
   width: 36px;
   height: 20px;
 }
-
 .lg .switchTrack {
   width: 44px;
   height: 24px;
-}
-
-/* Hover state (only when not disabled) */
-.switchContainer:not(.disabled):hover .switchTrack {
-  background-color: var(--color-switch-off, #d5cbc0);
-}
-
-.switchContainer:not(.disabled):hover .switchInput:checked ~ .switchTrack {
-  background-color: var(--color-switch-on, #6e8b6b);
 }
 
 /* Checked state */
@@ -81,7 +82,6 @@
 /* ============================================================
    Switch Thumb
    ============================================================ */
-
 .switchThumb {
   position: absolute;
   top: 2px;
@@ -94,26 +94,18 @@
   height: calc(100% - 4px);
 }
 
-/* Size-specific thumb adjustments */
+/* Size-specific thumb */
 .sm .switchThumb {
   width: 12px;
   height: 12px;
-  top: 2px;
-  left: 2px;
 }
-
 .md .switchThumb {
   width: 16px;
   height: 16px;
-  top: 2px;
-  left: 2px;
 }
-
 .lg .switchThumb {
   width: 20px;
   height: 20px;
-  top: 2px;
-  left: 2px;
 }
 
 /* Checked: slide thumb to the right */
@@ -124,7 +116,6 @@
 /* ============================================================
    Focus-visible
    ============================================================ */
-
 .switchInput:focus-visible ~ .switchTrack {
   outline: var(--focus-ring-width) solid var(--color-focus-ring);
   outline-offset: var(--focus-ring-offset);
@@ -133,38 +124,65 @@
 /* ============================================================
    Error State
    ============================================================ */
-
 .switchContainer.error .switchTrack {
   border-color: var(--color-input-error-border, #a86a6a);
 }
-
 .switchContainer.error .switchInput:checked ~ .switchTrack {
   background-color: var(--color-input-error-border, #a86a6a);
 }
 
 /* ============================================================
-   Label
+   Label – consistent font size across variants
    ============================================================ */
-
 .switchLabel {
   line-height: 1.4;
-  font-size: inherit;
+  font-size: var(--font-size-md);
   color: var(--color-text-primary);
-  cursor: pointer;
+}
+
+/* ============================================================
+   Required Star
+   ============================================================ */
+.requiredStar {
+  color: var(--color-error-text);
+  font-weight: var(--font-weight-bold);
+  margin-left: var(--space-xxs, 2px);
+  font-size: 1.2em;
+}
+
+/* ============================================================
+   Disabled State
+   ============================================================ */
+.switchContainer.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .switchContainer.disabled .switchLabel {
   color: var(--color-input-disabled-text, #b5a99c);
-  cursor: not-allowed;
+}
+.switchContainer.disabled .requiredStar {
+  color: var(--color-input-disabled-text, #b5a99c);
 }
 
-/* Size-specific label font sizes */
-.sm .switchLabel {
+/* ============================================================
+   Error & Helper Text (displayed below)
+   ============================================================ */
+.errorText {
+  color: var(--color-error-text);
   font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
 }
-.md .switchLabel {
-  font-size: var(--font-size-md);
+
+.helperText {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
 }
-.lg .switchLabel {
-  font-size: var(--font-size-lg);
-}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

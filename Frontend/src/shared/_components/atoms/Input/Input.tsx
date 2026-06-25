@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { forwardRef, memo } from 'react';
+import clsx from 'clsx';
 import styles from './Input.module.css';
 
 export type InputSize = 'sm' | 'md' | 'lg';
@@ -6,7 +7,7 @@ export type InputSize = 'sm' | 'md' | 'lg';
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /**
-   * Size variant of the input
+   * Size variant
    * @default 'md'
    */
   inputSize?: InputSize;
@@ -16,7 +17,7 @@ export interface InputProps
    */
   error?: boolean;
   /**
-   * If true, shows success state styling
+   * If true, shows success state styling (overridden by error if both true)
    * @default false
    */
   success?: boolean;
@@ -33,6 +34,37 @@ export interface InputProps
    * Right adornment (icon, text, or component)
    */
   rightAdornment?: React.ReactNode;
+  /**
+   * If true, marks the input as required
+   * @default false
+   */
+  required?: boolean;
+  /**
+   * ID of an element that describes the error (used for aria-describedby)
+   */
+  errorMessageId?: string;
+  /**
+   * Accessible label (if not provided via label or aria-label)
+   */
+  ariaLabel?: string;
+  /**
+   * Input mode for mobile keyboards (e.g., "numeric", "decimal", "email")
+   */
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
+  /**
+   * If true, shows character count when maxLength is set
+   * @default false
+   */
+  showCount?: boolean;
+  /**
+   * If true, shows a clear button when the input has a value
+   * @default false
+   */
+  clearable?: boolean;
+  /**
+   * Callback when clear button is clicked
+   */
+  onClear?: () => void;
 }
 
 /**
@@ -45,21 +77,21 @@ const buildClassName = (
   fullWidth: boolean,
   className?: string,
 ): string => {
-  const classes = [
+  // If both error and success are true, error takes precedence
+  const isError = error;
+  const isSuccess = success && !error;
+
+  return clsx(
     styles.input,
     styles[`size-${inputSize}`],
-    error && styles.error,
-    success && styles.success,
+    isError && styles.error,
+    isSuccess && styles.success,
     fullWidth && styles.fullWidth,
     className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  return classes;
+  );
 };
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       inputSize = 'md',
@@ -70,6 +102,17 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       rightAdornment,
       className,
       disabled,
+      required = false,
+      errorMessageId,
+      ariaLabel,
+      inputMode,
+      showCount = false,
+      clearable = false,
+      onClear,
+      maxLength,
+      value,
+      defaultValue,
+      onChange,
       ...restProps
     },
     ref,
@@ -82,35 +125,87 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       className,
     );
 
+    const isError = error;
+    const isSuccess = success && !error;
+
+    // Compute aria attributes
+    const ariaInvalid = isError ? true : undefined;
+    const ariaDescribedBy = isError && errorMessageId ? errorMessageId : undefined;
+
+    // Compute character count display
+    const currentValue = (value ?? defaultValue ?? '') as string;
+    const charCount = currentValue.length;
+    const showCharCount = showCount && maxLength && maxLength > 0;
+
+    // Handle clear
+    const handleClear = () => {
+      if (onClear) {
+        onClear();
+      } else {
+        // If no onClear provided, we need to simulate clearing via onChange
+        // We'll trigger a change event with empty string
+        if (onChange) {
+          const event = {
+            target: { value: '' },
+          } as React.ChangeEvent<HTMLInputElement>;
+          onChange(event);
+        }
+      }
+    };
+
     const inputElement = (
       <input
         ref={ref}
         className={classNames}
         disabled={disabled}
-        data-error={error}
-        data-success={success}
-        data-size={inputSize}
+        required={required}
+        aria-invalid={ariaInvalid}
+        aria-describedby={ariaDescribedBy}
+        aria-required={required}
+        aria-label={ariaLabel}
+        inputMode={inputMode}
+        maxLength={maxLength}
+        value={value}
+        defaultValue={defaultValue}
+        onChange={onChange}
         {...restProps}
       />
     );
 
-    // If there are adornments, wrap in a container
-    if (leftAdornment || rightAdornment) {
+    // If there are adornments or clear button, wrap in a container
+    if (leftAdornment || rightAdornment || clearable || showCharCount) {
       return (
-        <div
-          className={styles.wrapper}
-          data-disabled={disabled}
-          data-error={error}
-          data-success={success}
-          data-size={inputSize}
-          data-full-width={fullWidth}
-        >
-          {leftAdornment && (
-            <span className={styles.leftAdornment}>{leftAdornment}</span>
-          )}
-          {inputElement}
-          {rightAdornment && (
-            <span className={styles.rightAdornment}>{rightAdornment}</span>
+        <div className={styles.wrapperContainer}>
+          <div
+            className={styles.wrapper}
+            data-disabled={disabled}
+            data-error={isError}
+            data-success={isSuccess}
+            data-size={inputSize}
+            data-full-width={fullWidth}
+          >
+            {leftAdornment && (
+              <span className={styles.leftAdornment}>{leftAdornment}</span>
+            )}
+            {inputElement}
+            {clearable && currentValue.length > 0 && !disabled && (
+              <button
+                type="button"
+                className={styles.clearButton}
+                onClick={handleClear}
+                aria-label="Clear input"
+              >
+                ×
+              </button>
+            )}
+            {rightAdornment && (
+              <span className={styles.rightAdornment}>{rightAdornment}</span>
+            )}
+          </div>
+          {showCharCount && (
+            <div className={styles.charCount}>
+              {charCount} / {maxLength}
+            </div>
           )}
         </div>
       );
@@ -121,3 +216,5 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 
 Input.displayName = 'Input';
+
+export default memo(Input);

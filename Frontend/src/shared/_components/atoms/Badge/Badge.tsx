@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import clsx from 'clsx';
 import styles from './Badge.module.css';
+
+// --- Types ---
 
 export type BadgeVariant =
   | 'primary'
@@ -13,38 +15,39 @@ export type BadgeVariant =
 
 export type BadgeSize = 'sm' | 'md' | 'lg';
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  /**
-   * Visual style variant
-   * @default 'default'
-   */
+// Base props shared by all variants
+interface BadgeBaseProps extends React.HTMLAttributes<HTMLSpanElement> {
+  /** Visual style variant */
   variant?: BadgeVariant;
-  /**
-   * Badge size
-   * @default 'md'
-   */
+  /** Size variant */
   size?: BadgeSize;
-  /**
-   * If true, uses fully rounded pill shape
-   * @default true
-   */
+  /** If true, uses fully rounded pill shape (default true) */
   rounded?: boolean;
-  /**
-   * If true, shows a dot instead of text content
-   * @default false
-   */
-  dot?: boolean;
-  /**
-   * Icon displayed before the text
-   */
-  icon?: React.ReactNode;
-  /**
-   * Badge content (text)
-   */
-  children?: React.ReactNode;
+  /** Additional CSS class */
+  className?: string;
+  /** Custom aria-label (overrides default in dot mode) */
+  ariaLabel?: string;
 }
 
-export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
+// Dot mode: only dot, no children or icon
+interface DotModeProps extends BadgeBaseProps {
+  dot: true;
+  children?: never;
+  icon?: never;
+}
+
+// Content mode: optional children and icon, dot is false or undefined
+interface ContentModeProps extends BadgeBaseProps {
+  dot?: false;
+  children?: React.ReactNode;
+  icon?: React.ReactNode;
+}
+
+export type BadgeProps = DotModeProps | ContentModeProps;
+
+// --- Component ---
+
+const BadgeComponent = React.forwardRef<HTMLSpanElement, BadgeProps>(
   (
     {
       variant = 'default',
@@ -54,35 +57,48 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       icon,
       children,
       className,
+      ariaLabel,
       ...restProps
     },
     ref,
   ) => {
+    // In dot mode, we ignore children and icon
+    const isDot = dot === true;
+
+    // Determine the aria-label
+    const label = ariaLabel ?? (isDot ? 'Status indicator' : undefined);
+
+    // Build class names
     const classNames = clsx(
       styles.badge,
       styles[variant],
       styles[size],
       rounded && styles.rounded,
-      dot && styles.dot,
+      isDot && styles.dot,
+      // If only icon is provided (and no children), adjust padding to be more compact
+      !isDot && icon && !children && styles.iconOnly,
       className,
     );
 
-    // If dot mode is enabled, ignore children and icon
-    if (dot) {
+    // For dot mode, render just the dot
+    if (isDot) {
       return (
         <span
           ref={ref}
           className={classNames}
-          aria-label="Status indicator"
+          aria-label={label}
+          role="img" // semantic for a status indicator
           {...restProps}
         />
       );
     }
 
+    // Otherwise render with content
     return (
       <span
         ref={ref}
         className={classNames}
+        aria-label={label}
         {...restProps}
       >
         {icon && <span className={styles.icon}>{icon}</span>}
@@ -92,4 +108,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   },
 );
 
-Badge.displayName = 'Badge';
+BadgeComponent.displayName = 'Badge';
+
+// Memoize to prevent unnecessary re‑renders
+export const Badge = memo(BadgeComponent);

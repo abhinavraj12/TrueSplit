@@ -1,7 +1,18 @@
 /* Checkbox.module.css */
 
 /* ============================================================
-   Container Label
+   Wrapper – to contain the label and messages
+   ============================================================ */
+
+.checkboxWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs, 4px);
+  width: 100%;
+}
+
+/* ============================================================
+   Container Label – improved touch area
    ============================================================ */
 
 .checkboxContainer {
@@ -14,6 +25,8 @@
   user-select: none;
   transition: all var(--duration-fast) var(--easing-standard);
   position: relative;
+  padding: var(--space-xxs, 4px) 0; /* increase click area */
+  width: fit-content;
 }
 
 .checkboxContainer:not(.disabled):hover .checkboxControl {
@@ -160,6 +173,14 @@
   color: var(--color-input-disabled-text, #b5a99c);
 }
 
+.checkboxContainer.disabled .checkboxLabel {
+  color: var(--color-input-disabled-text, #b5a99c);
+}
+
+.checkboxContainer.disabled .requiredStar {
+  color: var(--color-input-disabled-text, #b5a99c);
+}
+
 /* ============================================================
    Error State
    ============================================================ */
@@ -178,27 +199,48 @@
 }
 
 /* ============================================================
-   Label
+   Label – consistent font size across variants
    ============================================================ */
 
 .checkboxLabel {
   line-height: 1.4;
-  font-size: inherit;
-  font-family: var(--font-checkbox);
+  font-size: var(--font-size-md);
   color: var(--color-text-primary);
 }
 
-.checkboxContainer.disabled .checkboxLabel {
-  color: var(--color-input-disabled-text, #b5a99c);
+/* Size-specific label font sizes - removed for consistency */
+/* Labels now use the base font size regardless of checkbox size */
+
+/* ============================================================
+   Required Star
+   ============================================================ */
+
+.requiredStar {
+  color: var(--color-error-text);
+  font-weight: var(--font-weight-bold);
+  margin-left: var(--space-xxs, 2px);
+  font-size: 1.2em;
 }
 
-.checkboxLabel {
-  line-height: 1.4;
-  font-size: inherit;
-  color: var(--color-text-primary);
+/* ============================================================
+   Error & Helper Text (displayed below)
+   ============================================================ */
+
+.errorText {
+  color: var(--color-error-text);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
 }
 
-/* Size-specific label font sizes */
-.sm .checkboxLabel { font-size: var(--font-size-sm); }
-.md .checkboxLabel { font-size: var(--font-size-md); }
-.lg .checkboxLabel { font-size: var(--font-size-lg); }
+.helperText {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

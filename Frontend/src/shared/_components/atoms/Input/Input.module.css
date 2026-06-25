@@ -173,3 +173,77 @@
 .wrapper[data-size='lg'] .rightAdornment {
   padding-right: var(--space-md);
 }
+
+/* Wrapper container for input + character count */
+.wrapperContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-xxs, 4px);
+}
+
+/* Clear button */
+.clearButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  padding: 0 var(--space-xs, 6px);
+  color: var(--color-icon-muted);
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  line-height: 1;
+  transition: color var(--duration-fast) var(--easing-standard);
+  min-height: 100%;
+}
+
+.clearButton:hover {
+  color: var(--color-icon-hover);
+}
+
+.clearButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Character count */
+.charCount {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: right;
+  padding: 0 var(--space-xs, 4px);
+}
+
+/* Ensure input doesn't overlap adornments */
+.wrapper .input {
+  padding-left: var(--space-sm, 12px);
+  padding-right: var(--space-sm, 12px);
+}
+
+/* Adjust padding when left adornment exists */
+.wrapper .leftAdornment + .input {
+  padding-left: var(--space-xxs, 4px);
+}
+
+/* Adjust padding when right adornment exists */
+.wrapper .input + .rightAdornment,
+.wrapper .input + .clearButton + .rightAdornment {
+  padding-right: var(--space-xxs, 4px);
+}
+
+/* Ensure clear button doesn't push right adornment */
+.wrapper .clearButton + .rightAdornment {
+  margin-left: 0;
+}
+
+/* Size-specific adjustments */
+.wrapper[data-size="sm"] .input {
+  padding-left: var(--space-xs, 8px);
+  padding-right: var(--space-xs, 8px);
+}
+.wrapper[data-size="lg"] .input {
+  padding-left: var(--space-md, 16px);
+  padding-right: var(--space-md, 16px);
+}

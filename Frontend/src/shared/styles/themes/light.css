@@ -202,8 +202,8 @@
   /* ---------- Progress & Skeleton ---------- */
   --color-progress-bg: #E6DDD4;
   --color-progress-fill: #6E8B6B;
-  --color-skeleton-base: #E6DDD4;
-  --color-skeleton-highlight: #FFFFFF;
+  --color-skeleton-base: #C4BAA4;
+  --color-skeleton-highlight: #F0EBE4;
 
   /* ---------- Scrollbar ---------- */
   --color-scrollbar-track: #F0EBE4;

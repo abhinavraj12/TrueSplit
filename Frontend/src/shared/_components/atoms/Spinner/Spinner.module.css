@@ -1,8 +1,4 @@
-/* Spinner.module.css */
-
-/* ============================================================
-   Spinner Container
-   ============================================================ */
+/* Spinner.module.css – modern SVG spinner with track and arc */
 
 .spinner {
   display: inline-flex;
@@ -12,136 +8,127 @@
   flex-shrink: 0;
 }
 
-/* ============================================================
-   Spinner Circle (the rotating element)
-   ============================================================ */
-
-.spinnerCircle {
+.svg {
   display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 3px solid currentColor;
-  border-top-color: transparent;
-  border-left-color: transparent;
   animation: spinnerRotate var(--spinner-duration, 0.8s) linear infinite;
   will-change: transform;
 }
 
-/* ============================================================
-   Sizes
-   ============================================================ */
-
-.size-xs {
-  width: var(--icon-xs, 12px);
-  height: var(--icon-xs, 12px);
+/* Track – subtle background ring */
+.track {
+  stroke: var(--color-spinner-track, rgba(128, 128, 128, 0.2));
+  transition: stroke var(--duration-fast) var(--easing-standard);
 }
 
-.size-xs .spinnerCircle {
-  border-width: 2px;
+/* Arc – the moving part */
+.arc {
+  stroke: var(--color-spinner-arc, currentColor);
+  transition: stroke var(--duration-fast) var(--easing-standard);
+  transform-origin: center;
+  animation: spinnerDash var(--spinner-duration, 0.8s) ease-in-out infinite;
 }
 
-.size-sm {
-  width: var(--icon-sm, 16px);
-  height: var(--icon-sm, 16px);
-}
-
-.size-sm .spinnerCircle {
-  border-width: 2.5px;
-}
-
-.size-md {
-  width: var(--icon-md, 20px);
-  height: var(--icon-md, 20px);
-}
-
-.size-md .spinnerCircle {
-  border-width: 3px;
-}
-
-.size-lg {
-  width: var(--icon-lg, 24px);
-  height: var(--icon-lg, 24px);
-}
-
-.size-lg .spinnerCircle {
-  border-width: 3.5px;
-}
-
-.size-xl {
-  width: var(--icon-xl, 32px);
-  height: var(--icon-xl, 32px);
-}
-
-.size-xl .spinnerCircle {
-  border-width: 4px;
-}
-
-/* ============================================================
-   Colors
-   ============================================================ */
-
-.color-default {
-  color: var(--color-icon-default);
-}
-
-.color-primary {
-  color: var(--color-text-primary);
-}
-
-.color-success {
-  color: var(--color-success-text);
-}
-
-.color-warning {
-  color: var(--color-warning-text);
-}
-
-.color-error {
-  color: var(--color-error-text);
-}
-
-.color-info {
-  color: var(--color-info-text);
-}
-
-.color-link {
-  color: var(--color-text-link);
-}
-
-/* ============================================================
-   Speeds
-   ============================================================ */
-
-.speed-slow {
-  --spinner-duration: 1.2s;
-}
-
-.speed-normal {
-  --spinner-duration: 0.8s;
-}
-
-.speed-fast {
-  --spinner-duration: 0.5s;
-}
-
-/* ============================================================
-   Animation
-   ============================================================ */
-
+/* Animation for rotation */
 @keyframes spinnerRotate {
-  from {
+  0% {
     transform: rotate(0deg);
   }
-  to {
+  100% {
     transform: rotate(360deg);
   }
 }
 
-/* ============================================================
-   Accessibility – Screen Reader Only
-   ============================================================ */
+/* Animation for dash offset to create a sweeping motion */
+@keyframes spinnerDash {
+  0% {
+    stroke-dashoffset: 85%;
+  }
+  50% {
+    stroke-dashoffset: 20%;
+    transform: rotate(180deg);
+  }
+  100% {
+    stroke-dashoffset: 85%;
+    transform: rotate(360deg);
+  }
+}
 
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .svg {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .arc {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ===== Sizes ===== */
+.size-xs .svg {
+  width: 16px;
+  height: 16px;
+}
+.size-sm .svg {
+  width: 20px;
+  height: 20px;
+}
+.size-md .svg {
+  width: 28px;
+  height: 28px;
+}
+.size-lg .svg {
+  width: 36px;
+  height: 36px;
+}
+.size-xl .svg {
+  width: 44px;
+  height: 44px;
+}
+
+/* ===== Colors – define both track and arc ===== */
+.color-default {
+  --color-spinner-track: rgba(128, 128, 128, 0.2);
+  --color-spinner-arc: var(--color-icon-default);
+}
+.color-primary {
+  --color-spinner-track: rgba(90, 117, 87, 0.2);
+  --color-spinner-arc: var(--color-btn-primary-bg);
+}
+.color-success {
+  --color-spinner-track: rgba(77, 107, 68, 0.2);
+  --color-spinner-arc: var(--color-success-text);
+}
+.color-warning {
+  --color-spinner-track: rgba(123, 74, 26, 0.2);
+  --color-spinner-arc: var(--color-warning-text);
+}
+.color-error {
+  --color-spinner-track: rgba(168, 106, 106, 0.2);
+  --color-spinner-arc: var(--color-error-text);
+}
+.color-info {
+  --color-spinner-track: rgba(74, 99, 70, 0.2);
+  --color-spinner-arc: var(--color-info-text);
+}
+.color-link {
+  --color-spinner-track: rgba(110, 139, 107, 0.2);
+  --color-spinner-arc: var(--color-text-link);
+}
+
+/* ===== Speeds ===== */
+.speed-slow {
+  --spinner-duration: 1.2s;
+}
+.speed-normal {
+  --spinner-duration: 0.8s;
+}
+.speed-fast {
+  --spinner-duration: 0.5s;
+}
+
+/* ===== Screen Reader Only ===== */
 .srOnly {
   position: absolute;
   width: 1px;

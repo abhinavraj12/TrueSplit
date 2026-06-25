@@ -27,7 +27,52 @@
   position: relative;
   line-height: 1;
   min-width: 44px;
+  /* Ensure color is inherited from variant */
+  color: inherit;
 }
+
+/* ========== Anchor Button Override ========== */
+a.button {
+  text-decoration: none;
+}
+
+/* Prevent global link hover from overriding button text color */
+a.button:hover {
+  color: inherit !important;
+  text-decoration: none;
+}
+
+/* ========== Link Variant (button styled as link) ========== */
+.button.link {
+  background-color: transparent;
+  color: var(--color-text-link);
+  border-color: transparent;
+  padding: 0;
+  height: auto;
+  min-height: auto;
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.button.link:hover:not(:disabled) {
+  color: var(--color-text-link-hover);
+  background-color: transparent;
+}
+.button.link:active:not(:disabled) {
+  color: var(--color-text-link-hover);
+  background-color: transparent;
+}
+
+/* For anchor with link variant, we want link hover behavior */
+a.button.link:hover {
+  color: var(--color-text-link-hover) !important;
+  text-decoration: underline !important;
+}
+a.button.link:active {
+  color: var(--color-text-link-hover) !important;
+}
+
+/* ========== Button Focus ========== */
 
 .button:focus-visible {
   outline: var(--focus-ring-width) solid var(--color-focus-ring);
@@ -180,26 +225,6 @@
   border-color: var(--color-btn-success-hover);
 }
 
-.link {
-  background-color: transparent;
-  color: var(--color-text-link);
-  border-color: transparent;
-  padding: 0;
-  height: auto;
-  min-height: auto;
-  font-weight: var(--font-weight-medium);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-.link:hover:not(:disabled) {
-  color: var(--color-text-link-hover);
-  background-color: transparent;
-}
-.link:active:not(:disabled) {
-  color: var(--color-text-link-hover);
-  background-color: transparent;
-}
-
 /* ========== Disabled State ========== */
 
 .button:disabled,
@@ -225,6 +250,11 @@
   color: inherit;
 }
 
+/* ========== Active State – subtle scale ========== */
+.button:active:not(:disabled):not([aria-disabled='true']) {
+  transform: scale(0.98);
+}
+
 /* ========== Loading Spinner ========== */
 
 .spinner {
@@ -240,6 +270,7 @@
   height: 6px;
   border-radius: var(--radius-full);
   background-color: currentColor;
+  opacity: 0.8;
   animation: spinnerBounce 1.4s infinite ease-in-out both;
 }
 
@@ -265,7 +296,7 @@
   border: 0;
 }
 
-/* ========== Touch-friendly Adjustments ========== */
+/* ========== Touch‑friendly Adjustments ========== */
 
 @media (pointer: coarse) {
   .sm { min-height: 44px; padding: 0 var(--space-md); }

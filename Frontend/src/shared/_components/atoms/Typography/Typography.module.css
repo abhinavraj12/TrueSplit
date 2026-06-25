@@ -1,7 +1,4 @@
-/* 
-  This component uses design tokens from the theme system.
-  All variables are defined in :root and overridden in dark mode.
-*/
+/* Typography.module.css – fully revised */
 
 .root {
   margin: 0;
@@ -9,52 +6,52 @@
   font-family: var(--font-typography);
 }
 
-/* ========== Variants (Heading Sizes) ========== */
+/* ========== Variants with responsive font sizes ========== */
 
 .h1 {
-  font-size: var(--font-size-3xl);
+  font-size: clamp(var(--font-size-2xl), 5vw, var(--font-size-4xl));
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
 }
 
 .h2 {
-  font-size: var(--font-size-2xl);
+  font-size: clamp(var(--font-size-xl), 4vw, var(--font-size-3xl));
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
 }
 
 .h3 {
-  font-size: var(--font-size-xl);
+  font-size: clamp(var(--font-size-lg), 3.5vw, var(--font-size-2xl));
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
 }
 
 .h4 {
-  font-size: var(--font-size-lg);
+  font-size: clamp(var(--font-size-md), 3vw, var(--font-size-xl));
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
 }
 
 .h5 {
-  font-size: var(--font-size-md);
+  font-size: clamp(var(--font-size-sm), 2.5vw, var(--font-size-lg));
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
 }
 
 .h6 {
-  font-size: var(--font-size-sm);
+  font-size: clamp(var(--font-size-xs), 2vw, var(--font-size-md));
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
 }
 
 .body {
-  font-size: var(--font-size-md);
+  font-size: clamp(var(--font-size-sm), 2vw, var(--font-size-md));
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-normal);
 }
 
 .small {
-  font-size: var(--font-size-sm);
+  font-size: clamp(var(--font-size-xs), 1.5vw, var(--font-size-sm));
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-normal);
 }
@@ -70,31 +67,24 @@
 .color-primary {
   color: var(--color-text-primary);
 }
-
 .color-secondary {
   color: var(--color-text-secondary);
 }
-
 .color-muted {
   color: var(--color-text-muted);
 }
-
 .color-success {
   color: var(--color-success-text);
 }
-
 .color-warning {
   color: var(--color-warning-text);
 }
-
 .color-error {
   color: var(--color-error-text);
 }
-
 .color-info {
   color: var(--color-info-text);
 }
-
 .color-link {
   color: var(--color-text-link);
 }
@@ -104,15 +94,12 @@
 .weight-normal {
   font-weight: var(--font-weight-normal);
 }
-
 .weight-medium {
   font-weight: var(--font-weight-medium);
 }
-
 .weight-semibold {
   font-weight: var(--font-weight-semibold);
 }
-
 .weight-bold {
   font-weight: var(--font-weight-bold);
 }
@@ -122,15 +109,12 @@
 .align-left {
   text-align: left;
 }
-
 .align-center {
   text-align: center;
 }
-
 .align-right {
   text-align: right;
 }
-
 .align-justify {
   text-align: justify;
 }
@@ -142,4 +126,67 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+
+/* ========== Line Clamp (multi-line truncation) ========== */
+
+.lineClamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+/* ========== Text Transform ========== */
+
+.transform-uppercase {
+  text-transform: uppercase;
+}
+.transform-lowercase {
+  text-transform: lowercase;
+}
+.transform-capitalize {
+  text-transform: capitalize;
+}
+
+/* ========== Letter Spacing ========== */
+
+.letterSpacing-tight {
+  letter-spacing: var(--letter-spacing-tight);
+}
+.letterSpacing-normal {
+  letter-spacing: var(--letter-spacing-normal);
+}
+.letterSpacing-wide {
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* ========== Responsive Adjustments ========== */
+
+@media (max-width: 480px) {
+  .h1 {
+    font-size: var(--font-size-2xl);
+  }
+  .h2 {
+    font-size: var(--font-size-xl);
+  }
+  .h3 {
+    font-size: var(--font-size-lg);
+  }
+  .h4 {
+    font-size: var(--font-size-md);
+  }
+  .h5 {
+    font-size: var(--font-size-sm);
+  }
+  .h6 {
+    font-size: var(--font-size-xs);
+  }
+  .body {
+    font-size: var(--font-size-sm);
+  }
+  .small {
+    font-size: var(--font-size-xs);
+  }
 }
