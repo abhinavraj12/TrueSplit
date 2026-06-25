@@ -1,0 +1,362 @@
+/* page.module.css – SearchInput Demo Page */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--page-padding-mobile, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg, 24px);
+  min-height: 100vh;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-md, 16px) 0;
+  flex-wrap: wrap;
+  gap: var(--space-sm, 12px);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+}
+
+/* ============================================================
+   Tabs
+   ============================================================ */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs, 8px);
+  padding: var(--space-xs, 8px) 0;
+  border-bottom: 2px solid var(--color-divider);
+}
+
+.tab {
+  padding: var(--space-xs, 8px) var(--space-md, 16px);
+  border-radius: var(--radius-md, 10px);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-typography);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing-standard);
+  border: 2px solid transparent;
+  min-height: 40px;
+}
+
+.tab:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.tabActive {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border-color: var(--color-btn-primary-bg);
+}
+
+.tabActive:hover {
+  background-color: var(--color-btn-primary-hover);
+  color: var(--color-btn-primary-text);
+}
+
+/* ============================================================
+   Sections
+   ============================================================ */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+  padding: var(--space-md, 16px);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-border);
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs, 4px);
+}
+
+/* ============================================================
+   Row & Grid Layouts
+   ============================================================ */
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md, 16px);
+  align-items: flex-start;
+}
+
+.row > * {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md, 16px);
+}
+
+.grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+}
+
+/* ============================================================
+   Preview
+   ============================================================ */
+
+.preview {
+  flex: 0 1 auto;
+  padding: var(--space-sm, 12px);
+  background-color: var(--color-bg-page);
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+  min-height: 44px;
+  min-width: 180px;
+}
+
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 8px);
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   Size & State Labels
+   ============================================================ */
+
+.sizeLabel,
+.stateLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================================
+   Results (Real-World)
+   ============================================================ */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 12px);
+  padding: var(--space-sm, 12px);
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-border);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.results::-webkit-scrollbar {
+  width: 4px;
+}
+.results::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+.resultsHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 8px);
+  padding-bottom: var(--space-xs, 8px);
+  border-bottom: 1px solid var(--color-divider);
+  flex-shrink: 0;
+}
+
+.resultsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+  flex: 1;
+}
+
+.resultItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs, 8px) var(--space-sm, 12px);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-sm, 6px);
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+
+.resultItem:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.resultLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Group Results (Preview)
+   ============================================================ */
+
+.groupResults {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs, 8px);
+}
+
+.groupChip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 8px);
+  padding: var(--space-xxs, 4px) var(--space-sm, 12px);
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+/* ============================================================
+   Empty State
+   ============================================================ */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm, 12px);
+  padding: var(--space-xl, 32px) var(--space-md, 16px);
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
+   Code Block
+   ============================================================ */
+
+.codeBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+  padding: var(--space-sm, 12px);
+  background-color: var(--color-bg-page);
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.codeLabel {
+  font-weight: var(--font-weight-medium);
+}
+
+.code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.footer {
+  margin-top: auto;
+  padding: var(--space-md, 16px) 0;
+  text-align: center;
+  border-top: 1px solid var(--color-divider);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .tabs {
+    gap: var(--space-xxs, 4px);
+  }
+
+  .tab {
+    padding: var(--space-xxs, 6px) var(--space-sm, 12px);
+    font-size: var(--font-size-xs);
+    min-height: 32px;
+  }
+
+  .section {
+    padding: var(--space-sm, 12px);
+  }
+
+  .row {
+    flex-direction: column;
+  }
+
+  .row > * {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .preview {
+    width: 100%;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results {
+    max-height: 240px;
+  }
+
+  .resultItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xxs, 4px);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: var(--space-sm, 12px);
+  }
+
+  .code {
+    font-size: var(--font-size-xs);
+  }
+
+  .tab {
+    font-size: var(--font-size-xs);
+    padding: var(--space-xxs, 4px) var(--space-xs, 8px);
+  }
+
+  .results {
+    max-height: 180px;
+  }
+}

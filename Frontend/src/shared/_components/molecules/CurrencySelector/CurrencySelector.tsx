@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useMemo, memo } from 'react';
 import clsx from 'clsx';
-import { Typography } from '@/shared/_components/atoms/Typography';
-import { SelectDropdown } from '@/shared/_components/molecules/SelectDropdown';
+import { SelectDropdown, SelectOption } from '@/shared/_components/molecules/SelectDropdown';
 import styles from './CurrencySelector.module.css';
 
 export interface CurrencyOption {
@@ -11,20 +10,45 @@ export interface CurrencyOption {
 }
 
 export interface CurrencySelectorProps {
+  /** Currently selected currency code (controlled) */
   value?: string;
+  /** Default currency code (uncontrolled) */
   defaultValue?: string;
+  /** Callback when selection changes */
   onChange?: (value: string) => void;
+  /** Label displayed above the selector */
   label?: React.ReactNode;
+  /** Show currency symbol as an icon in the dropdown (default: true) */
   showSymbol?: boolean;
+  /** Show full currency name alongside the code in the dropdown (default: false) */
   showFullName?: boolean;
+  /** Placeholder text when no currency is selected (default: 'Select currency') */
   placeholder?: string;
+  /** Disable the selector */
   disabled?: boolean;
+  /** Error state (boolean or error message string) */
   error?: boolean | string;
+  /** Helper text displayed below */
   helperText?: React.ReactNode;
+  /** Size variant (default: 'md') */
   size?: 'sm' | 'md' | 'lg';
+  /** Additional CSS class */
   className?: string;
+  /** If true, marks the field as required (shows asterisk) */
+  required?: boolean;
+  /** If true, shows a clear button when a value is selected */
+  clearable?: boolean;
+  /** If true, enables search/filtering of options (default: true) */
+  searchable?: boolean;
+  /** Custom accessible label for screen readers (overrides label) */
+  ariaLabel?: string;
+  /** If true, label is visually hidden but remains accessible */
+  labelHidden?: boolean;
+  /** Optional custom currency list (overrides the default list) */
+  currencies?: CurrencyOption[];
 }
 
+// Default currency list – ISO 4217 major currencies
 const DEFAULT_CURRENCIES: CurrencyOption[] = [
   { code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'EUR', symbol: '€', name: 'Euro' },
@@ -40,7 +64,25 @@ const DEFAULT_CURRENCIES: CurrencyOption[] = [
   { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar' },
 ];
 
-export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
+/**
+ * Format a currency option for display in the dropdown.
+ */
+const formatOptionLabel = (
+  currency: CurrencyOption,
+  showSymbol: boolean,
+  showFullName: boolean,
+): string => {
+  if (showFullName) {
+    return showSymbol ? `${currency.code} – ${currency.name}` : `${currency.code} – ${currency.name}`;
+  }
+  // Default: show just the code, optionally with symbol as icon
+  return currency.code;
+};
+
+/**
+ * CurrencySelector – A dropdown for selecting a currency with symbol, name, and accessibility.
+ */
+const CurrencySelectorComponent: React.FC<CurrencySelectorProps> = ({
   value,
   defaultValue,
   onChange,
@@ -53,51 +95,61 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
   helperText,
   size = 'md',
   className,
+  required = false,
+  clearable = false,
+  searchable = true,
+  ariaLabel,
+  labelHidden = false,
+  currencies = DEFAULT_CURRENCIES,
 }) => {
-  // Utility function to format a currency display string
-  // When showSymbol is true and we have an icon, the icon already shows the symbol
-  // so we only show the symbol in the label when showSymbol is false
-  const getDisplayValue = (curr: CurrencyOption): string => {
-    if (showFullName) {
-      return showSymbol ? `${curr.code} - ${curr.name}` : `${curr.code} - ${curr.name}`;
-    }
-    // When showSymbol is true, the icon shows the symbol, so label should only show the code
-    return showSymbol ? curr.code : `${curr.symbol} ${curr.code}`;
-  };
+  // Memoize options to prevent re‑creation on every render
+  const options: SelectOption[] = useMemo(() => {
+    return currencies.map((curr) => ({
+      value: curr.code,
+      label: formatOptionLabel(curr, showSymbol, showFullName),
+      icon: showSymbol ? (
+        <span className={styles.currencySymbol} aria-hidden="true">
+          {curr.symbol}
+        </span>
+      ) : undefined,
+    }));
+  }, [currencies, showSymbol, showFullName]);
 
-  // Generate options using the display function
-  const options = DEFAULT_CURRENCIES.map((curr) => ({
-    value: curr.code,
-    label: getDisplayValue(curr),
-    icon: showSymbol ? (
-      <span className={styles.currencySymbol}>{curr.symbol}</span>
-    ) : undefined,
-  }));
+  // If value is provided but not in the options, log a warning and treat as undefined
+  const safeValue = useMemo(() => {
+    if (value !== undefined && !options.some((opt) => opt.value === value)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`CurrencySelector: value "${value}" not found in currency list.`);
+      }
+      return undefined;
+    }
+    return value;
+  }, [value, options]);
 
   return (
-    <div className={clsx(styles.container, className)}>
-      {label && (
-        <Typography variant="body" weight="medium" color="secondary" className={styles.label}>
-          {label}
-        </Typography>
-      )}
-      <SelectDropdown
-        options={options}
-        value={value}
-        defaultValue={defaultValue}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        error={error}
-        helperText={helperText}
-        size={size}
-        clearable={false}
-        searchable
-      />
-    </div>
+    <SelectDropdown
+      label={label}
+      value={safeValue}
+      defaultValue={defaultValue}
+      onChange={onChange}
+      options={options}
+      placeholder={placeholder}
+      disabled={disabled}
+      error={error}
+      helperText={helperText}
+      size={size}
+      required={required}
+      clearable={clearable}
+      searchable={searchable}
+      aria-label={ariaLabel}
+      labelHidden={labelHidden}
+      className={clsx(styles.container, className)}
+    />
   );
 };
 
-CurrencySelector.displayName = 'CurrencySelector';
+CurrencySelectorComponent.displayName = 'CurrencySelector';
 
+// Memoize to prevent unnecessary re‑renders
+export const CurrencySelector = memo(CurrencySelectorComponent);
 export default CurrencySelector;

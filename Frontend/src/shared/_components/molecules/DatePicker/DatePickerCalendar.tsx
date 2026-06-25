@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, memo, useState } from 'react';
 import clsx from 'clsx';
 import {
   FaChevronLeft,
@@ -10,6 +10,12 @@ import {
 import { Typography } from '@/shared/_components/atoms/Typography';
 import { Icon } from '@/shared/_components/atoms/Icon';
 import { Button } from '@/shared/_components/atoms/Button';
+import {
+  generateCalendar,
+  getYearRange,
+  isSameDay,
+  isDateDisabled as isDateDisabledUtil,
+} from '@/shared/utils/date-utils';
 import styles from './DatePicker.module.css';
 
 export type HighlightStatus = 'success' | 'warning' | 'danger' | 'pending' | 'info';
@@ -24,63 +30,27 @@ export interface DatePickerCalendarProps {
   viewDate: Date;
   onViewDateChange: (date: Date) => void;
   onSelect: (date: Date | null) => void;
-  minDate?: Date;
-  maxDate?: Date;
+  minDate?: Date | null;
+  maxDate?: Date | null;
   disabledDates?: Date[];
   highlightedDates?: (Date | HighlightedDate)[];
+  clearable?: boolean;
+  onClear?: () => void;
 }
 
-const generateCalendar = (year: number, month: number): (Date | null)[] => {
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const daysInMonth = lastDay.getDate();
-  const startDayOfWeek = firstDay.getDay();
-  const days: (Date | null)[] = [];
-  const prevMonthLastDay = new Date(year, month, 0).getDate();
-  for (let i = startDayOfWeek - 1; i >= 0; i--) {
-    days.push(new Date(year, month - 1, prevMonthLastDay - i));
-  }
-  for (let i = 1; i <= daysInMonth; i++) {
-    days.push(new Date(year, month, i));
-  }
-  const remaining = 42 - days.length;
-  for (let i = 1; i <= remaining; i++) {
-    days.push(new Date(year, month + 1, i));
-  }
-  return days;
-};
+const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-const isSameDay = (d1: Date, d2: Date): boolean => {
-  return d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
-};
-
-const isDateBetween = (date: Date, min?: Date | null, max?: Date | null): boolean => {
-  if (min && date < min) return false;
-  if (max && date > max) return false;
-  return true;
-};
-
-const getYearRange = (currentYear: number, range: number = 25): number[] => {
-  const start = currentYear - range;
-  const end = currentYear + range;
-  const years: number[] = [];
-  for (let i = start; i <= end; i++) {
-    years.push(i);
-  }
-  return years;
-};
-
-export const DatePickerCalendar: React.FC<DatePickerCalendarProps> = ({
+const DatePickerCalendarComponent: React.FC<DatePickerCalendarProps> = ({
   selectedDate,
   viewDate,
   onViewDateChange,
   onSelect,
-  minDate,
-  maxDate,
+  minDate = null,
+  maxDate = null,
   disabledDates = [],
   highlightedDates = [],
+  clearable = false,
+  onClear,
 }) => {
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -89,123 +59,127 @@ export const DatePickerCalendar: React.FC<DatePickerCalendarProps> = ({
   const days = useMemo(() => generateCalendar(year, month), [year, month]);
   const yearRange = useMemo(() => getYearRange(year, 25), [year]);
 
+  const highlightedMap = useMemo(() => {
+    const map = new Map<string, HighlightStatus>();
+    highlightedDates.forEach((item) => {
+      const date = item instanceof Date ? item : item.date;
+      const status = item instanceof Date ? 'info' : item.status;
+      const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      map.set(key, status);
+    });
+    return map;
+  }, [highlightedDates]);
+
   const handlePrevMonth = useCallback(() => {
-    const newDate = new Date(year, month - 1, 1);
-    onViewDateChange(newDate);
+    onViewDateChange(new Date(year, month - 1, 1));
   }, [year, month, onViewDateChange]);
 
   const handleNextMonth = useCallback(() => {
-    const newDate = new Date(year, month + 1, 1);
-    onViewDateChange(newDate);
+    onViewDateChange(new Date(year, month + 1, 1));
   }, [year, month, onViewDateChange]);
 
-  const handlePrevDecade = useCallback(() => {
-    const newDate = new Date(year - 1, month, 1);
-    onViewDateChange(newDate);
+  const handlePrevYear = useCallback(() => {
+    onViewDateChange(new Date(year - 1, month, 1));
   }, [year, month, onViewDateChange]);
 
-  const handleNextDecade = useCallback(() => {
-    const newDate = new Date(year + 1, month, 1);
-    onViewDateChange(newDate);
+  const handleNextYear = useCallback(() => {
+    onViewDateChange(new Date(year + 1, month, 1));
   }, [year, month, onViewDateChange]);
 
   const handleYearSelect = useCallback(
     (selectedYear: number) => {
-      const newDate = new Date(selectedYear, month, 1);
-      onViewDateChange(newDate);
+      onViewDateChange(new Date(selectedYear, month, 1));
       setShowYearDropdown(false);
     },
-    [month, onViewDateChange],
+    [month, onViewDateChange]
   );
 
   const handleToday = useCallback(() => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     onViewDateChange(today);
-    // Also select today's date
     onSelect(today);
   }, [onViewDateChange, onSelect]);
 
-  const isDateDisabled = useCallback(
-    (date: Date): boolean => {
-      if (date.getMonth() !== month || date.getFullYear() !== year) {
-        return true;
-      }
-      if (!isDateBetween(date, minDate, maxDate)) {
-        return true;
-      }
-      if (disabledDates.length > 0) {
-        return disabledDates.some((disabledDate) => isSameDay(date, disabledDate));
-      }
-      return false;
+  const handleDayClick = useCallback(
+    (date: Date) => {
+      const disabled = isDateDisabledUtil(date, minDate, maxDate, disabledDates);
+      if (!disabled) onSelect(date);
     },
-    [month, year, minDate, maxDate, disabledDates],
+    [minDate, maxDate, disabledDates, onSelect]
   );
 
   const isSelected = useCallback(
-    (date: Date): boolean => {
-      return selectedDate ? isSameDay(date, selectedDate) : false;
-    },
-    [selectedDate],
+    (date: Date) => (selectedDate ? isSameDay(date, selectedDate) : false),
+    [selectedDate]
   );
 
-  const isToday = useCallback(
-    (date: Date): boolean => {
-      const today = new Date();
-      return isSameDay(date, today);
-    },
-    [],
+  const isToday = useCallback((date: Date) => isSameDay(date, new Date()), []);
+
+  const isDisabled = useCallback(
+    (date: Date) => isDateDisabledUtil(date, minDate, maxDate, disabledDates),
+    [minDate, maxDate, disabledDates]
   );
 
   const getHighlightStatus = useCallback(
     (date: Date): HighlightStatus | null => {
-      for (const item of highlightedDates) {
-        const dateToCheck = item instanceof Date ? item : item.date;
-        if (isSameDay(date, dateToCheck)) {
-          if (item instanceof Date) return 'info';
-          return item.status;
-        }
-      }
-      return null;
+      const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      return highlightedMap.get(key) || null;
     },
-    [highlightedDates],
+    [highlightedMap]
   );
 
-  const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const renderDay = (date: Date, index: number) => {
+    const disabled = isDisabled(date);
+    const selected = isSelected(date);
+    const today = isToday(date);
+    const isOtherMonth = date.getMonth() !== month;
+    const highlightStatus = getHighlightStatus(date);
+    const effectiveHighlight = disabled ? null : highlightStatus;
+
+    return (
+      <button
+        key={index}
+        className={clsx(
+          styles.dayButton,
+          selected && styles.daySelected,
+          today && styles.dayToday,
+          disabled && styles.dayDisabled,
+          isOtherMonth && styles.dayOtherMonth,
+          effectiveHighlight && styles[`highlight-${effectiveHighlight}`]
+        )}
+        onClick={() => handleDayClick(date)}
+        disabled={disabled}
+        aria-label={`${date.toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+        })}`}
+        aria-pressed={selected || undefined}
+        aria-disabled={disabled || undefined}
+        aria-current={today ? 'date' : undefined}
+        tabIndex={selected ? 0 : -1}
+      >
+        {date.getDate()}
+      </button>
+    );
+  };
 
   return (
-    <div className={styles.calendar}>
-      <div className={styles.calendarHeader}>
+    <div className={styles.calendar} role="grid" aria-label="Calendar">
+      <div className={styles.calendarHeader} role="row">
         <div className={styles.navGroup}>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handlePrevDecade}
-            className={styles.navButton}
-            aria-label="Back 1 years"
-          >
-            <Icon size="sm" decorative>
-              <FaAngleDoubleLeft />
-            </Icon>
+          <Button variant="ghost" size="sm" onClick={handlePrevYear} className={styles.navButton} aria-label="Previous year">
+            <Icon size="sm" decorative><FaAngleDoubleLeft /></Icon>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handlePrevMonth}
-            className={styles.navButton}
-            aria-label="Previous month"
-          >
-            <Icon size="sm" decorative>
-              <FaChevronLeft />
-            </Icon>
+          <Button variant="ghost" size="sm" onClick={handlePrevMonth} className={styles.navButton} aria-label="Previous month">
+            <Icon size="sm" decorative><FaChevronLeft /></Icon>
           </Button>
         </div>
 
         <div className={styles.monthYearWrapper}>
-          <Typography
-            variant="body"
-            weight="semibold"
-            className={styles.monthYear}
-          >
+          <Typography variant="body" weight="semibold" className={styles.monthYear} role="heading" aria-level={2}>
             {viewDate.toLocaleDateString('en-US', { month: 'long' })}
           </Typography>
           <div className={styles.yearSelectorWrapper}>
@@ -213,30 +187,23 @@ export const DatePickerCalendar: React.FC<DatePickerCalendarProps> = ({
               className={styles.yearSelectorButton}
               onClick={() => setShowYearDropdown(!showYearDropdown)}
               aria-label="Select year"
+              aria-expanded={showYearDropdown}
             >
-              <Typography variant="body" weight="semibold" className={styles.yearText}>
-                {year}
-              </Typography>
-              <Icon
-                size="sm"
-                color="muted"
-                className={clsx(styles.yearChevron, showYearDropdown && styles.yearChevronOpen)}
-                decorative
-              >
+              <Typography variant="body" weight="semibold" className={styles.yearText}>{year}</Typography>
+              <Icon size="sm" color="muted" className={clsx(styles.yearChevron, showYearDropdown && styles.yearChevronOpen)} decorative>
                 <FaChevronDown />
               </Icon>
             </button>
             {showYearDropdown && (
-              <div className={styles.yearDropdown}>
+              <div className={styles.yearDropdown} role="listbox">
                 <div className={styles.yearDropdownList}>
                   {yearRange.map((y) => (
                     <button
                       key={y}
-                      className={clsx(
-                        styles.yearOption,
-                        y === year && styles.yearOptionSelected,
-                      )}
+                      className={clsx(styles.yearOption, y === year && styles.yearOptionSelected)}
                       onClick={() => handleYearSelect(y)}
+                      role="option"
+                      aria-selected={y === year}
                     >
                       {y}
                     </button>
@@ -248,86 +215,36 @@ export const DatePickerCalendar: React.FC<DatePickerCalendarProps> = ({
         </div>
 
         <div className={styles.navGroup}>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleNextMonth}
-            className={styles.navButton}
-            aria-label="Next month"
-          >
-            <Icon size="sm" decorative>
-              <FaChevronRight />
-            </Icon>
+          <Button variant="ghost" size="sm" onClick={handleNextMonth} className={styles.navButton} aria-label="Next month">
+            <Icon size="sm" decorative><FaChevronRight /></Icon>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleNextDecade}
-            className={styles.navButton}
-            aria-label="Forward 1 years"
-          >
-            <Icon size="sm" decorative>
-              <FaAngleDoubleRight />
-            </Icon>
+          <Button variant="ghost" size="sm" onClick={handleNextYear} className={styles.navButton} aria-label="Next year">
+            <Icon size="sm" decorative><FaAngleDoubleRight /></Icon>
           </Button>
         </div>
       </div>
 
-      <div className={styles.calendarWeekDays}>
+      <div className={styles.calendarWeekDays} role="row">
         {weekDays.map((day) => (
-          <div key={day} className={styles.weekDay}>
-            {day}
-          </div>
+          <div key={day} className={styles.weekDay} role="columnheader">{day}</div>
         ))}
       </div>
 
-      <div className={styles.calendarGrid}>
-        {days.map((date, index) => {
-          if (!date) return null;
-          const disabled = isDateDisabled(date);
-          const selected = isSelected(date);
-          const today = isToday(date);
-          const isOtherMonth = date.getMonth() !== month;
-          const highlightStatus = getHighlightStatus(date);
-
-          return (
-            <button
-              key={index}
-              className={clsx(
-                styles.dayButton,
-                selected && styles.daySelected,
-                today && styles.dayToday,
-                disabled && styles.dayDisabled,
-                isOtherMonth && styles.dayOtherMonth,
-                highlightStatus && styles[`highlight-${highlightStatus}`],
-              )}
-              onClick={() => {
-                if (!disabled) {
-                  onSelect(date);
-                }
-              }}
-              disabled={disabled}
-              aria-label={date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-              aria-current={selected ? 'date' : undefined}
-            >
-              {date.getDate()}
-            </button>
-          );
-        })}
+      <div className={styles.calendarGrid} role="rowgroup">
+        {days.map((date, index) => (
+          <div key={index} role="gridcell">{renderDay(date, index)}</div>
+        ))}
       </div>
 
       <div className={styles.calendarFooter}>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleToday}
-          className={styles.todayButton}
-        >
-          Today
-        </Button>
+        <Button variant="ghost" size="sm" onClick={handleToday} className={styles.todayButton}>Today</Button>
+        {clearable && onClear && (
+          <Button variant="ghost" size="sm" onClick={onClear} className={styles.clearButton}>Clear</Button>
+        )}
       </div>
     </div>
   );
 };
 
-DatePickerCalendar.displayName = 'DatePickerCalendar';
+DatePickerCalendarComponent.displayName = 'DatePickerCalendar';
+export const DatePickerCalendar = memo(DatePickerCalendarComponent);

@@ -1,3 +1,5 @@
+/* Breadcrumb.module.css – updated: current item no background/border */
+
 .breadcrumb {
   font-family: var(--font-typography);
   padding: var(--space-xs, 8px) 0;
@@ -19,24 +21,36 @@
 .item {
   display: flex;
   align-items: center;
+  max-width: 100%;
 }
 
+/* ============================================================
+   Link / Current / Label Wrapper
+   ============================================================ */
+
 .link,
-.current {
+.current,
+.labelWrapper {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xxs, 4px);
   padding: var(--space-xxs, 4px) var(--space-xs, 8px);
   border-radius: var(--radius-sm);
   transition: all var(--duration-fast) var(--easing-standard);
+  text-decoration: none;
+  min-height: 32px;
+  max-width: 100%;
 }
 
+/* Interactive link */
 .link {
-  text-decoration: none;
   cursor: pointer;
+  color: var(--color-text-secondary);
 }
 
 .link:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
   text-decoration: underline;
 }
 
@@ -45,9 +59,59 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+/* Non‑interactive (e.g., ellipsis) */
+.link.nonInteractive {
+  cursor: default;
+  color: var(--color-text-muted);
+}
+
+.link.nonInteractive:hover {
+  background-color: transparent;
+  text-decoration: none;
+}
+
+/* Current page – no background/border, just bold text */
 .current {
   cursor: default;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  /* Removed background-color and border */
 }
+
+.current .label {
+  color: var(--color-text-primary) !important;
+}
+
+/* Ellipsis special styling */
+.ellipsisItem {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+  padding: var(--space-xxs, 4px) var(--space-xs, 6px);
+}
+
+.ellipsisItem .label {
+  color: var(--color-text-muted) !important;
+}
+
+/* Label – with truncation */
+.label {
+  display: inline-block;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Icon */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Separator
+   ============================================================ */
 
 .separator {
   display: inline-flex;
@@ -55,7 +119,6 @@
   margin: 0 var(--space-xs, 8px);
   color: var(--color-text-muted);
   user-select: none;
-  font-size: 0.8em;
 }
 
 .small .separator {
@@ -65,14 +128,61 @@
 .small .link,
 .small .current {
   padding: var(--space-xxs, 4px) var(--space-xxs, 4px);
+  min-height: 28px;
+  font-size: var(--font-size-xs);
 }
 
-.icon {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
+.small .label {
+  max-width: 80px;
 }
 
-.label {
-  display: inline;
+/* ============================================================
+   Mobile responsiveness – larger touch targets
+   ============================================================ */
+
+@media (pointer: coarse) {
+  .link,
+  .current {
+    min-height: 44px;
+    padding: var(--space-xs, 8px) var(--space-sm, 12px);
+  }
+
+  .small .link,
+  .small .current {
+    min-height: 36px;
+    padding: var(--space-xxs, 4px) var(--space-xs, 8px);
+  }
+
+  .separator {
+    margin: 0 var(--space-sm, 12px);
+  }
+
+  .small .separator {
+    margin: 0 var(--space-xs, 8px);
+  }
 }
+
+/* Very small screens – reduce spacing and font size further */
+@media (max-width: 360px) {
+  .link,
+  .current {
+    padding: var(--space-xxs, 4px) var(--space-xxs, 4px);
+    font-size: var(--font-size-xs);
+  }
+
+  .label {
+    max-width: 60px;
+  }
+
+  .separator {
+    margin: 0 var(--space-xxs, 4px);
+  }
+
+  .small .label {
+    max-width: 40px;
+  }
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

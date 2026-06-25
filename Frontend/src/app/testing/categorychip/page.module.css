@@ -1,0 +1,240 @@
+/* page.module.css – CategoryChip Demo Page */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--page-padding-mobile, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg, 24px);
+  min-height: 100vh;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-md, 16px) 0;
+  flex-wrap: wrap;
+  gap: var(--space-sm, 12px);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+}
+
+/* ============================================================
+   Sections
+   ============================================================ */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+  padding: var(--space-md, 16px);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-border);
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs, 4px);
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ============================================================
+   Chip Groups
+   ============================================================ */
+
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm, 12px);
+  padding: var(--space-xs, 8px) 0;
+}
+
+/* ============================================================
+   Size Grid
+   ============================================================ */
+
+.sizeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xl, 32px);
+  align-items: flex-start;
+}
+
+.sizeGrid > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+}
+
+.sizeLabel {
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================================
+   Filter Bar
+   ============================================================ */
+
+.filterBar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 12px);
+  padding: var(--space-sm, 12px);
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-border);
+}
+
+.filterLabel {
+  font-weight: var(--font-weight-medium);
+}
+
+.filterSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm, 12px);
+}
+
+/* ============================================================
+   Customization Grid
+   ============================================================ */
+
+.customGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md, 16px);
+}
+
+.customGrid > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+}
+
+.customLabel {
+  font-size: var(--font-size-sm);
+}
+
+.customChip {
+  background-color: var(--color-highlight-success-bg);
+  border-color: var(--color-success-text);
+  color: var(--color-success-text);
+}
+
+/* ============================================================
+   Actions
+   ============================================================ */
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md, 16px);
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   Code Block
+   ============================================================ */
+
+.codeBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+  padding: var(--space-sm, 12px);
+  background-color: var(--color-bg-page);
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.codeLabel {
+  font-weight: var(--font-weight-medium);
+}
+
+.code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.footer {
+  margin-top: auto;
+  padding: var(--space-md, 16px) 0;
+  text-align: center;
+  border-top: 1px solid var(--color-divider);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .section {
+    padding: var(--space-sm, 12px);
+  }
+
+  .sizeGrid {
+    flex-direction: column;
+    gap: var(--space-md, 16px);
+  }
+
+  .customGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: var(--space-sm, 12px);
+  }
+
+  .chipGroup {
+    gap: var(--space-xs, 8px);
+  }
+
+  .code {
+    font-size: var(--font-size-xs);
+  }
+
+  .filterBar {
+    padding: var(--space-xs, 8px);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

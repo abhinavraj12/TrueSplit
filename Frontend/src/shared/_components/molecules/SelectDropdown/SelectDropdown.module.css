@@ -313,6 +313,96 @@
   margin-top: var(--space-xxs, 2px);
 }
 
-/* ============================================================
-   Dark Mode (CSS variables handle it automatically)
-   ============================================================ */
+/* Live region (visually hidden) */
+.liveRegion {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Loading state */
+.triggerLoading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.loadingIcon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Option count badge */
+.countBadge {
+  margin-left: var(--space-xs, 8px);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: var(--color-bg-page);
+  padding: 0 var(--space-xs, 6px);
+  border-radius: var(--radius-full);
+  line-height: 1.4;
+}
+
+/* Dropdown positioning */
+.dropdownPanel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: var(--color-dropdown-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-dropdown, 1000);
+  max-height: 260px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dropdown-bottom {
+  top: calc(100% + var(--space-xs, 8px));
+}
+
+.dropdown-top {
+  bottom: calc(100% + var(--space-xs, 8px));
+}
+
+/* Touch-friendly sizes */
+@media (pointer: coarse) {
+  .trigger {
+    min-height: 48px;
+  }
+
+  .option {
+    min-height: 44px;
+    padding: var(--space-sm, 12px) var(--space-md, 16px);
+  }
+
+  .option .optionIcon {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* Option hover for selected state */
+.optionSelected:hover:not(.optionDisabled) {
+  background-color: var(--color-btn-primary-hover);
+}
+
+/* Reduce motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none !important;
+  }
+  .spinner {
+    animation-duration: 0.01ms !important;
+  }
+}

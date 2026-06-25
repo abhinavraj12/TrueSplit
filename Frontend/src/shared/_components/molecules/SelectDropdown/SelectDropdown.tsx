@@ -1,6 +1,14 @@
-import React, { useState, useRef, useEffect, useCallback, useId } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useId,
+  useMemo,
+  memo,
+} from 'react';
 import clsx from 'clsx';
-import { FaChevronDown, FaCheck, FaSearch, FaTimes } from 'react-icons/fa';
+import { FaChevronDown, FaCheck, FaSearch, FaTimes, FaSpinner } from 'react-icons/fa';
 import { Input } from '@/shared/_components/atoms/Input';
 import { Icon } from '@/shared/_components/atoms/Icon';
 import { Button } from '@/shared/_components/atoms/Button';
@@ -16,24 +24,51 @@ export interface SelectOption {
 }
 
 export interface SelectDropdownProps {
+  /** Optional label above the dropdown */
   label?: React.ReactNode;
+  /** Controlled selected value */
   value?: string;
+  /** Uncontrolled default value */
   defaultValue?: string;
+  /** Array of options (required) */
   options: SelectOption[];
+  /** Callback when selection changes */
   onChange?: (value: string) => void;
+  /** Placeholder text (default: 'Select an option...') */
   placeholder?: string;
+  /** Error state (boolean or error message) */
   error?: boolean | string;
+  /** Helper text displayed below */
   helperText?: React.ReactNode;
+  /** Marks the field as required (prevents clearing) */
   required?: boolean;
+  /** Size variant (default: 'md') */
   size?: SelectSize;
+  /** Enables search/filtering (default: false) */
   searchable?: boolean;
+  /** Shows a clear button when a value is selected (default: false) */
   clearable?: boolean;
+  /** Disables the dropdown */
   disabled?: boolean;
+  /** Visually hides the label but keeps it accessible */
   labelHidden?: boolean;
+  /** Additional CSS class */
   className?: string;
+  /** Custom accessible label for the dropdown (overrides label) */
+  ariaLabel?: string;
+  /** Loading state (shows spinner inside trigger) */
+  loading?: boolean;
+  /** Custom empty state message (default: 'No options found') */
+  emptyState?: React.ReactNode;
+  /** Callback when dropdown opens */
+  onOpen?: () => void;
+  /** Callback when dropdown closes */
+  onClose?: () => void;
+  /** Show option count badge near the label (default: false) */
+  showOptionCount?: boolean;
 }
 
-export const SelectDropdown: React.FC<SelectDropdownProps> = ({
+const SelectDropdownComponent: React.FC<SelectDropdownProps> = ({
   label,
   value: controlledValue,
   defaultValue = '',
@@ -49,68 +84,151 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
   disabled = false,
   labelHidden = false,
   className,
+  ariaLabel,
+  loading = false,
+  emptyState = 'No options found',
+  onOpen,
+  onClose,
+  showOptionCount = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [internalValue, setInternalValue] = useState(defaultValue);
-  const [focusedIndex, setFocusedIndex] = useState(-1);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLUListElement>(null);
-
-  const isControlled = controlledValue !== undefined;
-  const currentValue = isControlled ? controlledValue : internalValue;
-  const isError = Boolean(error);
-  const errorMessage = typeof error === 'string' ? error : undefined;
+  // --- IDs for accessibility ---
   const generatedId = useId();
   const dropdownId = `select-${generatedId}`;
   const listId = `select-list-${generatedId}`;
   const errorId = `select-error-${generatedId}`;
+  const helperId = `select-helper-${generatedId}`;
+  const liveRegionId = `select-live-${generatedId}`;
 
-  const selectedOption = options.find((opt) => opt.value === currentValue);
-  const filteredOptions = searchable && searchTerm
-    ? options.filter((opt) =>
-        opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : options;
+  // --- State ---
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
 
-  // --- Move handleSelect and handleClear above the keyboard effect ---
+  // --- Refs ---
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  // --- Determine controlled ---
+  const isControlled = controlledValue !== undefined;
+  const currentValue = isControlled ? controlledValue : internalValue;
+
+  // --- Memoize filtered options (handles performance) ---
+  const filteredOptions = useMemo(() => {
+    if (!searchable || !searchTerm) return options;
+    const lower = searchTerm.toLowerCase();
+    return options.filter((opt) =>
+      opt.label.toLowerCase().includes(lower)
+    );
+  }, [options, searchable, searchTerm]);
+
+  // --- Selected option ---
+  const selectedOption = useMemo(
+    () => options.find((opt) => opt.value === currentValue),
+    [options, currentValue]
+  );
+
+  // --- Derived state ---
+  const isError = Boolean(error);
+  const errorMessage = typeof error === 'string' ? error : undefined;
+  const hasLiveRegion = searchable && isOpen;
+
+  // --- Handlers ---
   const handleSelect = useCallback(
     (val: string) => {
-      if (!isControlled) {
-        setInternalValue(val);
-      }
+      if (!isControlled) setInternalValue(val);
       onChange?.(val);
       setIsOpen(false);
       setSearchTerm('');
       setFocusedIndex(-1);
+      onClose?.();
+      triggerRef.current?.focus();
     },
-    [onChange, isControlled],
+    [onChange, isControlled, onClose]
   );
 
   const handleClear = useCallback(() => {
+    if (required) return;
     const emptyValue = '';
-    if (!isControlled) {
-      setInternalValue(emptyValue);
-    }
+    if (!isControlled) setInternalValue(emptyValue);
     onChange?.(emptyValue);
     setSearchTerm('');
     setFocusedIndex(-1);
-  }, [onChange, isControlled]);
+    triggerRef.current?.focus();
+  }, [onChange, isControlled, required]);
 
-  // --- Close dropdown on outside click ---
+  const handleToggle = useCallback(() => {
+    if (disabled || loading) return;
+    const newState = !isOpen;
+    setIsOpen(newState);
+    if (newState) {
+      onOpen?.();
+      setTimeout(() => {
+        if (searchable && searchInputRef.current) {
+          searchInputRef.current.focus();
+          setSearchTerm('');
+        } else if (listRef.current) {
+          const firstOption = listRef.current.querySelector(
+            'li[role="option"]:not([aria-disabled="true"])'
+          ) as HTMLElement;
+          if (firstOption) firstOption.focus();
+        }
+      }, 50);
+    } else {
+      onClose?.();
+      setSearchTerm('');
+      setFocusedIndex(-1);
+    }
+  }, [isOpen, disabled, loading, searchable, onOpen, onClose]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSearchTerm(value);
+      setFocusedIndex(-1);
+    },
+    []
+  );
+
+  const handleSearchClear = useCallback(() => {
+    setSearchTerm('');
+    searchInputRef.current?.focus();
+  }, []);
+
+  // --- Click outside ---
   useEffect(() => {
+    if (!isOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
         setSearchTerm('');
         setFocusedIndex(-1);
+        onClose?.();
+        triggerRef.current?.focus();
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isOpen, onClose]);
+
+  // --- Positioning ---
+  useEffect(() => {
+    if (!isOpen) return;
+    const updatePosition = () => {
+      if (!triggerRef.current) return;
+      const rect = triggerRef.current.getBoundingClientRect();
+      const dropdownHeight = 260;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setDropdownPosition(spaceBelow < dropdownHeight && spaceAbove > spaceBelow ? 'top' : 'bottom');
+    };
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, [isOpen]);
 
   // --- Keyboard navigation ---
   useEffect(() => {
@@ -121,71 +239,92 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
         setIsOpen(false);
         setSearchTerm('');
         setFocusedIndex(-1);
+        onClose?.();
+        triggerRef.current?.focus();
         return;
       }
 
+      const activeElement = document.activeElement;
+      const isSearchFocused = searchInputRef.current === activeElement;
+
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setFocusedIndex((prev) =>
-          prev < filteredOptions.length - 1 ? prev + 1 : prev
-        );
+        if (isSearchFocused) {
+          const firstOption = listRef.current?.querySelector(
+            'li[role="option"]:not([aria-disabled="true"])'
+          ) as HTMLElement;
+          if (firstOption) { firstOption.focus(); setFocusedIndex(0); }
+        } else {
+          const newIndex = Math.min(focusedIndex + 1, filteredOptions.length - 1);
+          setFocusedIndex(newIndex);
+          const optionEl = listRef.current?.children[newIndex] as HTMLElement;
+          if (optionEl) optionEl.focus();
+        }
       }
 
       if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setFocusedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        if (isSearchFocused) {
+          const lastIndex = filteredOptions.length - 1;
+          const lastOption = listRef.current?.children[lastIndex] as HTMLElement;
+          if (lastOption) { lastOption.focus(); setFocusedIndex(lastIndex); }
+        } else {
+          const newIndex = Math.max(focusedIndex - 1, 0);
+          setFocusedIndex(newIndex);
+          const optionEl = listRef.current?.children[newIndex] as HTMLElement;
+          if (optionEl) optionEl.focus();
+        }
       }
 
       if (e.key === 'Enter' && focusedIndex >= 0) {
         e.preventDefault();
-        const selected = filteredOptions[focusedIndex];
-        if (selected && !selected.disabled) {
-          handleSelect(selected.value);
-        }
+        const option = filteredOptions[focusedIndex];
+        if (option && !option.disabled) handleSelect(option.value);
+      }
+
+      if (e.key === 'Home') {
+        e.preventDefault();
+        setFocusedIndex(0);
+        const optionEl = listRef.current?.children[0] as HTMLElement;
+        if (optionEl) optionEl.focus();
+      }
+      if (e.key === 'End') {
+        e.preventDefault();
+        const lastIndex = filteredOptions.length - 1;
+        setFocusedIndex(lastIndex);
+        const optionEl = listRef.current?.children[lastIndex] as HTMLElement;
+        if (optionEl) optionEl.focus();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, filteredOptions, focusedIndex, handleSelect]); // ✅ Added handleSelect
+  }, [isOpen, filteredOptions, focusedIndex, handleSelect, onClose]);
 
-  // --- Scroll focused option into view ---
-  useEffect(() => {
-    if (focusedIndex >= 0 && listRef.current) {
-      const items = listRef.current.querySelectorAll('li');
-      if (items[focusedIndex]) {
-        items[focusedIndex].scrollIntoView({ block: 'nearest' });
-      }
-    }
-  }, [focusedIndex]);
+  // --- aria-describedby ---
+  const describedBy = clsx(
+    isError && errorId,
+    helperText && !isError && helperId
+  ) || undefined;
 
-  const handleToggle = useCallback(() => {
-    if (disabled) return;
-    setIsOpen((prev) => !prev);
-    if (!isOpen && searchable) {
-      setTimeout(() => searchInputRef.current?.focus(), 100);
-    }
-  }, [disabled, isOpen, searchable]);
-
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setSearchTerm(value);
-      setFocusedIndex(-1);
-      if (value && !isOpen) {
-        setIsOpen(true);
-      }
-    },
-    [isOpen],
-  );
-
-  const handleSearchClear = useCallback(() => {
-    setSearchTerm('');
-    setFocusedIndex(-1);
-    searchInputRef.current?.focus();
-  }, []);
-
+  // --- Display value ---
   const displayValue = selectedOption?.label || placeholder;
+
+  // --- Clearable logic ---
+  const showClearButton = clearable && currentValue && !disabled && !required;
+
+  // --- Option count ---
+  const optionCount = options.length;
+
+  // --- Live region message ---
+  const liveMessage = useMemo(() => {
+    if (isOpen && searchable) {
+      const count = filteredOptions.length;
+      if (count === 0) return 'No options found';
+      return `${count} option${count > 1 ? 's' : ''} available`;
+    }
+    return '';
+  }, [isOpen, searchable, filteredOptions.length]);
 
   return (
     <div
@@ -195,7 +334,7 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
         styles[`size-${size}`],
         isError && styles.error,
         disabled && styles.disabled,
-        className,
+        className
       )}
     >
       {label && (
@@ -205,27 +344,36 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
         >
           {label}
           {required && <span className={styles.required}>*</span>}
+          {showOptionCount && (
+            <span className={styles.countBadge} aria-hidden="true">
+              {optionCount}
+            </span>
+          )}
         </label>
       )}
 
       <div className={styles.triggerWrapper}>
         <div
+          ref={triggerRef}
           id={dropdownId}
           className={clsx(
             styles.trigger,
             isOpen && styles.open,
             isError && styles.triggerError,
             disabled && styles.triggerDisabled,
+            loading && styles.triggerLoading
           )}
           onClick={handleToggle}
           role="combobox"
           aria-expanded={isOpen}
           aria-controls={listId}
           aria-haspopup="listbox"
-          aria-disabled={disabled}
-          aria-invalid={isError}
-          aria-describedby={isError && errorMessage ? errorId : undefined}
-          tabIndex={disabled ? -1 : 0}
+          aria-disabled={disabled || loading}
+          aria-invalid={isError || undefined}
+          aria-describedby={describedBy}
+          aria-required={required || undefined}
+          aria-label={ariaLabel || (typeof label === 'string' ? label : undefined)}
+          tabIndex={disabled || loading ? -1 : 0}
         >
           <span className={clsx(styles.value, !selectedOption && styles.placeholder)}>
             {selectedOption?.icon && (
@@ -235,7 +383,7 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
           </span>
 
           <div className={styles.actions}>
-            {clearable && currentValue && !disabled && (
+            {showClearButton && (
               <Button
                 iconOnly
                 variant="ghost"
@@ -246,9 +394,15 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
                 }}
                 className={styles.clearButton}
                 aria-label="Clear selection"
+                type="button"
               >
                 <FaTimes />
               </Button>
+            )}
+            {loading && (
+              <Icon size="sm" color="muted" className={styles.loadingIcon} decorative>
+                <FaSpinner className={styles.spinner} />
+              </Icon>
             )}
             <Icon
               size="sm"
@@ -261,8 +415,19 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
           </div>
         </div>
 
-        {isOpen && !disabled && (
-          <div className={styles.dropdownPanel}>
+        {hasLiveRegion && (
+          <div id={liveRegionId} className={styles.liveRegion} aria-live="polite" aria-atomic="true">
+            {liveMessage}
+          </div>
+        )}
+
+        {isOpen && !disabled && !loading && (
+          <div
+            className={clsx(
+              styles.dropdownPanel,
+              styles[`dropdown-${dropdownPosition}`]
+            )}
+          >
             {searchable && (
               <div className={styles.searchWrapper}>
                 <Input
@@ -271,6 +436,7 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
                   onChange={handleSearchChange}
                   placeholder="Search options..."
                   className={styles.searchInput}
+                  inputSize={size}
                   leftAdornment={
                     <Icon size="sm" color="muted" decorative>
                       <FaSearch />
@@ -301,7 +467,7 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
               aria-label="Options"
             >
               {filteredOptions.length === 0 ? (
-                <li className={styles.noOptions}>No options found</li>
+                <li className={styles.noOptions}>{emptyState}</li>
               ) : (
                 filteredOptions.map((option, index) => {
                   const isSelected = option.value === currentValue;
@@ -314,16 +480,16 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
                         styles.option,
                         isSelected && styles.optionSelected,
                         isFocused && styles.optionFocused,
-                        option.disabled && styles.optionDisabled,
+                        option.disabled && styles.optionDisabled
                       )}
                       onClick={() => {
-                        if (!option.disabled) {
-                          handleSelect(option.value);
-                        }
+                        if (!option.disabled) handleSelect(option.value);
                       }}
                       role="option"
                       aria-selected={isSelected}
                       aria-disabled={option.disabled}
+                      tabIndex={isFocused ? 0 : -1}
+                      onMouseEnter={() => setFocusedIndex(index)}
                     >
                       <span className={styles.optionContent}>
                         {option.icon && (
@@ -352,12 +518,15 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
       )}
 
       {helperText && !isError && (
-        <div className={styles.helperText}>{helperText}</div>
+        <div className={styles.helperText} id={helperId}>
+          {helperText}
+        </div>
       )}
     </div>
   );
 };
 
-SelectDropdown.displayName = 'SelectDropdown';
+SelectDropdownComponent.displayName = 'SelectDropdown';
 
+export const SelectDropdown = memo(SelectDropdownComponent);
 export default SelectDropdown;

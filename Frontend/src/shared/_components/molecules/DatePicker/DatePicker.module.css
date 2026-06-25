@@ -1,3 +1,7 @@
+/* ============================================================
+   Container
+   ============================================================ */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -10,6 +14,10 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ============================================================
+   Label
+   ============================================================ */
 
 .label {
   display: inline-flex;
@@ -38,6 +46,10 @@
   margin-left: var(--space-xxs, 2px);
 }
 
+/* ============================================================
+   Input Wrapper
+   ============================================================ */
+
 .inputWrapper {
   position: relative;
   width: 100%;
@@ -52,17 +64,22 @@
   border-color: var(--color-input-error-border);
 }
 
+/* Size-specific input padding — increased for icons */
 .size-sm .input {
-  padding-right: 40px !important;
+  padding-right: 72px !important;
 }
 
 .size-md .input {
-  padding-right: 48px !important;
+  padding-right: 80px !important;
 }
 
 .size-lg .input {
-  padding-right: 56px !important;
+  padding-right: 88px !important;
 }
+
+/* ============================================================
+   Icons (calendar & clear)
+   ============================================================ */
 
 .icons {
   position: absolute;
@@ -81,12 +98,14 @@
   pointer-events: auto;
 }
 
+/* Calendar icon */
 .calendarIcon {
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-xxs, 4px);
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm, 6px);
   transition: all var(--duration-fast) var(--easing-standard);
   color: var(--color-icon-muted);
@@ -97,41 +116,79 @@
   background-color: var(--color-surface-hover);
 }
 
+/* Clear button — consistent with calendar icon */
 .clearButton {
+  min-width: 32px !important;
+  min-height: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: var(--radius-sm, 6px);
   color: var(--color-icon-muted);
-  padding: var(--space-xxs, 2px);
-  min-height: auto;
-  width: 20px;
-  height: 20px;
+  transition: all var(--duration-fast) var(--easing-standard);
 }
 
 .clearButton:hover {
   color: var(--color-icon-hover);
+  background-color: var(--color-surface-hover);
 }
 
-.size-sm .clearButton {
-  width: 16px;
-  height: 16px;
-}
-
-.size-sm .clearButton svg {
-  width: 10px;
-  height: 10px;
-}
-
-.size-lg .clearButton {
-  width: 24px;
-  height: 24px;
-}
-
-.size-lg .clearButton svg {
+.clearButton svg {
   width: 14px;
   height: 14px;
 }
 
+/* Size-specific adjustments */
+.size-sm .clearButton {
+  min-width: 28px !important;
+  min-height: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.size-sm .clearButton svg {
+  width: 12px;
+  height: 12px;
+}
+
+.size-sm .calendarIcon {
+  width: 28px;
+  height: 28px;
+}
+
+.size-sm .calendarIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.size-lg .clearButton {
+  min-width: 38px !important;
+  min-height: 38px !important;
+  width: 38px !important;
+  height: 38px !important;
+}
+
+.size-lg .clearButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.size-lg .calendarIcon {
+  width: 38px;
+  height: 38px;
+}
+
+.size-lg .calendarIcon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ============================================================
+   Popover
+   ============================================================ */
+
 .popover {
   position: absolute;
-  top: calc(100% + var(--space-xs, 8px));
   left: 0;
   right: 0;
   background-color: var(--color-dropdown-bg);
@@ -143,6 +200,18 @@
   min-width: 280px;
   max-width: 100%;
 }
+
+.popover-bottom {
+  top: calc(100% + var(--space-xs, 8px));
+}
+
+.popover-top {
+  bottom: calc(100% + var(--space-xs, 8px));
+}
+
+/* ============================================================
+   Calendar
+   ============================================================ */
 
 .calendar {
   display: flex;
@@ -193,6 +262,10 @@
   flex: 1;
   justify-content: center;
 }
+
+/* ============================================================
+   Year Dropdown
+   ============================================================ */
 
 .yearSelectorWrapper {
   position: relative;
@@ -253,6 +326,7 @@
 .yearDropdown::-webkit-scrollbar {
   width: 4px;
 }
+
 .yearDropdown::-webkit-scrollbar-thumb {
   background: var(--color-scrollbar-thumb);
   border-radius: var(--radius-full);
@@ -294,6 +368,10 @@
   background-color: var(--color-btn-primary-hover);
 }
 
+/* ============================================================
+   Weekday Headers
+   ============================================================ */
+
 .calendarWeekDays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -308,6 +386,10 @@
   color: var(--color-text-muted);
   padding: var(--space-xxs, 4px) 0;
 }
+
+/* ============================================================
+   Day Grid
+   ============================================================ */
 
 .calendarGrid {
   display: grid;
@@ -352,7 +434,7 @@
 }
 
 .dayToday {
-  border: 1px solid var(--color-btn-primary-bg);
+  border: 2px solid var(--color-btn-primary-bg);
 }
 
 .dayOtherMonth {
@@ -365,6 +447,10 @@
   cursor: not-allowed;
   opacity: 0.4;
 }
+
+/* ============================================================
+   Highlighted Dates
+   ============================================================ */
 
 .highlight-success {
   background-color: var(--color-highlight-success-bg, rgba(77, 107, 68, 0.15));
@@ -396,9 +482,14 @@
   font-weight: var(--font-weight-medium);
 }
 
+/* ============================================================
+   Calendar Footer (Today + Clear)
+   ============================================================ */
+
 .calendarFooter {
   display: flex;
   justify-content: center;
+  gap: var(--space-sm, 12px);
   padding-top: var(--space-xs, 8px);
   border-top: 1px solid var(--color-divider);
 }
@@ -415,6 +506,22 @@
   background-color: var(--color-surface-hover);
 }
 
+.clearButtonFooter {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  padding: var(--space-xxs, 4px) var(--space-sm, 12px);
+}
+
+.clearButtonFooter:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+/* ============================================================
+   Error & Helper Text
+   ============================================================ */
+
 .errorText {
   color: var(--color-error-text);
   font-size: var(--font-size-sm);
@@ -430,18 +537,81 @@
   margin-top: var(--space-xxs, 2px);
 }
 
+/* ============================================================
+   Responsive & Touch Enhancements
+   ============================================================ */
+
 @media (max-width: 480px) {
   .popover {
     min-width: 100%;
     left: 0;
     right: 0;
   }
+
   .dayButton {
     min-height: 32px;
     font-size: var(--font-size-xs);
     padding: var(--space-xxs, 4px) 0;
   }
+
   .calendar {
     gap: var(--space-xs, 8px);
   }
+
+  .navButton {
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .size-sm .input {
+    padding-right: 64px !important;
+  }
+
+  .size-md .input {
+    padding-right: 68px !important;
+  }
+
+  .size-lg .input {
+    padding-right: 76px !important;
+  }
+
+  .size-sm .clearButton {
+    min-width: 24px !important;
+    min-height: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .size-sm .clearButton svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .size-sm .calendarIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .size-sm .calendarIcon svg {
+    width: 12px;
+    height: 12px;
+  }
 }
+
+/* Touch‑friendly sizes on devices with coarse pointers (mobile) */
+@media (pointer: coarse) {
+  .dayButton {
+    min-height: 44px;
+    padding: var(--space-xs, 8px) 0;
+    font-size: var(--font-size-md);
+  }
+
+  .navButton {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */
