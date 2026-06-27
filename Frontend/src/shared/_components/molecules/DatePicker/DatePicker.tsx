@@ -174,6 +174,17 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
   const errorMessage = typeof error === 'string' ? error : undefined;
   const describedBy = clsx(isError && errorId, helperText && !isError && helperId) || undefined;
 
+  // Handle keyboard on calendar icon wrapper
+  const handleCalendarKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleToggle();
+      }
+    },
+    [handleToggle]
+  );
+
   return (
     <div ref={containerRef} className={clsx(styles.container, styles[`size-${size}`], disabled && styles.disabled, className)}>
       {label && (
@@ -216,9 +227,21 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
               <FaTimes />
             </Button>
           )}
-          <Icon size="sm" color={isError ? 'error' : 'muted'} className={styles.calendarIcon} decorative onClick={handleToggle}>
-            <FaCalendarAlt />
-          </Icon>
+          {/* Calendar icon - wrapped in a div for proper centering */}
+          <div
+            className={clsx(styles.calendarIcon, isError && styles.calendarIconError)}
+            onClick={handleToggle}
+            onKeyDown={handleCalendarKeyDown}
+            role="button"
+            tabIndex={disabled ? -1 : 0}
+            aria-label="Open calendar"
+            aria-disabled={disabled}
+            aria-expanded={isOpen}
+          >
+            <Icon size="sm" color={isError ? 'error' : 'muted'} decorative>
+              <FaCalendarAlt />
+            </Icon>
+          </div>
         </div>
       </div>
 

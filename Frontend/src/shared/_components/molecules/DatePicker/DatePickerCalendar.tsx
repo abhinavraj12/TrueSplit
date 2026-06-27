@@ -237,9 +237,23 @@ const DatePickerCalendarComponent: React.FC<DatePickerCalendarProps> = ({
       </div>
 
       <div className={styles.calendarFooter}>
-        <Button variant="ghost" size="sm" onClick={handleToday} className={styles.todayButton}>Today</Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleToday}
+          className={styles.todayButton}
+        >
+          Today
+        </Button>
         {clearable && onClear && (
-          <Button variant="ghost" size="sm" onClick={onClear} className={styles.clearButton}>Clear</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClear}
+            className={styles.clearButtonFooter}
+          >
+            Clear
+          </Button>
         )}
       </div>
     </div>

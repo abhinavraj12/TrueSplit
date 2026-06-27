@@ -1,19 +1,9 @@
-/* FormField.module.css */
-
-/* ============================================================
-   Field Container
-   ============================================================ */
-
 .field {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs, 8px);
   width: 100%;
 }
-
-/* ============================================================
-   Label
-   ============================================================ */
 
 .label {
   display: inline-flex;
@@ -26,7 +16,6 @@
   transition: color var(--duration-fast) var(--easing-standard);
 }
 
-/* Visually hide label but keep accessible */
 .labelHidden {
   position: absolute;
   width: 1px;
@@ -38,36 +27,24 @@
   border: 0;
 }
 
-/* ============================================================
-   Required Indicator
-   ============================================================ */
-
 .required {
   color: var(--color-error-text);
   font-weight: var(--font-weight-bold);
   margin-left: var(--space-xxs, 2px);
 }
 
-/* ============================================================
-   Input Wrapper
-   ============================================================ */
-
 .inputWrapper {
   width: 100%;
   position: relative;
 }
 
-/* ============================================================
-   Error & Helper Text
-   ============================================================ */
-
 .errorText {
-  color: var(--color-error-text);
-  font-size: var(--font-size-sm);
-  margin-top: var(--space-xxs, 2px);
   display: flex;
   align-items: center;
   gap: var(--space-xxs, 4px);
+  color: var(--color-error-text);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
 }
 
 .helperText {
@@ -75,7 +52,3 @@
   font-size: var(--font-size-sm);
   margin-top: var(--space-xxs, 2px);
 }
-
-/* ============================================================
-   Dark Mode (CSS variables handle it automatically)
-   ============================================================ */

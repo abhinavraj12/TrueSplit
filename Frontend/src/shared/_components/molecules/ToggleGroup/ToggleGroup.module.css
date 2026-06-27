@@ -1,20 +1,21 @@
-/* ToggleGroup.module.css */
-
-/* ============================================================
-   Container
-   ============================================================ */
+/* ToggleGroup.module.css – fully responsive with wrap support */
 
 .toggleGroup {
   display: inline-flex;
+  flex-wrap: wrap; /* enables wrapping on small screens */
   background-color: var(--color-bg-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md, 10px);
   padding: var(--space-xxs, 4px);
   gap: var(--space-xxs, 4px);
   position: relative;
-  width: 100%;
   max-width: 100%;
-  overflow-x: auto;
+}
+
+/* Full width variant */
+.toggleGroup.fullWidth {
+  display: flex;
+  width: 100%;
 }
 
 .toggleGroup.disabled {
@@ -22,29 +23,21 @@
   cursor: not-allowed;
 }
 
-/* ============================================================
-   Sizes
-   ============================================================ */
-
+/* Sizes */
 .size-sm {
   padding: var(--space-xxs, 3px);
   gap: var(--space-xxs, 3px);
 }
-
 .size-md {
   padding: var(--space-xxs, 4px);
   gap: var(--space-xxs, 4px);
 }
-
 .size-lg {
   padding: var(--space-xxs, 5px);
   gap: var(--space-xxs, 5px);
 }
 
-/* ============================================================
-   Toggle Button
-   ============================================================ */
-
+/* Toggle Button */
 .toggleButton {
   display: inline-flex;
   align-items: center;
@@ -63,6 +56,8 @@
   min-height: 36px;
   padding: 0 var(--space-md, 16px);
   font-size: var(--font-size-sm);
+  /* Ensure focus ring is visible */
+  outline: none;
 }
 
 .toggleButton:hover:not(.selected):not(.optionDisabled) {
@@ -81,43 +76,54 @@
   font-size: var(--font-size-xs);
   padding: 0 var(--space-sm, 12px);
 }
-
 .size-md .toggleButton {
   min-height: 36px;
   font-size: var(--font-size-sm);
   padding: 0 var(--space-md, 16px);
 }
-
 .size-lg .toggleButton {
   min-height: 44px;
   font-size: var(--font-size-md);
   padding: 0 var(--space-lg, 24px);
 }
 
-/* ============================================================
-   Selected State
-   ============================================================ */
-
+/* Selected State */
 .toggleButton.selected {
   background-color: var(--color-btn-primary-bg);
   color: var(--color-btn-primary-text);
   box-shadow: var(--shadow-sm);
 }
-
 .toggleButton.selected:hover {
   background-color: var(--color-btn-primary-hover);
 }
+/* Extra visual cue for selected state (e.g., border) */
+.toggleButton.selected::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background-color: var(--color-btn-primary-text);
+  border-radius: var(--radius-full);
+  opacity: 0.6;
+}
 
-/* ============================================================
-   Disabled State
-   ============================================================ */
-
+/* Disabled State */
 .toggleButton.optionDisabled {
   cursor: not-allowed;
   opacity: 0.5;
   pointer-events: none;
 }
 
-/* ============================================================
-   Dark Mode (CSS variables handle it automatically)
-   ============================================================ */
+/* Responsive: wrap buttons on small screens */
+@media (max-width: 480px) {
+  .toggleGroup {
+    padding: var(--space-xxs, 3px);
+    gap: var(--space-xxs, 2px);
+  }
+  .toggleButton {
+    flex: 1 1 auto;
+    min-width: 60px;
+  }
+}

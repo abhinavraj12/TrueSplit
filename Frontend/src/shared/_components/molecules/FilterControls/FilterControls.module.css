@@ -1,8 +1,4 @@
-/* FilterControls.module.css */
-
-/* ============================================================
-   Container - Compact Single Line
-   ============================================================ */
+/* FilterControls.module.css – Option B Horizontal Layout */
 
 .container {
   display: flex;
@@ -15,10 +11,6 @@
   padding: var(--space-xs, 8px) var(--space-sm, 12px);
 }
 
-/* ============================================================
-   Top Row - Search + Controls
-   ============================================================ */
-
 .topRow {
   display: flex;
   flex-wrap: nowrap;
@@ -27,104 +19,10 @@
   width: 100%;
 }
 
-/* ============================================================
-   Search - Full Width
-   ============================================================ */
-
 .searchWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
   flex: 1;
   min-width: 0;
 }
-
-.searchIcon {
-  position: absolute;
-  left: var(--space-sm, 10px);
-  pointer-events: none;
-  color: var(--color-icon-muted);
-}
-
-.searchInput {
-  width: 100%;
-  padding: var(--space-xxs, 4px) var(--space-md, 14px) var(--space-xxs, 4px) var(--space-xl, 34px);
-  border: 2px solid var(--color-input-border);
-  border-radius: var(--radius-md, 10px);
-  background-color: var(--color-input-bg);
-  color: var(--color-text-primary);
-  font-family: var(--font-typography);
-  font-size: var(--font-size-sm);
-  transition: all var(--duration-fast) var(--easing-standard);
-  outline: none;
-  height: 34px;
-}
-
-.searchInput:focus {
-  border-color: var(--color-input-focus);
-  box-shadow: 0 0 0 2px rgba(var(--color-input-focus-rgb, 110, 139, 107), 0.15);
-}
-
-.searchInput:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.searchInput::placeholder {
-  color: var(--color-placeholder);
-  font-size: var(--font-size-xs);
-}
-
-.searchClear {
-  position: absolute;
-  right: var(--space-xxs, 4px);
-  background: none;
-  border: none;
-  color: var(--color-icon-muted);
-  cursor: pointer;
-  padding: var(--space-xxs, 2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm, 6px);
-  transition: all var(--duration-fast) var(--easing-standard);
-  font-size: var(--font-size-sm);
-  width: 24px;
-  height: 24px;
-}
-
-.searchClear:hover {
-  color: var(--color-icon-hover);
-  background-color: var(--color-surface-hover);
-}
-
-.searchLoading {
-  position: absolute;
-  right: var(--space-lg, 24px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-icon-muted);
-}
-
-.spinner {
-  animation: spin 0.8s linear infinite;
-  width: var(--icon-sm, 14px);
-  height: var(--icon-sm, 14px);
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============================================================
-   Right Controls
-   ============================================================ */
 
 .controlsRight {
   display: flex;
@@ -145,14 +43,9 @@
   height: 34px;
   color: var(--color-text-muted);
 }
-
 .clearButton:hover {
   color: var(--color-error-text);
 }
-
-/* ============================================================
-   Filters Row - Single Line
-   ============================================================ */
 
 .filtersRow {
   display: flex;
@@ -161,23 +54,29 @@
   gap: var(--space-xs, 6px) var(--space-sm, 12px);
   padding-top: var(--space-xs, 6px);
   border-top: 1px solid var(--color-divider);
+  min-height: 44px;
 }
 
-.filterWrapper {
-  display: flex;
-  align-items: center;
-  flex: 0 1 auto;
-  max-width: 100%;
-}
-
-/* ============================================================
-   Filter Items - Inline Compact
-   ============================================================ */
-
-.filterItem {
+.filterGroup {
   display: flex;
   align-items: center;
   gap: var(--space-xxs, 4px);
+  flex-shrink: 0;
+  height: 32px;
+}
+
+.filterGroupContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--color-divider);
+  flex-shrink: 0;
+  margin: 0 var(--space-xxs, 2px);
 }
 
 .filterLabel {
@@ -186,92 +85,109 @@
   color: var(--color-text-secondary);
   white-space: nowrap;
   letter-spacing: 0.3px;
+  cursor: pointer;
+  line-height: 1;
 }
 
-.filterInput {
-  height: 28px !important;
+.filterInput,
+.filterSelect,
+.filterDate {
+  height: 32px !important;
+  min-height: 32px !important;
+}
+
+.filterSelect :global(.trigger),
+.filterDate :global(.trigger) {
+  height: 32px !important;
+  min-height: 32px !important;
   font-size: var(--font-size-xs) !important;
   padding: 0 var(--space-sm, 10px) !important;
-  min-width: 100px;
-  width: auto;
 }
 
 .filterSelect {
-  min-width: 150px;
+  min-width: 120px;
   width: auto;
 }
-
 .filterSelect :global(.trigger) {
-  min-width: 150px;
-  height: 28px !important;
-  font-size: var(--font-size-xs) !important;
-  padding: 0 var(--space-sm, 10px) !important;
-  min-height: 28px !important;
+  min-width: 120px;
 }
 
 .filterDate {
-  min-width: 150px;
+  min-width: 130px;
   width: auto;
 }
-
 .filterDate :global(.trigger) {
-  min-width: 150px;
-  height: 28px !important;
-  font-size: var(--font-size-xs) !important;
-  padding: 0 var(--space-sm, 10px) !important;
-  min-height: 28px !important;
+  min-width: 130px;
 }
-
-/* ============================================================
-   Checkbox Group - Inline Compact
-   ============================================================ */
 
 .checkboxGroup {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-xs, 6px);
+  flex-wrap: nowrap;
 }
-
 .checkboxGroup :global(.checkboxLabel) {
   font-size: var(--font-size-xs);
 }
 
-/* ============================================================
-   Switch - Compact
-   ============================================================ */
-
-.filterItem :global(.switchLabel) {
+.filterGroup :global(.switchLabel) {
   font-size: var(--font-size-xs);
 }
 
-/* ============================================================
-   Responsive
-   ============================================================ */
+.liveRegion {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (max-width: 1024px) {
+  .filtersRow {
+    gap: var(--space-xs, 6px) var(--space-sm, 10px);
+  }
+  .filterGroup {
+    flex-shrink: 1;
+  }
+  .divider {
+    margin: 0 var(--space-xxs, 2px);
+  }
+}
 
 @media (max-width: 768px) {
   .topRow {
     flex-wrap: wrap;
   }
-
   .searchWrapper {
     flex: 1 1 100%;
   }
-
   .controlsRight {
     flex: 0 1 auto;
   }
 
   .filtersRow {
-    gap: var(--space-xxs, 4px) var(--space-xs, 8px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xs, 6px);
+    border-top: none;
+    padding-top: var(--space-xs);
   }
 
-  .filterWrapper {
-    flex: 1 1 auto;
-    min-width: 120px;
+  .divider {
+    display: none;
   }
 
-  .filterItem {
+  .filterGroup {
+    height: auto;
+    flex-wrap: wrap;
+    gap: var(--space-xxs, 4px);
+    width: 100%;
+  }
+
+  .filterGroupContent {
     width: 100%;
     flex-wrap: wrap;
   }
@@ -279,6 +195,11 @@
   .filterInput,
   .filterSelect,
   .filterDate {
+    min-width: 100%;
+    width: 100%;
+  }
+  .filterSelect :global(.trigger),
+  .filterDate :global(.trigger) {
     min-width: 100%;
     width: 100%;
   }
@@ -292,18 +213,25 @@
   .container {
     padding: var(--space-xs, 6px);
   }
-
   .controlsRight {
     flex-wrap: wrap;
     gap: var(--space-xxs, 2px);
   }
-
   .toggleButton span,
   .clearButton span {
     font-size: var(--font-size-xs);
   }
 }
 
-/* ============================================================
-   Dark Mode (CSS variables handle it automatically)
-   ============================================================ */
+@media (pointer: coarse) {
+  .toggleButton,
+  .clearButton {
+    min-height: 44px;
+  }
+  .filterInput,
+  .filterSelect :global(.trigger),
+  .filterDate :global(.trigger) {
+    min-height: 36px !important;
+    height: 36px !important;
+  }
+}

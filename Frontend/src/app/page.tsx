@@ -26,6 +26,7 @@ const Page = () => {
       <Link href="/testing/searchInput" className={styles.link}>SearchInput</Link>
       <Link href="/testing/selectdropdown" className={styles.link}>Selectdropdown</Link>
       <Link href="/testing/filtercontrol" className={styles.link}>Filtercontrol</Link>
+      <Link href="/testing/formField" className={styles.link}>FormField</Link>
     </div>
   );
 };

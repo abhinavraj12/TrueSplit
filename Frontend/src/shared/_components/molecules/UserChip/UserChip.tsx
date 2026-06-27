@@ -1,9 +1,8 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, memo, useCallback } from 'react';
 import clsx from 'clsx';
 import { FaTimes } from 'react-icons/fa';
-import { Avatar } from '@/shared/_components/atoms/Avatar';
+import { Avatar, AvatarSize } from '@/shared/_components/atoms/Avatar';
 import { Typography } from '@/shared/_components/atoms/Typography';
-import { Icon } from '@/shared/_components/atoms/Icon';
 import { Button } from '@/shared/_components/atoms/Button';
 import styles from './UserChip.module.css';
 
@@ -30,17 +29,21 @@ export interface UserChipProps extends React.HTMLAttributes<HTMLDivElement> {
   initials?: boolean;
   /** Status indicator dot (online, offline, busy, away) */
   status?: 'online' | 'offline' | 'busy' | 'away';
-  /** Subtext displayed below the name (optional) */
-  subtext?: string;
+  /** Subtext displayed below the name (can be string or ReactNode) */
+  subtext?: React.ReactNode;
   /** If true, the chip is disabled */
   disabled?: boolean;
+  /** Override the avatar size independently */
+  avatarSize?: AvatarSize;
+  /** Accessible label for the chip when clickable (default: "View profile for {name}") */
+  ariaLabel?: string;
 }
 
 /**
  * UserChip component - Displays a user's avatar with their name.
  * Clean, minimal design with hover and interactive states.
  */
-export const UserChip = forwardRef<HTMLDivElement, UserChipProps>(
+const UserChipComponent = forwardRef<HTMLDivElement, UserChipProps>(
   (
     {
       name,
@@ -56,31 +59,66 @@ export const UserChip = forwardRef<HTMLDivElement, UserChipProps>(
       subtext,
       disabled = false,
       onClick,
+      avatarSize,
+      ariaLabel,
       ...restProps
     },
     ref,
   ) => {
-    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-      if (disabled || !clickable) return;
-      onClick?.(e);
-    };
+    // --- All hooks must be called unconditionally ---
+    const handleClick = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        if (disabled || !clickable) return;
+        onClick?.(e);
+      },
+      [disabled, clickable, onClick]
+    );
 
-    const handleDismiss = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      onDismiss?.();
-    };
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (disabled || !clickable) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.(e as unknown as React.MouseEvent<HTMLDivElement>);
+        }
+      },
+      [disabled, clickable, onClick]
+    );
 
-    const avatarSizeMap: Record<UserChipSize, 'xs' | 'sm' | 'md'> = {
+    const handleDismiss = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onDismiss?.();
+      },
+      [onDismiss]
+    );
+
+    // --- Guard: if name is empty, render nothing (after hooks) ---
+    if (!name.trim()) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('UserChip: `name` prop is empty. Rendering null.');
+      }
+      return null;
+    }
+
+    // Map chip size to avatar size, with optional override
+    const defaultAvatarSizeMap: Record<UserChipSize, AvatarSize> = {
       sm: 'xs',
       md: 'sm',
       lg: 'md',
     };
+    const finalAvatarSize = avatarSize || defaultAvatarSizeMap[size];
 
+    // Typography size map
     const typographySizeMap: Record<UserChipSize, 'small' | 'body' | 'h6'> = {
       sm: 'small',
       md: 'body',
       lg: 'h6',
     };
+
+    // Determine aria-label for clickable chip
+    const chipAriaLabel =
+      ariaLabel || (clickable ? `View profile for ${name}` : undefined);
 
     return (
       <div
@@ -90,16 +128,18 @@ export const UserChip = forwardRef<HTMLDivElement, UserChipProps>(
           styles[`size-${size}`],
           clickable && styles.clickable,
           disabled && styles.disabled,
-          className,
+          className
         )}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
         role={clickable ? 'button' : undefined}
         tabIndex={clickable && !disabled ? 0 : undefined}
         aria-disabled={disabled}
+        aria-label={chipAriaLabel}
         {...restProps}
       >
         <Avatar
-          size={avatarSizeMap[size]}
+          size={finalAvatarSize}
           src={src}
           alt={alt || name}
           name={initials ? name : undefined}
@@ -143,9 +183,10 @@ export const UserChip = forwardRef<HTMLDivElement, UserChipProps>(
         )}
       </div>
     );
-  },
+  }
 );
 
-UserChip.displayName = 'UserChip';
+UserChipComponent.displayName = 'UserChip';
 
+export const UserChip = memo(UserChipComponent);
 export default UserChip;

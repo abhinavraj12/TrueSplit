@@ -1,15 +1,22 @@
-import React, { useState, useCallback, useRef, useEffect, memo } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  useId,
+  memo,
+} from 'react';
 import clsx from 'clsx';
-import { FaSearch, FaTimes, FaFilter, FaSpinner } from 'react-icons/fa';
-import { Typography } from '@/shared/_components/atoms/Typography';
+import { FaFilter } from 'react-icons/fa';
 import { Input } from '@/shared/_components/atoms/Input';
 import { Button } from '@/shared/_components/atoms/Button';
-import { Icon } from '@/shared/_components/atoms/Icon';
 import { Badge } from '@/shared/_components/atoms/Badge';
 import { Checkbox } from '@/shared/_components/atoms/Checkbox';
 import { Switch } from '@/shared/_components/atoms/Switch';
 import { DatePicker } from '@/shared/_components/molecules/DatePicker';
 import { SelectDropdown } from '@/shared/_components/molecules/SelectDropdown';
+import { SearchInput } from '@/shared/_components/molecules/SearchInput';
 import styles from './FilterControls.module.css';
 
 export type FilterType = 'text' | 'select' | 'checkbox' | 'toggle' | 'date';
@@ -60,6 +67,12 @@ export interface FilterControlsProps {
 
 type FilterValuesState = Record<string, FilterValue>;
 
+/**
+ * FilterControls – A comprehensive search + filter UI for lists.
+ * Supports text, select, checkbox, toggle, and date filters.
+ * Collapsible, responsive, accessible, and performant.
+ * Option B layout: horizontal row with uniform control heights.
+ */
 const FilterControlsComponent: React.FC<FilterControlsProps> = ({
   filters,
   onChange,
@@ -73,14 +86,15 @@ const FilterControlsComponent: React.FC<FilterControlsProps> = ({
   collapsible = true,
   className,
   disabled = false,
-  activeCount,
+  activeCount: externalActiveCount,
 }) => {
-  // Internal search value - always used for the input to ensure instant responsiveness
-  const [internalSearchValue, setInternalSearchValue] = useState(
-    controlledSearchValue ?? ''
-  );
+  // --- IDs for accessibility ---
+  const filtersRowId = useId();
+  const liveRegionId = useId();
+
+  // --- State ---
   const [isExpanded, setIsExpanded] = useState(!collapsible);
-  const [internalValues, setInternalValues] = useState<FilterValuesState>(() => {
+  const [internalFilterValues, setInternalFilterValues] = useState<FilterValuesState>(() => {
     const initial: FilterValuesState = {};
     filters.forEach((filter) => {
       if (filter.defaultValue !== undefined) {
@@ -90,38 +104,55 @@ const FilterControlsComponent: React.FC<FilterControlsProps> = ({
     return initial;
   });
 
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isInternalUpdateRef = useRef(false);
+  // --- Live region status ---
+  type SearchStatus = 'idle' | 'searching' | 'complete';
+  const [searchStatus, setSearchStatus] = useState<SearchStatus>('idle');
+  const prevLoadingRef = useRef(searchLoading);
 
-  // Sync internal value with controlled prop when it changes from outside
   useEffect(() => {
-    if (
-      controlledSearchValue !== undefined &&
-      controlledSearchValue !== internalSearchValue &&
-      !isInternalUpdateRef.current
-    ) {
-      setInternalSearchValue(controlledSearchValue);
+    if (searchLoading !== prevLoadingRef.current) {
+      if (searchLoading) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSearchStatus('searching');
+      } else {
+        setSearchStatus('complete');
+        const timer = setTimeout(() => setSearchStatus('idle'), 2000);
+        return () => clearTimeout(timer);
+      }
+      prevLoadingRef.current = searchLoading;
     }
-  }, [controlledSearchValue, internalSearchValue]);
+    return () => {};
+  }, [searchLoading]);
 
-  const isFilterControlled = (filter: FilterControl): boolean => {
-    return filter.value !== undefined;
-  };
+  // --- Refs ---
+  const containerRef = useRef<HTMLDivElement>(null);
+  const firstFilterRef = useRef<HTMLDivElement>(null);
 
-  const getFilterValue = (filter: FilterControl): FilterValue => {
-    if (isFilterControlled(filter)) {
-      return filter.value ?? null;
-    }
-    return internalValues[filter.id] ?? filter.defaultValue ?? null;
-  };
+  // --- Determine if filter is controlled ---
+  const isFilterControlled = useCallback(
+    (filter: FilterControl): boolean => filter.value !== undefined,
+    [],
+  );
 
+  // --- Get current value for a filter ---
+  const getFilterValue = useCallback(
+    (filter: FilterControl): FilterValue => {
+      if (isFilterControlled(filter)) {
+        return filter.value ?? null;
+      }
+      return internalFilterValues[filter.id] ?? filter.defaultValue ?? null;
+    },
+    [isFilterControlled, internalFilterValues],
+  );
+
+  // --- Handle filter change ---
   const handleFilterChange = useCallback(
     (filterId: string, value: FilterValue) => {
       const filter = filters.find((f) => f.id === filterId);
       if (!filter) return;
 
       if (!isFilterControlled(filter)) {
-        setInternalValues((prev) => ({ ...prev, [filterId]: value }));
+        setInternalFilterValues((prev) => ({ ...prev, [filterId]: value }));
       }
 
       const allValues: FilterValuesState = {};
@@ -131,57 +162,24 @@ const FilterControlsComponent: React.FC<FilterControlsProps> = ({
         } else if (isFilterControlled(f)) {
           allValues[f.id] = f.value ?? null;
         } else {
-          allValues[f.id] = internalValues[f.id] ?? f.defaultValue ?? null;
+          allValues[f.id] = internalFilterValues[f.id] ?? f.defaultValue ?? null;
         }
       });
 
       onChange(allValues);
     },
-    [filters, internalValues, onChange]
+    [filters, internalFilterValues, onChange, isFilterControlled],
   );
 
-  // Search handlers - always update internal state immediately
+  // --- Search change ---
   const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-
-      // Update internal state immediately for responsive typing
-      setInternalSearchValue(value);
-      isInternalUpdateRef.current = true;
-
-      // Debounce the external callback
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-
-      debounceTimerRef.current = setTimeout(() => {
-        onSearchChange?.(value);
-        isInternalUpdateRef.current = false;
-      }, searchDebounce);
-
-      // If debounce is 0, call immediately
-      if (searchDebounce === 0) {
-        onSearchChange?.(value);
-        isInternalUpdateRef.current = false;
-      }
+    (value: string) => {
+      onSearchChange?.(value);
     },
-    [onSearchChange, searchDebounce]
+    [onSearchChange],
   );
 
-  const handleSearchClear = useCallback(() => {
-    // Clear internal state immediately
-    setInternalSearchValue('');
-    isInternalUpdateRef.current = true;
-
-    // Notify parent
-    onSearchChange?.('');
-
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-      isInternalUpdateRef.current = false;
-    }
-  }, [onSearchChange]);
-
+  // --- Clear all ---
   const handleClearAll = useCallback(() => {
     const clearedValues: FilterValuesState = {};
     filters.forEach((filter) => {
@@ -199,17 +197,18 @@ const FilterControlsComponent: React.FC<FilterControlsProps> = ({
       }
       clearedValues[filter.id] = emptyValue;
       if (!isFilterControlled(filter)) {
-        setInternalValues((prev) => ({ ...prev, [filter.id]: emptyValue }));
+        setInternalFilterValues((prev) => ({ ...prev, [filter.id]: emptyValue }));
       }
     });
     onChange(clearedValues);
-    // Clear search as well
-    handleSearchClear();
-  }, [filters, onChange, handleSearchClear]);
+    if (onSearchChange) {
+      onSearchChange('');
+    }
+  }, [filters, onChange, isFilterControlled, onSearchChange]);
 
-  const getActiveCount = (): number => {
-    if (activeCount !== undefined) return activeCount;
-
+  // --- Compute active count ---
+  const activeCount = useMemo(() => {
+    if (externalActiveCount !== undefined) return externalActiveCount;
     let count = 0;
     filters.forEach((filter) => {
       const val = getFilterValue(filter);
@@ -219,197 +218,354 @@ const FilterControlsComponent: React.FC<FilterControlsProps> = ({
       }
     });
     return count;
-  };
+  }, [filters, getFilterValue, externalActiveCount]);
 
-  const activeFilters = getActiveCount();
+  // --- Toggle expansion ---
+  const toggleExpanded = useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
 
-  const renderFilterControl = useCallback(
-    (filter: FilterControl): React.ReactNode => {
+  // --- Focus first filter when expanded ---
+  useEffect(() => {
+    if (isExpanded && firstFilterRef.current) {
+      const firstInput = firstFilterRef.current.querySelector(
+        'input, [role="combobox"], button',
+      ) as HTMLElement | null;
+      if (
+        firstInput &&
+        'disabled' in firstInput &&
+        !(firstInput as HTMLInputElement | HTMLButtonElement).disabled
+      ) {
+        setTimeout(() => firstInput.focus(), 50);
+      }
+    }
+  }, [isExpanded]);
+
+  // --- Live message ---
+  const liveMessage = useMemo(() => {
+    if (searchStatus === 'searching') return 'Searching...';
+    if (searchStatus === 'complete') return 'Search complete';
+    return '';
+  }, [searchStatus]);
+
+  // --- Helper renderers ---
+  function renderTextFilter({
+    id,
+    label,
+    value,
+    onChange: onTextChange,
+    placeholder,
+    disabled: isDisabled,
+  }: {
+    id: string;
+    label: string;
+    value: string;
+    onChange: (val: string) => void;
+    placeholder?: string;
+    disabled?: boolean;
+  }) {
+    const inputId = `filter-text-${id}`;
+    return (
+      <div className={styles.filterGroupContent}>
+        <label htmlFor={inputId} className={styles.filterLabel}>
+          {label}
+        </label>
+        <Input
+          id={inputId}
+          value={value || ''}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTextChange(e.target.value)}
+          placeholder={placeholder || '...'}
+          disabled={isDisabled}
+          className={styles.filterInput}
+          inputSize="sm"
+        />
+      </div>
+    );
+  }
+
+  function renderSelectFilter({
+    id,
+    label,
+    value,
+    onChange: onSelectChange,
+    options,
+    placeholder,
+    disabled: isDisabled,
+  }: {
+    id: string;
+    label: string;
+    value: string;
+    onChange: (val: string) => void;
+    options: FilterOption[];
+    placeholder?: string;
+    disabled?: boolean;
+  }) {
+    if (options.length === 0 && process.env.NODE_ENV === 'development') {
+      console.warn(`FilterControls: Select filter "${id}" has no options.`);
+    }
+    return (
+      <div className={styles.filterGroupContent}>
+        <span className={styles.filterLabel}>{label}</span>
+        <SelectDropdown
+          value={value || ''}
+          onChange={onSelectChange}
+          options={options.map((opt) => ({ value: opt.value, label: opt.label }))}
+          placeholder={placeholder || 'All'}
+          disabled={isDisabled}
+          size="sm"
+          className={styles.filterSelect}
+          clearable={false}
+          labelHidden
+        />
+      </div>
+    );
+  }
+
+  function renderCheckboxFilter({
+    id,
+    label,
+    value,
+    onChange: onCheckboxChange,
+    options,
+    disabled: isDisabled,
+  }: {
+    id: string;
+    label: string;
+    value: string[];
+    onChange: (val: string[]) => void;
+    options: FilterOption[];
+    disabled?: boolean;
+  }) {
+    if (options.length === 0 && process.env.NODE_ENV === 'development') {
+      console.warn(`FilterControls: Checkbox filter "${id}" has no options.`);
+    }
+    return (
+      <div className={styles.filterGroupContent}>
+        <span className={styles.filterLabel}>{label}</span>
+        <div className={styles.checkboxGroup}>
+          {options.map((opt) => {
+            const checked = Array.isArray(value) && value.includes(opt.value);
+            return (
+              <Checkbox
+                key={opt.value}
+                label={opt.label}
+                checked={checked}
+                onChange={() => {
+                  const current = Array.isArray(value) ? value : [];
+                  const newValue = checked
+                    ? current.filter((v) => v !== opt.value)
+                    : [...current, opt.value];
+                  onCheckboxChange(newValue);
+                }}
+                disabled={isDisabled}
+                size="sm"
+              />
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  function renderToggleFilter({
+    label,
+    value,
+    onChange: onToggleChange,
+    disabled: isDisabled,
+  }: {
+    id: string;
+    label: string;
+    value: boolean;
+    onChange: (val: boolean) => void;
+    disabled?: boolean;
+  }) {
+    return (
+      <div className={styles.filterGroupContent}>
+        <span className={styles.filterLabel}>{label}</span>
+        <Switch
+          checked={!!value}
+          onChange={() => onToggleChange(!value)}
+          disabled={isDisabled}
+          size="sm"
+          label={value ? 'Yes' : 'No'}
+        />
+      </div>
+    );
+  }
+
+  function renderDateFilter({
+    label,
+    value,
+    onChange: onDateChange,
+    placeholder,
+    disabled: isDisabled,
+  }: {
+    id: string;
+    label: string;
+    value: Date | null;
+    onChange: (val: Date | null) => void;
+    placeholder?: string;
+    disabled?: boolean;
+  }) {
+    return (
+      <div className={styles.filterGroupContent}>
+        <span className={styles.filterLabel}>{label}</span>
+        <DatePicker
+          value={value || null}
+          onChange={onDateChange}
+          placeholder={placeholder || 'Date'}
+          disabled={isDisabled}
+          size="sm"
+          clearable
+          className={styles.filterDate}
+        />
+      </div>
+    );
+  }
+
+  // --- Memoize filter controls with Option B horizontal layout ---
+  const renderFilterControls = useMemo(() => {
+    if (filters.length === 0) return null;
+
+    const groups: React.ReactNode[] = [];
+
+    filters.forEach((filter, index) => {
       const value = getFilterValue(filter);
       const isDisabled = disabled || filter.disabled;
+      const filterId = filter.id;
+
+      let control: React.ReactNode;
 
       if (filter.render) {
-        return filter.render({
+        control = filter.render({
           value,
-          onChange: (val: FilterValue) => handleFilterChange(filter.id, val),
-          id: filter.id,
+          onChange: (val: FilterValue) => handleFilterChange(filterId, val),
+          id: filterId,
           label: filter.label,
           options: filter.options,
           disabled: isDisabled,
         });
+      } else {
+        switch (filter.type) {
+          case 'text':
+            control = renderTextFilter({
+              id: filterId,
+              label: filter.label,
+              value: value as string,
+              onChange: (val) => handleFilterChange(filterId, val),
+              placeholder: filter.placeholder,
+              disabled: isDisabled,
+            });
+            break;
+          case 'select':
+            control = renderSelectFilter({
+              id: filterId,
+              label: filter.label,
+              value: value as string,
+              onChange: (val) => handleFilterChange(filterId, val),
+              options: filter.options || [],
+              placeholder: filter.placeholder,
+              disabled: isDisabled,
+            });
+            break;
+          case 'checkbox':
+            control = renderCheckboxFilter({
+              id: filterId,
+              label: filter.label,
+              value: value as string[],
+              onChange: (val) => handleFilterChange(filterId, val),
+              options: filter.options || [],
+              disabled: isDisabled,
+            });
+            break;
+          case 'toggle':
+            control = renderToggleFilter({
+              id: filterId,
+              label: filter.label,
+              value: value as boolean,
+              onChange: (val) => handleFilterChange(filterId, val),
+              disabled: isDisabled,
+            });
+            break;
+          case 'date':
+            control = renderDateFilter({
+              id: filterId,
+              label: filter.label,
+              value: value as Date | null,
+              onChange: (val) => handleFilterChange(filterId, val),
+              placeholder: filter.placeholder,
+              disabled: isDisabled,
+            });
+            break;
+          default:
+            if (process.env.NODE_ENV === 'development') {
+              console.warn(`FilterControls: Unknown filter type "${filter.type}" for filter "${filterId}"`);
+            }
+            return null;
+        }
       }
 
-      switch (filter.type) {
-        case 'text':
-          return (
-            <div className={styles.filterItem}>
-              <Typography variant="small" color="secondary" className={styles.filterLabel}>
-                {filter.label}
-              </Typography>
-              <Input
-                id={filter.id}
-                value={(value as string) || ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleFilterChange(filter.id, e.target.value)
-                }
-                placeholder={filter.placeholder || '...'}
-                disabled={isDisabled}
-                className={styles.filterInput}
-                inputSize="sm"
-              />
-            </div>
-          );
+      const group = (
+        <div key={filterId} className={styles.filterGroup} ref={index === 0 ? firstFilterRef : undefined}>
+          {control}
+        </div>
+      );
 
-        case 'select':
-          return (
-            <div className={styles.filterItem}>
-              <Typography variant="small" color="secondary" className={styles.filterLabel}>
-                {filter.label}
-              </Typography>
-              <SelectDropdown
-                value={(value as string) || ''}
-                onChange={(val: string) => handleFilterChange(filter.id, val)}
-                options={filter.options?.map((opt) => ({
-                  value: opt.value,
-                  label: opt.label,
-                })) || []}
-                placeholder={filter.placeholder || 'All'}
-                disabled={isDisabled}
-                size="sm"
-                className={styles.filterSelect}
-                clearable={false}
-              />
-            </div>
-          );
+      groups.push(group);
 
-        case 'checkbox':
-          return (
-            <div className={styles.filterItem}>
-              <Typography variant="small" color="secondary" className={styles.filterLabel}>
-                {filter.label}
-              </Typography>
-              <div className={styles.checkboxGroup}>
-                {filter.options?.map((opt) => {
-                  const selected = Array.isArray(value) && value.includes(opt.value);
-                  return (
-                    <Checkbox
-                      key={opt.value}
-                      label={opt.label}
-                      checked={selected}
-                      onChange={() => {
-                        const current = Array.isArray(value) ? value : [];
-                        const newValue = selected
-                          ? current.filter((v) => v !== opt.value)
-                          : [...current, opt.value];
-                        handleFilterChange(filter.id, newValue);
-                      }}
-                      disabled={isDisabled}
-                      size="sm"
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          );
-
-        case 'toggle':
-          return (
-            <div className={styles.filterItem}>
-              <Typography variant="small" color="secondary" className={styles.filterLabel}>
-                {filter.label}
-              </Typography>
-              <Switch
-                checked={!!value}
-                onChange={() => handleFilterChange(filter.id, !value)}
-                disabled={isDisabled}
-                size="sm"
-                label={value ? 'Yes' : 'No'}
-              />
-            </div>
-          );
-
-        case 'date':
-          return (
-            <div className={styles.filterItem}>
-              <Typography variant="small" color="secondary" className={styles.filterLabel}>
-                {filter.label}
-              </Typography>
-              <DatePicker
-                value={(value as Date) || null}
-                onChange={(date: Date | null) => handleFilterChange(filter.id, date)}
-                placeholder={filter.placeholder || 'Date'}
-                disabled={isDisabled}
-                size="sm"
-                clearable
-                className={styles.filterDate}
-              />
-            </div>
-          );
-
-        default:
-          return null;
+      if (index < filters.length - 1) {
+        groups.push(
+          <div key={`divider-${filterId}`} className={styles.divider} aria-hidden="true" />
+        );
       }
-    },
-    [disabled, getFilterValue, handleFilterChange]
-  );
+    });
 
-  useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
-  }, []);
-
-  const displaySearchValue = internalSearchValue;
+    return (
+      <div className={styles.filtersRow} id={filtersRowId} role="group" aria-label="Filters">
+        {groups}
+      </div>
+    );
+  }, [filters, getFilterValue, disabled, handleFilterChange, filtersRowId]);
 
   return (
-    <div className={clsx(styles.container, className)}>
+    <div ref={containerRef} className={clsx(styles.container, className)}>
       <div className={styles.topRow}>
         {showSearch && (
           <div className={styles.searchWrapper}>
-            <Icon size="sm" color="muted" className={styles.searchIcon} decorative>
-              <FaSearch />
-            </Icon>
-            <input
-              type="text"
-              value={displaySearchValue}
+            <SearchInput
+              value={controlledSearchValue}
               onChange={handleSearchChange}
               placeholder={searchPlaceholder}
+              loading={searchLoading}
+              debounce={searchDebounce}
               disabled={disabled}
-              className={styles.searchInput}
+              size="sm"
+              className={styles.searchInputComponent}
+              aria-label="Search"
             />
-            {displaySearchValue && !disabled && (
-              <button
-                className={styles.searchClear}
-                onClick={handleSearchClear}
-                aria-label="Clear search"
-                type="button"
-              >
-                <FaTimes />
-              </button>
-            )}
-            {searchLoading && (
-              <div className={styles.searchLoading}>
-                <FaSpinner className={styles.spinner} />
-              </div>
-            )}
           </div>
         )}
-
         <div className={styles.controlsRight}>
           {collapsible && (
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={toggleExpanded}
               className={styles.toggleButton}
               leftIcon={<FaFilter />}
+              aria-expanded={isExpanded}
+              aria-controls={filtersRowId}
+              disabled={disabled}
             >
-              Filters {activeFilters > 0 && <Badge size="sm" variant="primary">{activeFilters}</Badge>}
+              Filters
+              {activeCount > 0 && (
+                <Badge size="sm" variant="primary">
+                  {activeCount}
+                </Badge>
+              )}
             </Button>
           )}
-          {showClearAll && activeFilters > 0 && (
+          {showClearAll && activeCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
@@ -423,22 +579,16 @@ const FilterControlsComponent: React.FC<FilterControlsProps> = ({
         </div>
       </div>
 
-      {(!collapsible || isExpanded) && filters.length > 0 && (
-        <div className={styles.filtersRow}>
-          {filters.map((filter) => (
-            <div key={filter.id} className={styles.filterWrapper}>
-              {renderFilterControl(filter)}
-            </div>
-          ))}
-        </div>
-      )}
+      {(!collapsible || isExpanded) && renderFilterControls}
+
+      <div id={liveRegionId} className={styles.liveRegion} aria-live="polite" aria-atomic="true">
+        {liveMessage}
+      </div>
     </div>
   );
 };
 
-// Memoize to prevent unnecessary re-renders
+FilterControlsComponent.displayName = 'FilterControls';
+
 export const FilterControls = memo(FilterControlsComponent);
-
-FilterControls.displayName = 'FilterControls';
-
 export default FilterControls;

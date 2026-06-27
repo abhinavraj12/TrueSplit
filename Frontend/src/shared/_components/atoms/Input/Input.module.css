@@ -247,3 +247,41 @@
   padding-left: var(--space-md, 16px);
   padding-right: var(--space-md, 16px);
 }
+
+/* ========== Password Toggle Button ========== */
+.passwordToggle {
+  flex-shrink: 0;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: var(--radius-sm, 6px);
+  color: var(--color-icon-muted);
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+.passwordToggle:hover {
+  color: var(--color-icon-hover);
+  background-color: var(--color-surface-hover);
+}
+
+.passwordToggle:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Size-specific adjustments */
+.wrapper[data-size='sm'] .passwordToggle {
+  min-width: 28px !important;
+  min-height: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.wrapper[data-size='lg'] .passwordToggle {
+  min-width: 38px !important;
+  min-height: 38px !important;
+  width: 38px !important;
+  height: 38px !important;
+}
