@@ -6,7 +6,8 @@ import org.bson.types.Decimal128;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -32,12 +33,13 @@ public class Expense {
     private String createdBy;
     private List<String> participants;
     private List<ManualSplit> manualSplits;
-    private LocalDateTime expenseDateTime;
+    private Instant expenseDateTime;
+    private String timezone;
     private String status; // ACTIVE, COMPLETE, DELETED
     private List<ParticipantSettlement> participantSettlement;
     private List<Image> images;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     @Data
     public static class ManualSplit {
@@ -49,7 +51,7 @@ public class Expense {
     public static class ParticipantSettlement {
         private String userId;
         private boolean settled;
-        private LocalDateTime settledAt;
+        private Instant settledAt;
     }
 
     @Data
@@ -58,6 +60,6 @@ public class Expense {
         private String thumbnailUrl;
         private String originalName;
         private long size;
-        private LocalDateTime uploadedAt;
+        private Instant uploadedAt;
     }
 }

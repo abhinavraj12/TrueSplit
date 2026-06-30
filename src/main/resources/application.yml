@@ -35,6 +35,7 @@ server:
 jwt:
   secret: ${JWT_SECRET}
   expiration-ms: 86400000 # 1 day
+  refresh-expiration-ms: 2592000000 # 30 days
 otp:
   validity-seconds: 100   # OTP expiry time in seconds (60 second)
 

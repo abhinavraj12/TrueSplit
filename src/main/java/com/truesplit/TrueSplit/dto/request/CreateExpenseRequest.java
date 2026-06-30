@@ -36,5 +36,7 @@ public class CreateExpenseRequest {  // Make sure this is public
 
     private String expenseTime;
 
+    private String timezone;
+
     private List<ManualSplitEntry> manualSplits;
 }

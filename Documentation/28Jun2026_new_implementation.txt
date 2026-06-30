@@ -1,0 +1,15 @@
+User logs in
+ -> backend gives authToken + refreshToken
+
+User calls APIs
+ -> frontend uses authToken
+
+authToken expires
+ -> frontend calls /auth/refresh using refreshToken
+ -> backend gives new authToken + new refreshToken
+
+User logs out
+ -> backend revokes refreshToken
+ -> cookies are cleared
+
+

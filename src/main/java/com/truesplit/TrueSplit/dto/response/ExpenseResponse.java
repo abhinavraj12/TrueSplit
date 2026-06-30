@@ -2,11 +2,15 @@ package com.truesplit.TrueSplit.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
-import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.time.Instant;
 import java.util.List;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExpenseResponse {
     private String id;
     private String title;
@@ -19,12 +23,13 @@ public class ExpenseResponse {
     private CreatedByInfo createdBy;
     private List<ParticipantInfo> participants;
     private List<ManualSplitInfo> manualSplits;
-    private LocalDateTime expenseDateTime;
+    private Instant expenseDateTime;
+    private String timezone;
     private String status;
     private List<ParticipantSettlementInfo> participantSettlement;
     private List<ImageInfo> images;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     @Data
     @Builder
@@ -63,7 +68,7 @@ public class ExpenseResponse {
     public static class ParticipantSettlementInfo {
         private String userId;
         private boolean settled;
-        private LocalDateTime settledAt;
+        private Instant settledAt;
     }
 
     @Data
@@ -73,6 +78,6 @@ public class ExpenseResponse {
         private String thumbnailUrl;
         private String originalName;
         private Long size;
-        private LocalDateTime uploadedAt;
+        private Instant uploadedAt;
     }
 }
