@@ -4,17 +4,26 @@ import com.truesplit.TrueSplit.Repository.ExpenseRepository;
 import com.truesplit.TrueSplit.Repository.UserRepository;
 import com.truesplit.TrueSplit.dto.request.CreateExpenseRequest;
 import com.truesplit.TrueSplit.dto.response.ExpenseResponse;
+import com.truesplit.TrueSplit.dto.response.RecentExpenseResponse;
+import com.truesplit.TrueSplit.exception.NotFoundException;
 import com.truesplit.TrueSplit.model.Expense;
 import com.truesplit.TrueSplit.model.User;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.Decimal128;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.DateTimeException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,18 +40,20 @@ public class ExpenseService {
 
         // Get current user from email
         User currentUser = userRepository.findByEmail(currentUserEmail)
-                .orElseThrow(() -> new RuntimeException("Current user not found"));
+                .orElseThrow(() -> new NotFoundException("Your account could not be found. Please sign in again."));
         String currentUserId = currentUser.getId();
 
+        List<String> participants = new ArrayList<>(new LinkedHashSet<>(request.getParticipants()));
+
         // 1. Validate paidBy is in participants
-        if (!request.getParticipants().contains(request.getPaidBy())) {
-            throw new IllegalArgumentException("PaidBy user must be in participants list");
+        if (!participants.contains(request.getPaidBy())) {
+            throw new IllegalArgumentException("The payer must be included as a participant.");
         }
 
         // 2. Validate participants exist
-        for (String participantId : request.getParticipants()) {
+        for (String participantId : participants) {
             if (!userRepository.existsById(participantId)) {
-                throw new IllegalArgumentException("User not found: " + participantId);
+                throw new IllegalArgumentException("One or more participants could not be found.");
             }
         }
 
@@ -50,7 +61,7 @@ public class ExpenseService {
         List<Expense.ManualSplit> manualSplits = null;
         if ("MANUAL".equals(request.getSplitType())) {
             if (request.getManualSplits() == null || request.getManualSplits().isEmpty()) {
-                throw new IllegalArgumentException("Manual splits required for MANUAL split type");
+                throw new IllegalArgumentException("Please add split amounts for a manual split.");
             }
 
             // CORRECTED: Calculate sum of manual splits
@@ -61,8 +72,7 @@ public class ExpenseService {
             BigDecimal total = BigDecimal.valueOf(request.getTotalAmount());
 
             if (sum.compareTo(total) != 0) {
-                throw new IllegalArgumentException("Sum of manual splits (" + sum +
-                        ") does not equal total amount (" + total + ")");
+                throw new IllegalArgumentException("Manual split amounts must add up to the total amount.");
             }
 
             manualSplits = request.getManualSplits().stream()
@@ -75,16 +85,16 @@ public class ExpenseService {
                     .collect(Collectors.toList());
         } else if ("EQUAL".equals(request.getSplitType())) {
             // ADD THIS: EQUAL split calculation
-            int participantCount = request.getParticipants().size();
+            int participantCount = participants.size();
             BigDecimal totalAmount = BigDecimal.valueOf(request.getTotalAmount());
-            BigDecimal sharePerPerson = totalAmount.divide(BigDecimal.valueOf(participantCount), 2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal sharePerPerson = totalAmount.divide(BigDecimal.valueOf(participantCount), 2, RoundingMode.HALF_UP);
 
             // Calculate the last person's share to avoid rounding errors
             BigDecimal lastShare = totalAmount.subtract(sharePerPerson.multiply(BigDecimal.valueOf(participantCount - 1)));
 
             manualSplits = new ArrayList<>();
-            for (int i = 0; i < request.getParticipants().size(); i++) {
-                String participantId = request.getParticipants().get(i);
+            for (int i = 0; i < participants.size(); i++) {
+                String participantId = participants.get(i);
                 BigDecimal amount = (i == participantCount - 1) ? lastShare : sharePerPerson;
 
                 Expense.ManualSplit split = new Expense.ManualSplit();
@@ -98,10 +108,12 @@ public class ExpenseService {
         String slug = slugGenerator.generateUniqueSlug(request.getTitle());
 
         // 5. Create expense date time
-        LocalDate date = LocalDate.parse(request.getExpenseDate());
+        ZoneId zoneId = resolveZoneId(request.getTimezone());
+        LocalDate date = parseExpenseDate(request.getExpenseDate());
         LocalTime time = request.getExpenseTime() != null ?
-                LocalTime.parse(request.getExpenseTime()) : LocalTime.now();
-        LocalDateTime expenseDateTime = LocalDateTime.of(date, time);
+                parseExpenseTime(request.getExpenseTime()) : LocalTime.now(zoneId);
+        Instant expenseDateTime = LocalDateTime.of(date, time).atZone(zoneId).toInstant();
+        Instant now = Instant.now();
 
         // 6. Build expense entity
         Expense expense = new Expense();
@@ -113,13 +125,14 @@ public class ExpenseService {
         expense.setSplitType(request.getSplitType());
         expense.setPaidBy(request.getPaidBy());
         expense.setCreatedBy(currentUserId);
-        expense.setParticipants(new ArrayList<>(new LinkedHashSet<>(request.getParticipants())));
+        expense.setParticipants(participants);
         expense.setManualSplits(manualSplits);
         expense.setExpenseDateTime(expenseDateTime);
+        expense.setTimezone(zoneId.getId());
         expense.setStatus("ACTIVE");
 
         // Initialize participant settlement array
-        List<Expense.ParticipantSettlement> settlements = request.getParticipants().stream()
+        List<Expense.ParticipantSettlement> settlements = participants.stream()
                 .map(participantId -> {
                     Expense.ParticipantSettlement settlement = new Expense.ParticipantSettlement();
                     settlement.setUserId(participantId);
@@ -131,8 +144,8 @@ public class ExpenseService {
         expense.setParticipantSettlement(settlements);
 
         expense.setImages(new ArrayList<>());
-        expense.setCreatedAt(LocalDateTime.now());
-        expense.setUpdatedAt(LocalDateTime.now());
+        expense.setCreatedAt(now);
+        expense.setUpdatedAt(now);
 
         // 7. Save to database
         Expense savedExpense = expenseRepository.save(expense);
@@ -146,13 +159,26 @@ public class ExpenseService {
 
         if (identifier.matches("^[0-9a-fA-F]{24}$")) {
             expense = expenseRepository.findById(identifier)
-                    .orElseThrow(() -> new RuntimeException("Expense not found"));
+                    .orElseThrow(() -> new NotFoundException("Expense not found."));
         } else {
             expense = expenseRepository.findByTitleSlug(identifier)
-                    .orElseThrow(() -> new RuntimeException("Expense not found"));
+                    .orElseThrow(() -> new NotFoundException("Expense not found."));
         }
 
         return convertToResponse(expense);
+    }
+
+    public List<RecentExpenseResponse> getRecentExpenses(String currentUserEmail) {
+        User currentUser = userRepository.findByEmail(currentUserEmail)
+                .orElseThrow(() -> new NotFoundException("Your account could not be found. Please sign in again."));
+
+        return expenseRepository.findExpensesByUser(
+                        currentUser.getId(),
+                        PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "expenseDateTime"))
+                )
+                .stream()
+                .map(expense -> convertToRecentResponse(expense, currentUser.getId()))
+                .collect(Collectors.toList());
     }
 
     private ExpenseResponse convertToResponse(Expense expense) {
@@ -162,9 +188,7 @@ public class ExpenseService {
         userIds.add(expense.getCreatedBy());
         userIds.addAll(expense.getParticipants());
 
-        for (String userId : userIds) {
-            userRepository.findById(userId).ifPresent(user -> userMap.put(userId, user));
-        }
+        userRepository.findAllById(userIds).forEach(user -> userMap.put(user.getId(), user));
 
         ExpenseResponse.ExpenseResponseBuilder builder = ExpenseResponse.builder()
                 .id(expense.getId())
@@ -175,6 +199,7 @@ public class ExpenseService {
                 .currency(expense.getCurrency())
                 .splitType(expense.getSplitType())
                 .expenseDateTime(expense.getExpenseDateTime())
+                .timezone(expense.getTimezone())
                 .status(expense.getStatus())
                 .createdAt(expense.getCreatedAt())
                 .updatedAt(expense.getUpdatedAt());
@@ -191,7 +216,7 @@ public class ExpenseService {
 
         // Set created by info
         User createdByUser = userMap.get(expense.getCreatedBy());
-        if (createdByUser != null) {
+        if (createdByUser != null && !Objects.equals(expense.getCreatedBy(), expense.getPaidBy())) {
             builder.createdBy(ExpenseResponse.CreatedByInfo.builder()
                     .id(createdByUser.getId())
                     .name(createdByUser.getName())
@@ -203,13 +228,16 @@ public class ExpenseService {
         List<ExpenseResponse.ParticipantInfo> participantInfos = expense.getParticipants().stream()
                 .map(participantId -> {
                     User user = userMap.get(participantId);
+                    if (user == null) {
+                        return null;
+                    }
                     return ExpenseResponse.ParticipantInfo.builder()
                             .id(user.getId())
                             .name(user.getName())
-                            .email(user.getEmail())
                             .avatar(user.getPicture())
                             .build();
                 })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         builder.participants(participantInfos);
 
@@ -237,5 +265,77 @@ public class ExpenseService {
         }
 
         return builder.build();
+    }
+
+    private RecentExpenseResponse convertToRecentResponse(Expense expense, String currentUserId) {
+        Map<String, User> userMap = new HashMap<>();
+        userRepository.findAllById(expense.getParticipants()).forEach(user -> userMap.put(user.getId(), user));
+
+        List<RecentExpenseResponse.ParticipantSummary> participants = expense.getParticipants().stream()
+                .map(userMap::get)
+                .filter(Objects::nonNull)
+                .map(user -> RecentExpenseResponse.ParticipantSummary.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .avatar(user.getPicture())
+                        .build())
+                .collect(Collectors.toList());
+
+        return RecentExpenseResponse.builder()
+                .id(expense.getId())
+                .title(expense.getTitle())
+                .participants(participants)
+                .time(expense.getExpenseDateTime())
+                .pendingAmount(calculatePendingAmount(expense, currentUserId).toPlainString())
+                .currency(expense.getCurrency())
+                .build();
+    }
+
+    private BigDecimal calculatePendingAmount(Expense expense, String currentUserId) {
+        if (expense.getManualSplits() == null || expense.getParticipantSettlement() == null) {
+            return BigDecimal.ZERO;
+        }
+
+        Map<String, Boolean> settlementMap = expense.getParticipantSettlement().stream()
+                .collect(Collectors.toMap(
+                        Expense.ParticipantSettlement::getUserId,
+                        Expense.ParticipantSettlement::isSettled,
+                        (first, second) -> first
+                ));
+
+        return expense.getManualSplits().stream()
+                .filter(split -> !Boolean.TRUE.equals(settlementMap.get(split.getUserId())))
+                .filter(split -> Objects.equals(expense.getPaidBy(), currentUserId)
+                        ? !Objects.equals(split.getUserId(), currentUserId)
+                        : Objects.equals(split.getUserId(), currentUserId))
+                .map(split -> split.getAmount().bigDecimalValue())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private ZoneId resolveZoneId(String timezone) {
+        if (timezone == null || timezone.isBlank()) {
+            return ZoneId.of("UTC");
+        }
+        try {
+            return ZoneId.of(timezone);
+        } catch (DateTimeException ex) {
+            throw new IllegalArgumentException("Please provide a valid timezone.");
+        }
+    }
+
+    private LocalDate parseExpenseDate(String expenseDate) {
+        try {
+            return LocalDate.parse(expenseDate);
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Please provide a valid expense date.");
+        }
+    }
+
+    private LocalTime parseExpenseTime(String expenseTime) {
+        try {
+            return LocalTime.parse(expenseTime);
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Please provide a valid expense time.");
+        }
     }
 }

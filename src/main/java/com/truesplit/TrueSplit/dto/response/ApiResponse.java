@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +20,7 @@ public class ApiResponse<T> {
         ApiResponse<T> response = new ApiResponse<>();
         response.setSuccess(true);
         response.setData(data);
-        response.setMetadata(new Metadata(LocalDateTime.now(), "v1"));
+        response.setMetadata(new Metadata(Instant.now(), "v1"));
         return response;
     }
 
@@ -28,7 +28,7 @@ public class ApiResponse<T> {
         ApiResponse<T> response = new ApiResponse<>();
         response.setSuccess(false);
         response.setError(new ErrorDetails(code, message));
-        response.setMetadata(new Metadata(LocalDateTime.now(), "v1"));
+        response.setMetadata(new Metadata(Instant.now(), "v1"));
         return response;
     }
 
@@ -44,7 +44,7 @@ public class ApiResponse<T> {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Metadata {
-        private LocalDateTime timestamp;
+        private Instant timestamp;
         private String apiVersion;
     }
 }

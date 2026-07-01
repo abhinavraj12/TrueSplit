@@ -42,6 +42,7 @@ public class SecurityConfig {
         );
 
         http
+                .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
@@ -55,19 +56,18 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/login/**",
                                 "/error**",
-                                "/api/me",
-                                "/api/v1/expenses/**"// needed for authGuard
+                                "/api/me"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuth2LoginSuccessHandler)
                 )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((req, res, exx) ->
-                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED)
-                        )
-                )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, exx) -> {
+                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    res.setContentType("application/json");
+                    res.getWriter().write("{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Please sign in to continue.\"}}");
+                }))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
