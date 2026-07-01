@@ -15,7 +15,7 @@ import {
   getYearRange,
   isSameDay,
   isDateDisabled as isDateDisabledUtil,
-} from '@/shared/utils/date-utils';
+} from '@/shared/lib/utils/date-utils';
 import styles from './DatePicker.module.css';
 
 export type HighlightStatus = 'success' | 'warning' | 'danger' | 'pending' | 'info';

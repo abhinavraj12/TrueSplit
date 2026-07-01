@@ -6,7 +6,7 @@ import { Typography } from '@/shared/_components/atoms/Typography';
 import { Button } from '@/shared/_components/atoms/Button';
 import { Icon } from '@/shared/_components/atoms/Icon';
 import { DatePickerCalendar, HighlightedDate } from './DatePickerCalendar';
-import { formatDate, isSameDay } from '@/shared/utils/date-utils';
+import { formatDate, isSameDay } from '@/shared/lib/utils/date-utils';
 import styles from './DatePicker.module.css';
 
 export type DatePickerSize = 'sm' | 'md' | 'lg';
