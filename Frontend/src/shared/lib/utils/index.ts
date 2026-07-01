@@ -20,3 +20,6 @@ export * from './validation-utils';
 
 // browser utilities
 export * from './browser-utils';
+
+// Route utilities
+export * from './route-utils';

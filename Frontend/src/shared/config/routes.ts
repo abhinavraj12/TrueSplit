@@ -28,7 +28,7 @@ export const ROUTES = {
   MAINTENANCE: '/maintenance',
   UNAVAILABLE: '/unavailable',
 
-  // Future authenticated routes (placeholders – will be used later)
+  // Future authenticated routes (placeholders)
   DASHBOARD: '/dashboard',
   GROUPS: '/groups',
   EXPENSES: '/expenses',
@@ -67,3 +67,35 @@ export const ROUTE_GROUPS = {
   /** Legal / policy pages (often in footer) */
   LEGAL: [ROUTES.PRIVACY, ROUTES.TERMS, ROUTES.COOKIES] as const,
 } as const;
+
+// Export auth routes separately for middleware and utilities
+export const AUTH_ROUTES = ROUTE_GROUPS.AUTH;
+
+/**
+ * Public route patterns for route protection and middleware.
+ * Includes exact matches and wildcards (`*`) for nested paths.
+ * This is the single source of truth for identifying public pages.
+ */
+export const PUBLIC_ROUTE_PATTERNS = [
+  // Exact matches
+  ROUTES.HOME,
+  ROUTES.FEATURES,
+  ROUTES.PRICING,
+  ROUTES.ABOUT,
+  ROUTES.CONTACT,
+  ROUTES.BLOG,                 // blog listing page
+  ROUTES.CAREERS,
+  ROUTES.HOW_IT_WORKS,
+  ROUTES.FAQ,
+  ROUTES.SUPPORT,
+  ROUTES.PRIVACY,
+  ROUTES.TERMS,
+  ROUTES.COOKIES,
+  ROUTES.LOGIN,
+  ROUTES.MAINTENANCE,
+  ROUTES.UNAVAILABLE,
+
+  // Wildcard patterns (prefix matches)
+  `${ROUTES.BLOG}/*`,          // all blog posts (e.g., /blog/my-post)
+  `${ROUTES.SUPPORT}/*`,       // support articles
+] as const;

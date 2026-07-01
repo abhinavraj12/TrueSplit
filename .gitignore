@@ -39,3 +39,4 @@ application-local.yml
 application-prod.yml
 
 /ignore
+/logs
