@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { commissioner, outfit, plusJakartaSans } from './fonts';
-import './globals.css';
+import '../shared/styles/globals.css';
 import { RootLayoutClient } from '@/providers';
 
 export const metadata: Metadata = {
