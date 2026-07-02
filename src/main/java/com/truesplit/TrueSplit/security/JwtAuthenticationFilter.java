@@ -48,12 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Clear security context
                 SecurityContextHolder.clearContext();
 
-                // HARD FAIL — user is no longer authenticated
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User deleted");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Please sign in again.\"}}");
                 return;
             }
 
-            // User exists → authenticate normally
             var userDetails = userDetailsService.loadUserByUsername(username);
 
             UsernamePasswordAuthenticationToken authentication =

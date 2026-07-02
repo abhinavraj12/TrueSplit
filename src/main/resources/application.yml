@@ -32,13 +32,14 @@ spring:
 
 server:
   port: 8080
+
 jwt:
   secret: ${JWT_SECRET}
-  expiration-ms: 86400000 # 1 day
+  expiration-ms: 86400000
+  refresh-expiration-ms: 2592000000
+
 otp:
-  validity-seconds: 100   # OTP expiry time in seconds (60 second)
+  validity-seconds: 100
 
 frontend:
-  redirect-home: http://localhost:5000
-
-
+  redirect-home: ${FRONTEND_REDIRECT_HOME:http://localhost:4000}

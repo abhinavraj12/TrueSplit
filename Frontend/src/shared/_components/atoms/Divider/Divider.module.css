@@ -1,0 +1,124 @@
+/* Divider.module.css */
+
+/* ============================================================
+   Divider Container
+   ============================================================ */
+
+.dividerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+}
+
+/* ============================================================
+   Horizontal Divider
+   ============================================================ */
+
+.horizontal {
+  flex-direction: row;
+}
+
+.horizontal .line {
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  flex: 1;
+}
+
+/* ============================================================
+   Vertical Divider
+   ============================================================ */
+
+.vertical {
+  flex-direction: column;
+  width: auto;
+  height: 100%;
+  display: inline-flex;
+}
+
+.vertical .line {
+  border: none;
+  border-left: 1px solid var(--color-divider);
+  flex: 1;
+  min-height: 20px;
+}
+
+.vertical.variant-inset .line {
+  border-left: 1px solid var(--color-divider);
+}
+
+/* ============================================================
+   Variants
+   ============================================================ */
+
+/* Full width (default) */
+.variant-full .line {
+  flex: 1;
+  width: 100%;
+}
+
+/* Inset (with margins) */
+.variant-inset {
+  padding: 0 var(--space-lg, 24px);
+}
+
+.variant-inset .line {
+  flex: 1;
+}
+
+/* Middle (with label) */
+.variant-middle {
+  gap: var(--space-md, 16px);
+}
+
+.variant-middle .line {
+  flex: 1;
+}
+
+.variant-middle .label {
+  flex-shrink: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  padding: 0 var(--space-sm, 12px);
+}
+
+/* Label position */
+.labelPositionLeft .label {
+  order: -1;
+}
+
+.labelPositionCenter .label {
+  order: 0;
+}
+
+.labelPositionRight .label {
+  order: 1;
+}
+
+/* ============================================================
+   Vertical specific: inset doesn't make much sense but keep it consistent
+   ============================================================ */
+
+.vertical.variant-inset {
+  padding: var(--space-lg, 24px) 0;
+}
+
+.vertical.variant-inset .line {
+  border-left: 1px solid var(--color-divider);
+}
+
+/* ============================================================
+   Thickness is handled via inline style, but we can add some base styles
+   ============================================================ */
+
+.line {
+  background-color: var(--color-divider);
+  /* border-width is set via inline style */
+}
+
+/* ============================================================
+   Dark Mode (handled by CSS variables)
+   ============================================================ */

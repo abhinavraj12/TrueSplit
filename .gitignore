@@ -37,3 +37,6 @@ build/
 .env
 application-local.yml
 application-prod.yml
+
+/ignore
+/logs

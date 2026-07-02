@@ -42,6 +42,7 @@ public class SecurityConfig {
         );
 
         http
+                .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
@@ -50,23 +51,27 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/auth/**",
-                                "/otp/**",
+                                // OAuth2 and OTP endpoints (public)
                                 "/oauth2/**",
                                 "/login/**",
+                                "/otp/**",
                                 "/error**",
-                                "/api/me"       // needed for authGuard
+                                
+                                // Standardised API v1 public endpoints
+                                "/api/v1/auth/**",      // Authentication endpoints
+                                "/api/v1/me",           // User profile (requires auth, but permit for health check)
+                                "/api/v1/health"        // Health check endpoint
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuth2LoginSuccessHandler)
                 )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((req, res, exx) ->
-                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED)
-                        )
-                )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, exx) -> {
+                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    res.setContentType("application/json");
+                    res.getWriter().write("{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Please sign in to continue.\"}}");
+                }))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

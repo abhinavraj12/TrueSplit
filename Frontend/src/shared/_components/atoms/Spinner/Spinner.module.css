@@ -1,0 +1,141 @@
+/* Spinner.module.css – modern SVG spinner with track and arc */
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.svg {
+  display: block;
+  animation: spinnerRotate var(--spinner-duration, 0.8s) linear infinite;
+  will-change: transform;
+}
+
+/* Track – subtle background ring */
+.track {
+  stroke: var(--color-spinner-track, rgba(128, 128, 128, 0.2));
+  transition: stroke var(--duration-fast) var(--easing-standard);
+}
+
+/* Arc – the moving part */
+.arc {
+  stroke: var(--color-spinner-arc, currentColor);
+  transition: stroke var(--duration-fast) var(--easing-standard);
+  transform-origin: center;
+  animation: spinnerDash var(--spinner-duration, 0.8s) ease-in-out infinite;
+}
+
+/* Animation for rotation */
+@keyframes spinnerRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation for dash offset to create a sweeping motion */
+@keyframes spinnerDash {
+  0% {
+    stroke-dashoffset: 85%;
+  }
+  50% {
+    stroke-dashoffset: 20%;
+    transform: rotate(180deg);
+  }
+  100% {
+    stroke-dashoffset: 85%;
+    transform: rotate(360deg);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .svg {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .arc {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ===== Sizes ===== */
+.size-xs .svg {
+  width: 16px;
+  height: 16px;
+}
+.size-sm .svg {
+  width: 20px;
+  height: 20px;
+}
+.size-md .svg {
+  width: 28px;
+  height: 28px;
+}
+.size-lg .svg {
+  width: 36px;
+  height: 36px;
+}
+.size-xl .svg {
+  width: 44px;
+  height: 44px;
+}
+
+/* ===== Colors – define both track and arc ===== */
+.color-default {
+  --color-spinner-track: rgba(128, 128, 128, 0.2);
+  --color-spinner-arc: var(--color-icon-default);
+}
+.color-primary {
+  --color-spinner-track: rgba(90, 117, 87, 0.2);
+  --color-spinner-arc: var(--color-btn-primary-bg);
+}
+.color-success {
+  --color-spinner-track: rgba(77, 107, 68, 0.2);
+  --color-spinner-arc: var(--color-success-text);
+}
+.color-warning {
+  --color-spinner-track: rgba(123, 74, 26, 0.2);
+  --color-spinner-arc: var(--color-warning-text);
+}
+.color-error {
+  --color-spinner-track: rgba(168, 106, 106, 0.2);
+  --color-spinner-arc: var(--color-error-text);
+}
+.color-info {
+  --color-spinner-track: rgba(74, 99, 70, 0.2);
+  --color-spinner-arc: var(--color-info-text);
+}
+.color-link {
+  --color-spinner-track: rgba(110, 139, 107, 0.2);
+  --color-spinner-arc: var(--color-text-link);
+}
+
+/* ===== Speeds ===== */
+.speed-slow {
+  --spinner-duration: 1.2s;
+}
+.speed-normal {
+  --spinner-duration: 0.8s;
+}
+.speed-fast {
+  --spinner-duration: 0.5s;
+}
+
+/* ===== Screen Reader Only ===== */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

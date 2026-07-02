@@ -1,5 +1,6 @@
 package com.truesplit.TrueSplit.service;
 
+import com.truesplit.TrueSplit.dto.response.AuthResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
 
+    @Value("${frontend.redirect-home}")
+    private String frontendRedirectHome;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -31,10 +35,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String picture = oauthUser.getAttribute("picture");
         String googleId = oauthUser.getAttribute("sub");
 
-        String jwt = authService.createOrGetUserFromOauth2(name, email,picture, googleId);
+        AuthResponse authResponse = authService.createOrGetUserFromOauth2(name, email, picture, googleId);
 
         // Store JWT in HttpOnly cookie
-        Cookie cookie = new Cookie("TS_AUTH", jwt);
+        Cookie cookie = new Cookie("TS_AUTH", authResponse.getAuthToken());
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // true in HTTPS (prod)
         cookie.setPath("/");
@@ -42,10 +46,18 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         response.addCookie(cookie);
 
-        //  CLEAR OAuth2 SESSION
+        Cookie refreshCookie = new Cookie("TS_REFRESH", authResponse.getRefreshToken());
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(false);
+        refreshCookie.setPath("/auth");
+        refreshCookie.setMaxAge(30 * 24 * 60 * 60);
+        response.addCookie(refreshCookie);
+
+        // Clear OAuth2 session
         request.getSession().invalidate();
 
-        // Redirect WITHOUT token
-        response.sendRedirect("http://localhost:5000/dashboard");
+        // Redirect to the frontend dashboard using the configured URL
+        String redirectUrl = frontendRedirectHome + "/dashboard";
+        response.sendRedirect(redirectUrl);
     }
 }

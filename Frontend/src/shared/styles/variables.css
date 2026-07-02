@@ -1,0 +1,198 @@
+/* Remove the Google Fonts @import - now handled by Next.js fonts */
+@import './themes/light.css';
+@import './themes/dark.css';
+
+:root {
+  --bp-sm: 768px;
+  --bp-md: 1024px;
+  --bp-lg: 1440px;
+
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-xxxl: 64px;
+
+  --gap-xs: 8px;
+  --gap-sm: 12px;
+  --gap-md: 16px;
+  --gap-lg: 24px;
+  --gap-xl: 32px;
+
+  --stack-xs: 8px;
+  --stack-sm: 12px;
+  --stack-md: 16px;
+  --stack-lg: 24px;
+  --stack-xl: 32px;
+  --stack-xxl: 48px;
+
+  --inset-sm: 12px;
+  --inset-md: 16px;
+  --inset-lg: 24px;
+  --inset-xl: 32px;
+
+  --section-spacing-sm: 24px;
+  --section-spacing-md: 32px;
+  --section-spacing-lg: 48px;
+  --section-spacing-xl: 64px;
+
+  --heading-margin-xs: 4px;
+  --heading-margin-sm: 8px;
+  --heading-margin-md: 12px;
+  --heading-margin-lg: 16px;
+  --heading-margin-xl: 24px;
+
+  --list-item-spacing-sm: 4px;
+  --list-item-spacing-md: 8px;
+  --list-item-spacing-lg: 12px;
+
+  --form-group-spacing-sm: 8px;
+  --form-group-spacing-md: 12px;
+  --form-group-spacing-lg: 16px;
+
+  --button-icon-gap: 6px;
+  --button-group-gap: 8px;
+
+  --card-header-spacing: 16px;
+  --card-footer-spacing: 16px;
+
+  --table-cell-padding-sm: 8px 12px;
+  --table-cell-padding-md: 12px 16px;
+  --table-cell-padding-lg: 16px 24px;
+
+  --tab-padding-sm: 6px 14px;
+  --tab-padding-md: 8px 20px;
+  --tab-padding-lg: 10px 28px;
+
+  --badge-padding-sm: 2px 10px;
+  --badge-padding-md: 4px 14px;
+  --badge-padding-lg: 6px 18px;
+
+  --tag-padding-sm: 2px 8px;
+  --tag-padding-md: 4px 12px;
+  --tag-padding-lg: 6px 16px;
+
+  --tooltip-padding: 6px 12px;
+  --toast-padding: 14px 20px;
+  --dropdown-item-padding: 8px 16px;
+  --modal-padding: 24px 28px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+
+  /* ===== Font Families ===== */
+  --font-family-base: var(--font-outfit), system-ui, -apple-system, sans-serif;
+  --font-family-heading: var(--font-commissioner), system-ui, -apple-system, sans-serif;
+  --font-family-ui: var(--font-plus-jakarta), system-ui, -apple-system, sans-serif;
+  --font-family-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* ===== Component-Specific Fonts ===== */
+  --font-typography: var(--font-outfit);
+  --font-button: var(--font-plus-jakarta);
+  --font-input: var(--font-outfit);
+  --font-textarea: var(--font-outfit);
+  --font-avatar: var(--font-plus-jakarta);
+  --font-badge: var(--font-plus-jakarta);
+  --font-checkbox: var(--font-outfit);
+  --font-switch: var(--font-outfit);
+  --font-radio: var(--font-outfit);
+  --font-skeleton: var(--font-outfit);
+  --font-spinner: var(--font-outfit);
+  --font-tooltip: var(--font-plus-jakarta);
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.75;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.02em;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+
+  --container-sm: 640px;
+  --container-content: 1200px;
+  --container-wide: 1440px;
+
+  --sidebar-width: 280px;
+  --sidebar-width-collapsed: 72px;
+
+  --header-height: 64px;
+  --mobile-header-height: 56px;
+  --topbar-height: 64px;
+
+  --page-padding-mobile: 16px;
+  --page-padding-tablet: 24px;
+  --page-padding-desktop: 32px;
+
+  --input-height-sm: 36px;
+  --input-height-md: 44px;
+  --input-height-lg: 52px;
+
+  --button-height-sm: 36px;
+  --button-height-md: 44px;
+  --button-height-lg: 52px;
+
+  --table-row-height: 48px;
+  --table-header-height: 52px;
+
+  --card-padding-sm: 12px;
+  --card-padding-md: 16px;
+  --card-padding-lg: 24px;
+
+  --avatar-xs: 24px;
+  --avatar-sm: 32px;
+  --avatar-md: 40px;
+  --avatar-lg: 48px;
+  --avatar-xl: 64px;
+
+  --icon-xs: 12px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 32px;
+
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-tooltip: 1060;
+  --z-index-toast: 1070;
+}

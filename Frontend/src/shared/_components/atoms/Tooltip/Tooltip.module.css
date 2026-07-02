@@ -1,0 +1,94 @@
+/* Tooltip.module.css */
+
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: var(--z-index-tooltip, 1060);
+  background-color: var(--color-tooltip-bg, #ffffff);
+  color: var(--color-tooltip-text, #2c241e);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  padding: var(--space-sm, 12px) var(--space-md, 16px);
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  max-width: 360px;
+  min-width: 150px;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: center;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: auto; /* allow hover on tooltip itself */
+}
+
+/* Visibility states */
+.tooltipVisible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tooltipHidden {
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+
+/* Arrow (pseudo) */
+.tooltip::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-tooltip-bg, #ffffff);
+  border: 1px solid var(--color-border);
+  transform: rotate(45deg);
+}
+
+.tooltip-top::after {
+  top: 100%;
+  left: 50%;
+  margin-left: -4px;
+  margin-top: -4px;
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+
+.tooltip-bottom::after {
+  bottom: 100%;
+  left: 50%;
+  margin-left: -4px;
+  margin-bottom: -4px;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+}
+
+.tooltip-left::after {
+  left: 100%;
+  top: 50%;
+  margin-left: -4px;
+  margin-top: -4px;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.tooltip-right::after {
+  right: 100%;
+  top: 50%;
+  margin-right: -4px;
+  margin-top: -4px;
+  border-right-color: transparent;
+  border-top-color: transparent;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition: none !important;
+    animation: none !important;
+  }
+}

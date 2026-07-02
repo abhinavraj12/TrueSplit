@@ -1,0 +1,247 @@
+/* AmountInput.module.css – fully updated for new features */
+
+/* ============================================================
+   Container
+   ============================================================ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+  width: 100%;
+  position: relative;
+}
+
+.container.fullWidth {
+  width: 100%;
+}
+
+.container.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Label
+   ============================================================ */
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--easing-standard);
+}
+
+.labelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.required {
+  color: var(--color-error-text);
+  font-weight: var(--font-weight-bold);
+  margin-left: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Input Wrapper
+   ============================================================ */
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================================
+   Input
+   ============================================================ */
+
+.input {
+  flex: 1;
+  padding-left: var(--space-xl, 32px) !important;
+  padding-right: var(--space-xl, 32px) !important;
+}
+
+.input.inputError {
+  border-color: var(--color-input-error-border);
+}
+
+.input.inputSuccess {
+  border-color: var(--color-input-success-border);
+}
+
+/* Size-specific padding */
+.size-sm .input {
+  padding-left: 28px !important;
+  padding-right: 28px !important;
+}
+
+.size-md .input {
+  padding-left: 36px !important;
+  padding-right: 36px !important;
+}
+
+.size-lg .input {
+  padding-left: 44px !important;
+  padding-right: 44px !important;
+}
+
+/* ============================================================
+   Currency Symbol
+   ============================================================ */
+
+.symbolWrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+  padding-left: var(--space-sm, 12px);
+  transition: color var(--duration-fast) var(--easing-standard);
+}
+
+.size-sm .symbolWrapper {
+  padding-left: var(--space-xs, 8px);
+}
+
+.size-lg .symbolWrapper {
+  padding-left: var(--space-md, 16px);
+}
+
+.symbolWrapper.symbolDisabled .currencySymbol {
+  color: var(--color-input-disabled-text) !important;
+}
+
+.currencySymbol {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  font-size: inherit;
+}
+
+/* ============================================================
+   Currency Code
+   ============================================================ */
+
+.codeWrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+  padding-right: var(--space-sm, 12px);
+}
+
+.currencyCode {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Clear Button
+   ============================================================ */
+
+.clearButton {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  color: var(--color-icon-muted);
+  padding: var(--space-xxs, 4px);
+  min-height: auto;
+  width: 28px;
+  height: 28px;
+  margin-right: var(--space-xxs, 4px);
+}
+
+.clearButton:hover {
+  color: var(--color-icon-hover);
+}
+
+.size-sm .clearButton {
+  width: 24px;
+  height: 24px;
+}
+
+.size-lg .clearButton {
+  width: 32px;
+  height: 32px;
+}
+
+.clearButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ============================================================
+   Error & Helper Text
+   ============================================================ */
+
+.errorText {
+  color: var(--color-error-text);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+}
+
+.helperText {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Responsive – prevent overlap on tiny screens
+   ============================================================ */
+
+@media (max-width: 360px) {
+  .input {
+    padding-left: 28px !important;
+    padding-right: 28px !important;
+    font-size: var(--font-size-sm) !important;
+  }
+  .size-sm .input {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  .size-md .input {
+    padding-left: 28px !important;
+    padding-right: 28px !important;
+  }
+  .size-lg .input {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+  .symbolWrapper {
+    padding-left: var(--space-xs, 6px);
+  }
+  .codeWrapper {
+    padding-right: var(--space-xs, 6px);
+  }
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

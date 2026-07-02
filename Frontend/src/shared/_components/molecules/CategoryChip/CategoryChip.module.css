@@ -1,0 +1,203 @@
+/* CategoryChip.module.css */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs, 8px);
+  padding: var(--space-xs, 8px) var(--space-sm, 12px);
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  transition: all var(--duration-fast) var(--easing-standard);
+  cursor: default;
+  user-select: none;
+  min-height: 32px;
+  min-width: 32px;
+  line-height: 1;
+  position: relative;
+}
+
+/* ===== Sizes ===== */
+.size-sm {
+  padding: var(--space-xxs, 4px) var(--space-xs, 8px);
+  gap: var(--space-xxs, 4px);
+  min-height: 26px;
+}
+
+.size-md {
+  padding: var(--space-xs, 8px) var(--space-sm, 12px);
+  gap: var(--space-xs, 8px);
+  min-height: 32px;
+}
+
+.size-lg {
+  padding: var(--space-sm, 12px) var(--space-lg, 24px);
+  gap: var(--space-sm, 12px);
+  min-height: 44px;
+}
+
+/* ===== Interactive ===== */
+.interactive {
+  cursor: pointer;
+}
+
+.interactive:hover:not(.disabled):not(.selected) {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-input-focus);
+}
+
+/* Selected hover state */
+.selected:hover:not(.disabled) {
+  background-color: var(--color-btn-primary-hover);
+  border-color: var(--color-btn-primary-hover);
+}
+
+.interactive:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.interactive:active:not(.disabled):not(.selected) {
+  background-color: var(--color-surface-active);
+  transform: scale(0.96);
+}
+
+/* ===== Selected ===== */
+.selected {
+  background-color: var(--color-btn-primary-bg);
+  border-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.selected .icon {
+  color: var(--color-btn-primary-text);
+}
+
+.selected .label {
+  color: var(--color-btn-primary-text);
+}
+
+/* ===== Disabled ===== */
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ===== Icon ===== */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* ===== Label ===== */
+.label {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+/* ===== Dismiss Button ===== */
+.dismissButton {
+  flex-shrink: 0;
+  margin: -4px -4px -4px 0;
+  color: var(--color-icon-muted);
+  padding: var(--space-xxs, 4px);
+  border-radius: var(--radius-full);
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+}
+
+.dismissButton:hover {
+  color: var(--color-icon-hover);
+  background-color: var(--color-surface-hover);
+}
+
+/* Size-specific dismiss button */
+.size-sm .dismissButton {
+  width: 16px;
+  height: 16px;
+  min-height: 16px;
+}
+
+.size-sm .dismissButton svg {
+  width: 10px;
+  height: 10px;
+}
+
+.size-lg .dismissButton {
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+}
+
+.size-lg .dismissButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== Selected + dismiss button ===== */
+.selected .dismissButton {
+  color: var(--color-btn-primary-text);
+}
+
+.selected .dismissButton:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .chip {
+    padding: var(--space-xxs, 4px) var(--space-xs, 8px);
+    min-height: 28px;
+  }
+  .size-sm {
+    min-height: 24px;
+  }
+  .size-md {
+    min-height: 28px;
+  }
+  .size-lg {
+    min-height: 34px;
+  }
+  .label {
+    max-width: 80px;
+  }
+}
+
+/* Touch-friendly: larger touch targets on mobile */
+@media (pointer: coarse) {
+  .chip.interactive {
+    min-height: 44px;
+    padding: var(--space-xs, 8px) var(--space-md, 16px);
+  }
+  .size-sm.interactive {
+    min-height: 36px;
+  }
+  .size-md.interactive {
+    min-height: 44px;
+  }
+  .size-lg.interactive {
+    min-height: 48px;
+  }
+  .dismissButton {
+    min-height: 32px;
+    min-width: 32px;
+    padding: var(--space-xs, 8px);
+  }
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

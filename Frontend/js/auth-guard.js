@@ -160,8 +160,7 @@ class AuthGuard {
                 method: 'POST',
                 credentials: 'include', // Important for sending cookies
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Accept': 'application/json'
                 }
             });
             
@@ -191,6 +190,9 @@ class AuthGuard {
             // Fallback: try to clear cookies client-side and redirect
             document.cookie = "TS_AUTH=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             document.cookie = "TS_AUTH=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost;";
+            document.cookie = "TS_REFRESH=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/auth;";
+            document.cookie = "TS_REFRESH=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/auth/refresh;";
+            document.cookie = "TS_REFRESH=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             
             // Show error message
             if (window.Dashboard && window.Dashboard.showToast) {
