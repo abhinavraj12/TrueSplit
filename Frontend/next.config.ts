@@ -64,14 +64,14 @@ const nextConfig: NextConfig = {
   },
 
   // Rewrites to proxy API requests to the backend (avoids CORS in development)
-  async rewrites() {
-    return [
-      {
-        source: '/api/v1/:path*',
-        destination: 'http://localhost:8080/api/v1/:path*',
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/v1/:path*',
+  //       destination: 'http://localhost:8080/api/v1/:path*',
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;
