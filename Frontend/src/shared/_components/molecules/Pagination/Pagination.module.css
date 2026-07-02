@@ -1,0 +1,273 @@
+/* Pagination.module.css */
+
+/* ============================================================
+   Container
+   ============================================================ */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-typography);
+  width: 100%;
+  overflow-x: auto;
+  padding: var(--space-xs, 8px) 0;
+}
+
+.pagination::-webkit-scrollbar {
+  height: 4px;
+}
+.pagination::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+/* ============================================================
+   List
+   ============================================================ */
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: max-content;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing-standard);
+  min-width: 36px;
+  height: 36px;
+  padding: 0 var(--space-xs, 8px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.button:hover:not(:disabled):not(.active) {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-input-border);
+}
+
+.button:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Active State
+   ============================================================ */
+
+.active {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border-color: var(--color-btn-primary-bg);
+  pointer-events: none;
+}
+
+.active:hover {
+  background-color: var(--color-btn-primary-hover);
+  border-color: var(--color-btn-primary-hover);
+}
+
+/* ============================================================
+   Sizes
+   ============================================================ */
+
+.sm {
+  min-width: 28px;
+  height: 28px;
+  font-size: var(--font-size-xs);
+  padding: 0 var(--space-xxs, 4px);
+}
+
+.md {
+  min-width: 36px;
+  height: 36px;
+  font-size: var(--font-size-sm);
+  padding: 0 var(--space-xs, 8px);
+}
+
+.lg {
+  min-width: 44px;
+  height: 44px;
+  font-size: var(--font-size-md);
+  padding: 0 var(--space-sm, 12px);
+}
+
+/* ============================================================
+   Ellipsis (non‑interactive)
+   ============================================================ */
+
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xl);
+  line-height: 1;
+  user-select: none;
+}
+
+.ellipsis.sm {
+  min-width: 28px;
+  height: 28px;
+  font-size: var(--font-size-lg);
+}
+
+.ellipsis.md {
+  min-width: 36px;
+  height: 36px;
+  font-size: var(--font-size-xl);
+}
+
+.ellipsis.lg {
+  min-width: 44px;
+  height: 44px;
+  font-size: var(--font-size-2xl);
+}
+
+/* ============================================================
+   Responsive Styles
+   ============================================================ */
+
+/* Tablets and smaller laptops */
+@media (max-width: 768px) {
+  .list {
+    gap: var(--space-xxs, 3px);
+  }
+
+  .button {
+    min-width: 32px;
+    height: 32px;
+    font-size: var(--font-size-xs);
+    padding: 0 var(--space-xxs, 4px);
+  }
+
+  .button.sm {
+    min-width: 26px;
+    height: 26px;
+  }
+
+  .button.md {
+    min-width: 32px;
+    height: 32px;
+  }
+
+  .button.lg {
+    min-width: 38px;
+    height: 38px;
+    font-size: var(--font-size-sm);
+  }
+
+  .ellipsis {
+    min-width: 32px;
+    height: 32px;
+    font-size: var(--font-size-lg);
+  }
+
+  .ellipsis.sm {
+    min-width: 26px;
+    height: 26px;
+    font-size: var(--font-size-md);
+  }
+
+  .ellipsis.md {
+    min-width: 32px;
+    height: 32px;
+    font-size: var(--font-size-lg);
+  }
+
+  .ellipsis.lg {
+    min-width: 38px;
+    height: 38px;
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  .list {
+    gap: var(--space-xxs, 2px);
+  }
+
+  .button {
+    min-width: 28px;
+    height: 28px;
+    font-size: var(--font-size-xs);
+    padding: 0 var(--space-xxs, 3px);
+  }
+
+  .button.sm {
+    min-width: 24px;
+    height: 24px;
+  }
+
+  .button.md {
+    min-width: 28px;
+    height: 28px;
+  }
+
+  .button.lg {
+    min-width: 34px;
+    height: 34px;
+    font-size: var(--font-size-xs);
+    padding: 0 var(--space-xxs, 4px);
+  }
+
+  .ellipsis {
+    min-width: 28px;
+    height: 28px;
+    font-size: var(--font-size-md);
+  }
+
+  .ellipsis.sm {
+    min-width: 24px;
+    height: 24px;
+    font-size: var(--font-size-sm);
+  }
+
+  .ellipsis.md {
+    min-width: 28px;
+    height: 28px;
+    font-size: var(--font-size-md);
+  }
+
+  .ellipsis.lg {
+    min-width: 34px;
+    height: 34px;
+    font-size: var(--font-size-lg);
+  }
+
+  /* Hide first/last buttons on very small screens? Optional, but we keep them. */
+  /* Or we could hide them with a prop, but we keep all. */
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

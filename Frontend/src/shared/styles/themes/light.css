@@ -1,0 +1,242 @@
+/* TrueSplit — Light Mode (Sage & Stone / Warm) */
+
+:root {
+  /* ---------- Backgrounds & Surfaces ---------- */
+  --color-bg-page: #FDF6EE;
+  --color-bg-surface: #FFFAF3;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-sidebar: #F8F1E8;
+  --color-bg-navbar: #FFFAF3;
+  --color-overlay: rgba(44, 36, 30, 0.35);
+
+  --color-surface-hover: #FCF7F0;
+  --color-surface-active: #F5EFE6;
+
+  /* ---------- Text ---------- */
+  --color-text-primary: #2C241E;
+  --color-text-secondary: #5A5046;
+  --color-text-muted: #6F6359;
+  --color-text-link: #6E8B6B;
+  --color-text-link-hover: #5C7A59;
+
+  /* ---------- Borders, Dividers & Inputs ---------- */
+  --color-border: #E6DDD4;
+  --color-divider: #E6DDD4;
+
+  --color-input-bg: #FFFFFF;
+  --color-input-border: #D5CBC0;
+  --color-input-focus: #6E8B6B;
+  --color-input-error-border: #A86A6A;
+  --color-input-success-border: #4D6B44;
+  --color-input-disabled-bg: #F0EBE4;
+  --color-input-disabled-text: #B5A99C;
+  --color-placeholder: #8A7D71;
+
+  /* ---------- Buttons ---------- */
+  --color-btn-primary-bg: #5A7557;
+  --color-btn-primary-text: #FFFFFF;
+  --color-btn-primary-hover: #4D654A;
+  --color-btn-primary-active: #40563E;
+
+  --color-btn-secondary-bg: #D3C9B4;
+  --color-btn-secondary-text: #2C241E;
+  --color-btn-secondary-hover: #C4BAA4;
+  --color-btn-secondary-active: #B5AB95;
+
+  --color-btn-outline-border: #D5CBC0;
+  --color-btn-outline-text: #5A5046;
+  --color-btn-outline-hover-bg: #F8F1E8;
+
+  --color-btn-danger-bg: #B85353;
+  --color-btn-danger-text: #FFFFFF;
+  --color-btn-danger-hover: #A34444;
+
+  --color-btn-success-bg: #4D6B44;
+  --color-btn-success-text: #FFFFFF;
+  --color-btn-success-hover: #3E5A36;
+
+  --color-btn-disabled-bg: #F0EBE4;
+  --color-btn-disabled-text: #B5A99C;
+  --color-btn-disabled-border: #E6DDD4;
+
+  /* ---------- Feedback States ---------- */
+  --color-success-bg: #F2F6ED;
+  --color-success-text: #4D6B44;
+  --color-success-border: #4D6B44;
+
+  --color-warning-bg: #F0E4CE;
+  --color-warning-text: #7B4A1A;
+  --color-warning-border: #7B4A1A;
+
+  --color-error-bg: #F9F0F0;
+  --color-error-text: #A86A6A;
+  --color-error-border: #A86A6A;
+
+  --color-info-bg: #F0F3EC;
+  --color-info-text: #4A6346;
+  --color-info-border: #4A6346;
+
+  /* ---------- Money & Balance ---------- */
+  --color-expense-paid: #5A7557;
+  --color-expense-owed: #A86A6A;
+  --color-expense-settled: #89A87D;
+  --color-expense-pending: #A67C3E;
+
+  --color-balance-positive: #5A7557;
+  --color-balance-negative: #A86A6A;
+  --color-balance-neutral: #8A7E72;
+
+  /* ---------- Status ---------- */
+  --color-status-active: #5A7557;
+  --color-status-pending: #A67C3E;
+  --color-status-inactive: #8A7E72;
+
+  /* ---------- Navigation ---------- */
+  --color-nav-item-hover: #F8F1E8;
+  --color-nav-item-active-bg: #6E8B6B;
+  --color-nav-item-active-text: #FFFFFF;
+  --color-nav-item-active-border: #5A7557;
+
+  /* ---------- Tabs ---------- */
+  --color-tab-active-bg: #6E8B6B;
+  --color-tab-active-text: #FFFFFF;
+  --color-tab-hover-bg: #F8F1E8;
+  --color-tab-text: #5A5046;
+
+  /* ---------- Cards ---------- */
+  --color-card-border: #E6DDD4;
+  --color-card-hover: #F8F1E8;
+  --color-card-active: #E6DDD4;
+
+  /* ---------- Accordion ---------- */
+  --color-accordion-hover: #F8F1E8;
+  --color-accordion-active: #F5EFE6;
+
+  /* ---------- Checkbox & Radio ---------- */
+  --color-checkbox-bg: #FFFFFF;
+  --color-checkbox-border: #D5CBC0;
+  --color-checkbox-checked: #6E8B6B;
+
+  --color-radio-bg: #FFFFFF;
+  --color-radio-border: #D5CBC0;
+  --color-radio-checked: #6E8B6B;
+
+  /* ---------- Dropzone ---------- */
+  --color-dropzone-bg: #F8F1E8;
+  --color-dropzone-border: #6E8B6B;
+
+  /* ---------- Search Highlight ---------- */
+  --color-search-highlight: #F4E8C8;
+
+  /* ---------- Dropdowns, Modals, Tooltips ---------- */
+  --color-dropdown-bg: #FFFFFF;
+  --color-dropdown-hover: #F8F1E8;
+  --color-modal-bg: #FFFFFF;
+  --color-tooltip-bg: #2C241E;
+  --color-tooltip-text: #FFFAF3;
+  --color-toast-bg: #FFFFFF;
+  --color-toast-border: #E6DDD4;
+
+  --color-toast-success-bg: #F2F6ED;
+  --color-toast-success-border: #4D6B44;
+  --color-toast-warning-bg: #F0E4CE;
+  --color-toast-warning-border: #7B4A1A;
+  --color-toast-error-bg: #F9F0F0;
+  --color-toast-error-border: #A86A6A;
+  --color-toast-info-bg: #F0F3EC;
+  --color-toast-info-border: #4A6346;
+
+  /* ---------- Notifications ---------- */
+  --color-notification-unread-bg: #F8F1E8;
+  --color-notification-read-bg: #FFFAF3;
+  --color-notification-dot: #6E8B6B;
+
+  /* ---------- Tables ---------- */
+  --color-table-header-bg: #F8F1E8;
+  --color-table-header-text: #2C241E;
+  --color-table-row-hover: #F5EFE6;
+  --color-table-border: #E6DDD4;
+
+  /* ---------- Badges & Tags ---------- */
+  --color-badge-default-bg: #E6DDD4;
+  --color-badge-default-text: #5A5046;
+
+  --color-badge-primary-bg: #6E8B6B;
+  --color-badge-primary-text: #FFFFFF;
+
+  --color-badge-success-bg: #5A7557;
+  --color-badge-success-text: #FFFFFF;
+
+  --color-badge-warning-bg: #DBBE8E;
+  --color-badge-warning-text: #2C241E;
+
+  --color-badge-error-bg: #A66060;
+  --color-badge-error-text: #FFFFFF;
+
+  --color-badge-info-bg: #4A6346;
+  --color-badge-info-text: #FFFFFF;
+
+  /* ---------- Interactive ---------- */
+  --color-focus-ring: #6E8B6B;
+  --color-selection-highlight: #DDE6D9;
+  --color-disabled-bg: #F0EBE4;
+  --color-disabled-text: #B5A99C;
+  --color-disabled-border: #E6DDD4;
+
+  /* ---------- Icons ---------- */
+  --color-icon-default: #5A5046;
+  --color-icon-hover: #2C241E;
+  --color-icon-interactive: #6E8B6B;
+  --color-icon-muted: #A5988A;
+
+  /* ---------- Charts ---------- */
+  --color-chart-1: #6E8B6B;
+  --color-chart-2: #B3A48A;
+  --color-chart-3: #89A87D;
+  --color-chart-4: #DBBE8E;
+  --color-chart-5: #CD9E9E;
+  --color-chart-6: #7A8E76;
+  --color-chart-grid: #E6DDD4;
+  --color-chart-axis: #5A5046;
+
+  /* ---------- Progress & Skeleton ---------- */
+  --color-progress-bg: #E6DDD4;
+  --color-progress-fill: #6E8B6B;
+  --color-skeleton-base: #C4BAA4;
+  --color-skeleton-highlight: #F0EBE4;
+
+  /* ---------- Scrollbar ---------- */
+  --color-scrollbar-track: #F0EBE4;
+  --color-scrollbar-thumb: #C4BAA4;
+  --color-scrollbar-thumb-hover: #B3A894;
+
+  /* ---------- UI Controls ---------- */
+  --color-rating-active: #DBBE8E;
+  --color-rating-inactive: #E6DDD4;
+  --color-switch-off: #D5CBC0;
+  --color-switch-on: #6E8B6B;
+  --color-switch-handle: #FFFFFF;
+
+  /* ---------- Avatar ---------- */
+  --color-avatar-bg: #D3C9B4;
+  --color-avatar-text: #2C241E;
+
+  /* ---------- Empty State ---------- */
+  --color-empty-tint: rgba(230, 221, 212, 0.4);
+
+  /* ---------- Shadows ---------- */
+  --shadow-sm: 0 2px 4px rgba(44, 36, 30, 0.06);
+  --shadow-md: 0 4px 12px rgba(44, 36, 30, 0.08);
+  --shadow-lg: 0 8px 24px rgba(44, 36, 30, 0.12);
+
+  --color-highlight-success-bg: rgba(77, 107, 68, 0.15);
+  --color-highlight-success-text: var(--color-success-text);
+  --color-highlight-warning-bg: rgba(123, 74, 26, 0.15);
+  --color-highlight-warning-text: var(--color-warning-text);
+  --color-highlight-danger-bg: rgba(168, 106, 106, 0.15);
+  --color-highlight-danger-text: var(--color-error-text);
+  --color-highlight-pending-bg: rgba(74, 99, 70, 0.10);
+  --color-highlight-pending-text: var(--color-info-text);
+  --color-highlight-info-bg: rgba(74, 99, 70, 0.12);
+  --color-highlight-info-text: var(--color-info-text);
+}

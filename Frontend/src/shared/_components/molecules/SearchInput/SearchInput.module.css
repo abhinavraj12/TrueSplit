@@ -1,0 +1,207 @@
+/* SearchInput.module.css – fully updated */
+
+.wrapperContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs, 4px);
+  width: 100%;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 12px);
+  background-color: var(--color-input-bg);
+  border: 2px solid var(--color-input-border);
+  border-radius: var(--radius-md, 10px);
+  transition: all var(--duration-fast) var(--easing-standard);
+  position: relative;
+  padding: 0 var(--space-sm, 12px);
+}
+
+/* Focus state using :focus-within */
+.wrapper:focus-within {
+  border-color: var(--color-input-focus);
+  box-shadow: 0 0 0 2px rgba(var(--color-input-focus-rgb, 110, 139, 107), 0.15);
+}
+
+.wrapper.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--color-input-disabled-bg);
+}
+
+.wrapper.disabled .input {
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.size-sm {
+  height: var(--input-height-sm, 36px);
+}
+
+.size-md {
+  height: var(--input-height-md, 44px);
+}
+
+.size-lg {
+  height: var(--input-height-lg, 52px);
+}
+
+/* Input */
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  padding: 0 !important;
+  height: 100%;
+  background: transparent;
+  box-shadow: none !important;
+}
+
+.input:focus {
+  box-shadow: none !important;
+}
+
+/* Icons */
+.iconLeft,
+.iconRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-icon-muted);
+}
+
+/* Right actions (spinner + clear) */
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  flex-shrink: 0;
+}
+
+/* Clear button */
+.clearButton {
+  color: var(--color-icon-muted);
+  min-height: auto;
+  padding: var(--space-xxs, 4px);
+}
+
+.clearButton:hover:not(:disabled) {
+  color: var(--color-icon-hover);
+}
+
+.clearButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading spinner – bouncing dots */
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: var(--space-xxs, 2px);
+}
+
+.spinnerDot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-input-focus);
+  animation: spinnerBounce 1.4s infinite ease-in-out both;
+}
+
+.spinnerDot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.spinnerDot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+.spinnerDot:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes spinnerBounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Helper text */
+.helperText {
+  padding: 0 var(--space-xs, 4px);
+}
+
+/* ============================================================
+   Responsive adjustments for very narrow screens
+   ============================================================ */
+
+@media (max-width: 400px) {
+  .wrapper {
+    padding: 0 var(--space-xs, 8px);
+    gap: var(--space-xs, 8px);
+  }
+
+  .size-sm {
+    height: 32px;
+  }
+  .size-md {
+    height: 38px;
+  }
+  .size-lg {
+    height: 44px;
+  }
+
+  .clearButton {
+    width: 28px;
+    height: 28px;
+    min-height: 28px;
+  }
+
+  .clearButton svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .spinnerDot {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+/* Touch‑friendly sizes */
+@media (pointer: coarse) {
+  .wrapper {
+    min-height: 44px;
+  }
+
+  .size-sm {
+    min-height: 38px;
+  }
+  .size-md {
+    min-height: 44px;
+  }
+  .size-lg {
+    min-height: 48px;
+  }
+
+  .clearButton {
+    min-height: 32px;
+    min-width: 32px;
+  }
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

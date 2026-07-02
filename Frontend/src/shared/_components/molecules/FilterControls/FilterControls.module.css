@@ -1,0 +1,237 @@
+/* FilterControls.module.css – Option B Horizontal Layout */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 6px);
+  width: 100%;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 10px);
+  padding: var(--space-xs, 8px) var(--space-sm, 12px);
+}
+
+.topRow {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-sm, 10px);
+  width: 100%;
+}
+
+.searchWrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.controlsRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  flex-shrink: 0;
+}
+
+.toggleButton {
+  font-size: var(--font-size-sm);
+  padding: 0 var(--space-sm, 10px);
+  height: 34px;
+}
+
+.clearButton {
+  font-size: var(--font-size-sm);
+  padding: 0 var(--space-sm, 10px);
+  height: 34px;
+  color: var(--color-text-muted);
+}
+.clearButton:hover {
+  color: var(--color-error-text);
+}
+
+.filtersRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs, 6px) var(--space-sm, 12px);
+  padding-top: var(--space-xs, 6px);
+  border-top: 1px solid var(--color-divider);
+  min-height: 44px;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  flex-shrink: 0;
+  height: 32px;
+}
+
+.filterGroupContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--color-divider);
+  flex-shrink: 0;
+  margin: 0 var(--space-xxs, 2px);
+}
+
+.filterLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.filterInput,
+.filterSelect,
+.filterDate {
+  height: 32px !important;
+  min-height: 32px !important;
+}
+
+.filterSelect :global(.trigger),
+.filterDate :global(.trigger) {
+  height: 32px !important;
+  min-height: 32px !important;
+  font-size: var(--font-size-xs) !important;
+  padding: 0 var(--space-sm, 10px) !important;
+}
+
+.filterSelect {
+  min-width: 120px;
+  width: auto;
+}
+.filterSelect :global(.trigger) {
+  min-width: 120px;
+}
+
+.filterDate {
+  min-width: 130px;
+  width: auto;
+}
+.filterDate :global(.trigger) {
+  min-width: 130px;
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 6px);
+  flex-wrap: nowrap;
+}
+.checkboxGroup :global(.checkboxLabel) {
+  font-size: var(--font-size-xs);
+}
+
+.filterGroup :global(.switchLabel) {
+  font-size: var(--font-size-xs);
+}
+
+.liveRegion {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (max-width: 1024px) {
+  .filtersRow {
+    gap: var(--space-xs, 6px) var(--space-sm, 10px);
+  }
+  .filterGroup {
+    flex-shrink: 1;
+  }
+  .divider {
+    margin: 0 var(--space-xxs, 2px);
+  }
+}
+
+@media (max-width: 768px) {
+  .topRow {
+    flex-wrap: wrap;
+  }
+  .searchWrapper {
+    flex: 1 1 100%;
+  }
+  .controlsRight {
+    flex: 0 1 auto;
+  }
+
+  .filtersRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xs, 6px);
+    border-top: none;
+    padding-top: var(--space-xs);
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .filterGroup {
+    height: auto;
+    flex-wrap: wrap;
+    gap: var(--space-xxs, 4px);
+    width: 100%;
+  }
+
+  .filterGroupContent {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filterInput,
+  .filterSelect,
+  .filterDate {
+    min-width: 100%;
+    width: 100%;
+  }
+  .filterSelect :global(.trigger),
+  .filterDate :global(.trigger) {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  .checkboxGroup {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: var(--space-xs, 6px);
+  }
+  .controlsRight {
+    flex-wrap: wrap;
+    gap: var(--space-xxs, 2px);
+  }
+  .toggleButton span,
+  .clearButton span {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (pointer: coarse) {
+  .toggleButton,
+  .clearButton {
+    min-height: 44px;
+  }
+  .filterInput,
+  .filterSelect :global(.trigger),
+  .filterDate :global(.trigger) {
+    min-height: 36px !important;
+    height: 36px !important;
+  }
+}

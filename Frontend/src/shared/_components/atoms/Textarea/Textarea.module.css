@@ -1,0 +1,128 @@
+/* ============================================================
+   Wrapper – for character count and messages
+   ============================================================ */
+.textareaWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-xxs, 4px);
+}
+
+/* ============================================================
+   Base Textarea
+   ============================================================ */
+.textarea {
+  font-family: var(--font-textarea);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-input-bg);
+  border: 2px solid var(--color-input-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: all var(--duration-fast) var(--easing-standard), height 0.15s ease;
+  width: 100%;
+  min-height: 60px;
+  resize: vertical;
+  padding: var(--space-md);
+}
+
+.textarea::placeholder {
+  color: var(--color-placeholder);
+}
+
+.textarea:focus {
+  border-color: var(--color-input-focus);
+  box-shadow: 0 0 0 2px rgba(var(--color-input-focus-rgb, 110, 139, 107), 0.15);
+}
+
+.textarea:disabled {
+  background-color: var(--color-input-disabled-bg);
+  color: var(--color-input-disabled-text);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================================
+   Size Variants
+   ============================================================ */
+.size-sm {
+  font-size: var(--font-size-sm);
+  padding: var(--space-sm);
+  min-height: 48px;
+}
+
+.size-md {
+  font-size: var(--font-size-md);
+  padding: var(--space-md);
+  min-height: 60px;
+}
+
+.size-lg {
+  font-size: var(--font-size-lg);
+  padding: var(--space-lg);
+  min-height: 72px;
+}
+
+/* ============================================================
+   Full Width
+   ============================================================ */
+.fullWidth {
+  width: 100%;
+}
+
+/* ============================================================
+   Error State
+   ============================================================ */
+.error {
+  border-color: var(--color-input-error-border, #a86a6a);
+}
+
+.error:focus {
+  border-color: var(--color-input-error-border, #a86a6a);
+  box-shadow: 0 0 0 2px rgba(168, 106, 106, 0.15);
+}
+
+/* ============================================================
+   Success State
+   ============================================================ */
+.success {
+  border-color: var(--color-input-success-border, #4d6b44);
+}
+
+.success:focus {
+  border-color: var(--color-input-success-border, #4d6b44);
+  box-shadow: 0 0 0 2px rgba(77, 107, 68, 0.15);
+}
+
+/* ============================================================
+   Character Count
+   ============================================================ */
+.charCount {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: right;
+  padding: 0 var(--space-xs, 4px);
+}
+
+/* ============================================================
+   Error & Helper Text (displayed below)
+   ============================================================ */
+.errorText {
+  color: var(--color-error-text);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+}
+
+.helperText {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Dark Mode Adjustments (CSS variables handle it automatically)
+   ============================================================ */

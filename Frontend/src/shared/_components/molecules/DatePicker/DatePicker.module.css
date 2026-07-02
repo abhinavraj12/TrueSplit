@@ -1,0 +1,617 @@
+/* ============================================================
+   Container
+   ============================================================ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 8px);
+  width: 100%;
+  position: relative;
+}
+
+.container.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Label
+   ============================================================ */
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.labelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.required {
+  color: var(--color-error-text);
+  font-weight: var(--font-weight-bold);
+  margin-left: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Input Wrapper
+   ============================================================ */
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  cursor: pointer;
+  padding-right: var(--space-xxl, 48px) !important;
+}
+
+.input.inputError {
+  border-color: var(--color-input-error-border);
+}
+
+/* Size-specific input padding — increased for icons */
+.size-sm .input {
+  padding-right: 72px !important;
+}
+
+.size-md .input {
+  padding-right: 80px !important;
+}
+
+.size-lg .input {
+  padding-right: 88px !important;
+}
+
+/* ============================================================
+   Icons (calendar & clear)
+   ============================================================ */
+
+.icons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 2px);
+  padding-right: var(--space-xs, 8px);
+  pointer-events: none;
+}
+
+.icons .clearButton,
+.icons .calendarIcon {
+  pointer-events: auto;
+}
+
+/* Calendar icon */
+.calendarIcon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm, 6px);
+  transition: all var(--duration-fast) var(--easing-standard);
+  color: var(--color-icon-muted);
+}
+
+.calendarIcon:hover {
+  color: var(--color-icon-hover);
+  background-color: var(--color-surface-hover);
+}
+
+/* Clear button — consistent with calendar icon */
+.clearButton {
+  min-width: 32px !important;
+  min-height: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: var(--radius-sm, 6px);
+  color: var(--color-icon-muted);
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+.clearButton:hover {
+  color: var(--color-icon-hover);
+  background-color: var(--color-surface-hover);
+}
+
+.clearButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Size-specific adjustments */
+.size-sm .clearButton {
+  min-width: 28px !important;
+  min-height: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.size-sm .clearButton svg {
+  width: 12px;
+  height: 12px;
+}
+
+.size-sm .calendarIcon {
+  width: 28px;
+  height: 28px;
+}
+
+.size-sm .calendarIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.size-lg .clearButton {
+  min-width: 38px !important;
+  min-height: 38px !important;
+  width: 38px !important;
+  height: 38px !important;
+}
+
+.size-lg .clearButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.size-lg .calendarIcon {
+  width: 38px;
+  height: 38px;
+}
+
+.size-lg .calendarIcon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ============================================================
+   Popover
+   ============================================================ */
+
+.popover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: var(--color-dropdown-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-dropdown, 1000);
+  padding: var(--space-sm, 12px);
+  min-width: 280px;
+  max-width: 100%;
+}
+
+.popover-bottom {
+  top: calc(100% + var(--space-xs, 8px));
+}
+
+.popover-top {
+  bottom: calc(100% + var(--space-xs, 8px));
+}
+
+/* ============================================================
+   Calendar
+   ============================================================ */
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 12px);
+  width: 100%;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs, 8px);
+  padding: 0 var(--space-xxs, 4px);
+}
+
+.monthYear {
+  flex: 1;
+  text-align: center;
+  font-weight: var(--font-weight-semibold);
+}
+
+.navGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 2px);
+}
+
+.navButton {
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-icon-muted);
+}
+
+.navButton:hover {
+  color: var(--color-icon-hover);
+  background-color: var(--color-surface-hover);
+}
+
+.monthYearWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 8px);
+  flex: 1;
+  justify-content: center;
+}
+
+/* ============================================================
+   Year Dropdown
+   ============================================================ */
+
+.yearSelectorWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.yearSelectorButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  padding: var(--space-xxs, 4px) var(--space-xs, 6px);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing-standard);
+  color: var(--color-text-primary);
+}
+
+.yearSelectorButton:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.yearSelectorButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.yearText {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.yearChevron {
+  transition: transform var(--duration-fast) var(--easing-standard);
+}
+
+.yearChevronOpen {
+  transform: rotate(180deg);
+}
+
+.yearDropdown {
+  position: absolute;
+  top: calc(100% + var(--space-xxs, 4px));
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 80px;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--color-dropdown-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-dropdown, 1000);
+  padding: var(--space-xxs, 4px);
+}
+
+.yearDropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.yearDropdown::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+.yearDropdownList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs, 2px);
+}
+
+.yearOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs, 6px) var(--space-sm, 12px);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  transition: all var(--duration-fast) var(--easing-standard);
+  width: 100%;
+  min-height: 32px;
+}
+
+.yearOption:hover {
+  background-color: var(--color-dropdown-hover);
+}
+
+.yearOptionSelected {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.yearOptionSelected:hover {
+  background-color: var(--color-btn-primary-hover);
+}
+
+/* ============================================================
+   Weekday Headers
+   ============================================================ */
+
+.calendarWeekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-xxs, 2px);
+  margin-bottom: var(--space-xs, 4px);
+}
+
+.weekDay {
+  text-align: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  padding: var(--space-xxs, 4px) 0;
+}
+
+/* ============================================================
+   Day Grid
+   ============================================================ */
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-xxs, 2px);
+}
+
+.dayButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs, 6px) 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-full);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing-standard);
+  width: 100%;
+  min-height: 36px;
+  position: relative;
+}
+
+.dayButton:hover:not(.dayDisabled) {
+  background-color: var(--color-surface-hover);
+}
+
+.dayButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.daySelected {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+.daySelected:hover:not(.dayDisabled) {
+  background-color: var(--color-btn-primary-hover);
+}
+
+.dayToday {
+  border: 2px solid var(--color-btn-primary-bg);
+}
+
+.dayOtherMonth {
+  color: var(--color-text-muted);
+  opacity: 0.5;
+}
+
+.dayDisabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* ============================================================
+   Highlighted Dates
+   ============================================================ */
+
+.highlight-success {
+  background-color: var(--color-highlight-success-bg, rgba(77, 107, 68, 0.15));
+  color: var(--color-highlight-success-text, var(--color-success-text));
+  font-weight: var(--font-weight-medium);
+}
+
+.highlight-warning {
+  background-color: var(--color-highlight-warning-bg, rgba(123, 74, 26, 0.15));
+  color: var(--color-highlight-warning-text, var(--color-warning-text));
+  font-weight: var(--font-weight-medium);
+}
+
+.highlight-danger {
+  background-color: var(--color-highlight-danger-bg, rgba(168, 106, 106, 0.15));
+  color: var(--color-highlight-danger-text, var(--color-error-text));
+  font-weight: var(--font-weight-medium);
+}
+
+.highlight-pending {
+  background-color: var(--color-highlight-pending-bg, rgba(74, 99, 70, 0.10));
+  color: var(--color-highlight-pending-text, var(--color-info-text));
+  font-weight: var(--font-weight-medium);
+}
+
+.highlight-info {
+  background-color: var(--color-highlight-info-bg, rgba(74, 99, 70, 0.12));
+  color: var(--color-highlight-info-text, var(--color-info-text));
+  font-weight: var(--font-weight-medium);
+}
+
+/* ============================================================
+   Calendar Footer (Today + Clear)
+   ============================================================ */
+
+.calendarFooter {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm, 12px);
+  padding-top: var(--space-xs, 8px);
+  border-top: 1px solid var(--color-divider);
+}
+
+.todayButton {
+  color: var(--color-text-link);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  padding: var(--space-xxs, 4px) var(--space-sm, 12px);
+}
+
+.todayButton:hover {
+  color: var(--color-text-link-hover);
+  background-color: var(--color-surface-hover);
+}
+
+.clearButtonFooter {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  padding: var(--space-xxs, 4px) var(--space-sm, 12px);
+}
+
+.clearButtonFooter:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+/* ============================================================
+   Error & Helper Text
+   ============================================================ */
+
+.errorText {
+  color: var(--color-error-text);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+}
+
+.helperText {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Responsive & Touch Enhancements
+   ============================================================ */
+
+@media (max-width: 480px) {
+  .popover {
+    min-width: 100%;
+    left: 0;
+    right: 0;
+  }
+
+  .dayButton {
+    min-height: 32px;
+    font-size: var(--font-size-xs);
+    padding: var(--space-xxs, 4px) 0;
+  }
+
+  .calendar {
+    gap: var(--space-xs, 8px);
+  }
+
+  .navButton {
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .size-sm .input {
+    padding-right: 64px !important;
+  }
+
+  .size-md .input {
+    padding-right: 68px !important;
+  }
+
+  .size-lg .input {
+    padding-right: 76px !important;
+  }
+
+  .size-sm .clearButton {
+    min-width: 24px !important;
+    min-height: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .size-sm .clearButton svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .size-sm .calendarIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .size-sm .calendarIcon svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Touch‑friendly sizes on devices with coarse pointers (mobile) */
+@media (pointer: coarse) {
+  .dayButton {
+    min-height: 44px;
+    padding: var(--space-xs, 8px) 0;
+    font-size: var(--font-size-md);
+  }
+
+  .navButton {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */

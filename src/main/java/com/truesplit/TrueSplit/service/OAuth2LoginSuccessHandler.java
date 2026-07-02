@@ -22,6 +22,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
 
+    @Value("${frontend.redirect-home}")
+    private String frontendRedirectHome;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -32,7 +35,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String picture = oauthUser.getAttribute("picture");
         String googleId = oauthUser.getAttribute("sub");
 
-        AuthResponse authResponse = authService.createOrGetUserFromOauth2(name, email,picture, googleId);
+        AuthResponse authResponse = authService.createOrGetUserFromOauth2(name, email, picture, googleId);
 
         // Store JWT in HttpOnly cookie
         Cookie cookie = new Cookie("TS_AUTH", authResponse.getAuthToken());
@@ -50,10 +53,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         refreshCookie.setMaxAge(30 * 24 * 60 * 60);
         response.addCookie(refreshCookie);
 
-        //  CLEAR OAuth2 SESSION
+        // Clear OAuth2 session
         request.getSession().invalidate();
 
-        // Redirect WITHOUT token
-        response.sendRedirect("http://localhost:5000/dashboard");
+        // Redirect to the frontend dashboard using the configured URL
+        String redirectUrl = frontendRedirectHome + "/dashboard";
+        response.sendRedirect(redirectUrl);
     }
 }

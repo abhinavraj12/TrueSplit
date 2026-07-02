@@ -51,12 +51,16 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/auth/**",
-                                "/otp/**",
+                                // OAuth2 and OTP endpoints (public)
                                 "/oauth2/**",
                                 "/login/**",
+                                "/otp/**",
                                 "/error**",
-                                "/api/me"
+                                
+                                // Standardised API v1 public endpoints
+                                "/api/v1/auth/**",      // Authentication endpoints
+                                "/api/v1/me",           // User profile (requires auth, but permit for health check)
+                                "/api/v1/health"        // Health check endpoint
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

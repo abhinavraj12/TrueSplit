@@ -1,0 +1,147 @@
+/* Badge.module.css */
+
+/* ============================================================
+   Base Badge
+   ============================================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-xs, 4px);
+  font-family: var(--font-badge);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  transition: all var(--duration-fast) var(--easing-standard);
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Rounded (Pill) Shape
+   ============================================================ */
+
+.rounded {
+  border-radius: var(--radius-full);
+}
+
+/* ============================================================
+   Sizes
+   ============================================================ */
+
+.sm {
+  padding: var(--badge-padding-sm, 2px 8px);
+  font-size: var(--font-size-xs);
+  min-height: 18px;
+}
+
+.md {
+  padding: var(--badge-padding-md, 4px 12px);
+  font-size: var(--font-size-sm);
+  min-height: 22px;
+}
+
+.lg {
+  padding: var(--badge-padding-lg, 6px 16px);
+  font-size: var(--font-size-md);
+  min-height: 28px;
+}
+
+/* ============================================================
+   Dot Mode
+   ============================================================ */
+
+.dot {
+  padding: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  min-height: auto;
+  border: none;
+}
+
+.dot.sm {
+  width: 6px;
+  height: 6px;
+}
+
+.dot.md {
+  width: 8px;
+  height: 8px;
+}
+
+.dot.lg {
+  width: 10px;
+  height: 10px;
+}
+
+/* ============================================================
+   Icon
+   ============================================================ */
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 0.8em;
+}
+
+/* ============================================================
+   Variants
+   ============================================================ */
+
+/* Default */
+.default {
+  background-color: var(--color-badge-default-bg);
+  color: var(--color-badge-default-text);
+  border-color: var(--color-border);
+}
+
+/* Primary */
+.primary {
+  background-color: var(--color-badge-primary-bg);
+  color: var(--color-badge-primary-text);
+  border-color: var(--color-badge-primary-bg);
+}
+
+/* Secondary */
+.secondary {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  border-color: var(--color-btn-secondary-bg);
+}
+
+/* Success */
+.success {
+  background-color: var(--color-badge-success-bg);
+  color: var(--color-badge-success-text);
+  border-color: var(--color-badge-success-bg);
+}
+
+/* Warning */
+.warning {
+  background-color: var(--color-badge-warning-bg);
+  color: var(--color-badge-warning-text);
+  border-color: var(--color-badge-warning-bg);
+}
+
+/* Error */
+.error {
+  background-color: var(--color-badge-error-bg);
+  color: var(--color-badge-error-text);
+  border-color: var(--color-badge-error-bg);
+}
+
+/* Info */
+.info {
+  background-color: var(--color-badge-info-bg);
+  color: var(--color-badge-info-text);
+  border-color: var(--color-badge-info-bg);
+}
+
+.iconOnly {
+  padding: 0 var(--space-xxs, 4px) !important;
+  min-width: auto;
+  /* Adjust as needed, but keep it compact */
+}

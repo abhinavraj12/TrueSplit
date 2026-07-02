@@ -1,0 +1,352 @@
+/* Avatar.module.css - fully revised with badgeCompact */
+
+/* ============================================================
+   Base Avatar Container
+   ============================================================ */
+
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--avatar-md, 40px);
+  height: var(--avatar-md, 40px);
+  background-color: var(--color-bg-surface);
+  color: var(--color-avatar-text);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-md);
+  user-select: none;
+  border-radius: 50%;
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+/* Interactive (clickable) */
+.avatar.interactive:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Size variants using design tokens */
+.xs {
+  width: var(--avatar-xs, 24px);
+  height: var(--avatar-xs, 24px);
+  font-size: var(--font-size-xs);
+}
+.sm {
+  width: var(--avatar-sm, 32px);
+  height: var(--avatar-sm, 32px);
+  font-size: var(--font-size-sm);
+}
+.md {
+  width: var(--avatar-md, 40px);
+  height: var(--avatar-md, 40px);
+  font-size: var(--font-size-md);
+}
+.lg {
+  width: var(--avatar-lg, 48px);
+  height: var(--avatar-lg, 48px);
+  font-size: var(--font-size-lg);
+}
+.xl {
+  width: var(--avatar-xl, 64px);
+  height: var(--avatar-xl, 64px);
+  font-size: var(--font-size-xl);
+}
+
+/* ============================================================
+   Content (image / fallback) with status cutout
+   ============================================================ */
+
+.content {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--color-avatar-bg, #d3c9b4);
+}
+
+.content.hasStatus {
+  -webkit-mask-image: radial-gradient(circle at 89.5% 89.5%, transparent 22%, black 22%);
+  mask-image: radial-gradient(circle at 89.5% 89.5%, transparent 22%, black 22%);
+}
+
+/* Size-specific cutout radii */
+.xs .content.hasStatus {
+  -webkit-mask-image: radial-gradient(circle at 88.75% 88.75%, transparent 28%, black 28%);
+  mask-image: radial-gradient(circle at 88.75% 88.75%, transparent 28%, black 28%);
+}
+.sm .content.hasStatus {
+  -webkit-mask-image: radial-gradient(circle at 90% 90%, transparent 24%, black 24%);
+  mask-image: radial-gradient(circle at 90% 90%, transparent 24%, black 24%);
+}
+.md .content.hasStatus {
+  -webkit-mask-image: radial-gradient(circle at 89.5% 89.5%, transparent 22%, black 22%);
+  mask-image: radial-gradient(circle at 89.5% 89.5%, transparent 22%, black 22%);
+}
+.lg .content.hasStatus {
+  -webkit-mask-image: radial-gradient(circle at 88.9% 88.9%, transparent 19%, black 19%);
+  mask-image: radial-gradient(circle at 88.9% 88.9%, transparent 19%, black 19%);
+}
+.xl .content.hasStatus {
+  -webkit-mask-image: radial-gradient(circle at 88.75% 88.75%, transparent 18%, black 18%);
+  mask-image: radial-gradient(circle at 88.75% 88.75%, transparent 18%, black 18%);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-avatar-bg);
+}
+
+.initials {
+  text-transform: uppercase;
+  font-family: var(--font-avatar);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+}
+
+.defaultIcon {
+  width: 50%;
+  height: 50%;
+  color: var(--color-icon-muted);
+}
+
+/* ============================================================
+   Status Indicator
+   ============================================================ */
+
+.status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  background-color: var(--color-status-inactive, #8a7e72);
+  border: 2px solid var(--color-bg-surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  box-sizing: content-box;
+  pointer-events: none;
+}
+
+/* Size-specific status dot sizes */
+.xs .status {
+  width: 9px;
+  height: 9px;
+  transform: translate(20%, 20%);
+}
+.sm .status {
+  width: 10px;
+  height: 10px;
+  transform: translate(18%, 18%);
+}
+.md .status {
+  width: 12px;
+  height: 12px;
+  transform: translate(15%, 15%);
+}
+.lg .status {
+  width: 14px;
+  height: 14px;
+  transform: translate(12%, 12%);
+}
+.xl .status {
+  width: 18px;
+  height: 18px;
+  transform: translate(10%, 10%);
+}
+
+.status-online {
+  background-color: var(--color-status-active, #5a7557);
+}
+.status-offline {
+  background-color: var(--color-status-inactive, #8a7e72);
+}
+.status-busy {
+  background-color: var(--color-error-text, #a86a6a);
+}
+.status-away {
+  background-color: var(--color-status-pending, #a67c3e);
+}
+
+/* ============================================================
+   Badge Wrapper (positioning)
+   ============================================================ */
+
+.badgeWrapper {
+  position: absolute;
+  z-index: 3;
+  box-sizing: border-box;
+  /* default top-right */
+  top: -4px;
+  right: -4px;
+}
+.badgeWrapper.top-left {
+  top: -4px;
+  left: -4px;
+  right: auto;
+}
+.badgeWrapper.bottom-right {
+  bottom: -4px;
+  right: -4px;
+  top: auto;
+}
+.badgeWrapper.bottom-left {
+  bottom: -4px;
+  left: -4px;
+  top: auto;
+  right: auto;
+}
+
+/* Adjust for size variations */
+.xs .badgeWrapper {
+  top: -3px;
+  right: -3px;
+}
+.xs .badgeWrapper.top-left {
+  top: -3px;
+  left: -3px;
+  right: auto;
+}
+.xs .badgeWrapper.bottom-right {
+  bottom: -3px;
+  right: -3px;
+  top: auto;
+}
+.xs .badgeWrapper.bottom-left {
+  bottom: -3px;
+  left: -3px;
+  top: auto;
+  right: auto;
+}
+
+.sm .badgeWrapper {
+  top: -3px;
+  right: -3px;
+}
+.sm .badgeWrapper.top-left {
+  top: -3px;
+  left: -3px;
+  right: auto;
+}
+.sm .badgeWrapper.bottom-right {
+  bottom: -3px;
+  right: -3px;
+  top: auto;
+}
+.sm .badgeWrapper.bottom-left {
+  bottom: -3px;
+  left: -3px;
+  top: auto;
+  right: auto;
+}
+
+.lg .badgeWrapper {
+  top: -4px;
+  right: -4px;
+}
+.lg .badgeWrapper.top-left {
+  top: -4px;
+  left: -4px;
+  right: auto;
+}
+.lg .badgeWrapper.bottom-right {
+  bottom: -4px;
+  right: -4px;
+  top: auto;
+}
+.lg .badgeWrapper.bottom-left {
+  bottom: -4px;
+  left: -4px;
+  top: auto;
+  right: auto;
+}
+
+.xl .badgeWrapper {
+  top: -5px;
+  right: -5px;
+}
+.xl .badgeWrapper.top-left {
+  top: -5px;
+  left: -5px;
+  right: auto;
+}
+.xl .badgeWrapper.bottom-right {
+  bottom: -5px;
+  right: -5px;
+  top: auto;
+}
+.xl .badgeWrapper.bottom-left {
+  bottom: -5px;
+  left: -5px;
+  top: auto;
+  right: auto;
+}
+
+/* ============================================================
+   Compact Badge – overrides Badge padding for avatar use
+   ============================================================ */
+.badgeCompact {
+  padding: 0 6px !important;
+  font-size: 0.75rem !important;
+  min-height: 20px !important;
+  height: auto !important;
+  line-height: 1.4;
+  border-radius: var(--radius-full);
+  min-width: 20px;
+}
+
+/* ============================================================
+   Avatar Group
+   ============================================================ */
+
+.avatarGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  gap: 0;
+}
+
+.avatarGroup .avatar {
+  border: 2px solid var(--color-bg-surface);
+  transition: transform var(--duration-fast) var(--easing-standard),
+              box-shadow var(--duration-fast) var(--easing-standard);
+  position: relative;
+}
+
+.group-size-xs .avatar:not(:first-child) { margin-left: -6px; }
+.group-size-sm .avatar:not(:first-child) { margin-left: -8px; }
+.group-size-md .avatar:not(:first-child) { margin-left: -10px; }
+.group-size-lg .avatar:not(:first-child) { margin-left: -12px; }
+.group-size-xl .avatar:not(:first-child) { margin-left: -16px; }
+
+.compact.group-size-xs .avatar:not(:first-child) { margin-left: -4px; }
+.compact.group-size-sm .avatar:not(:first-child) { margin-left: -6px; }
+.compact.group-size-md .avatar:not(:first-child) { margin-left: -8px; }
+.compact.group-size-lg .avatar:not(:first-child) { margin-left: -10px; }
+.compact.group-size-xl .avatar:not(:first-child) { margin-left: -12px; }
+
+.avatarGroup .avatar:not(.extraCount):hover {
+  transform: scale(1.15) translateY(-4px);
+  z-index: 10;
+  box-shadow: var(--shadow-md);
+}
+
+.extraCount {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  border: 2px solid var(--color-bg-surface);
+  cursor: default;
+}

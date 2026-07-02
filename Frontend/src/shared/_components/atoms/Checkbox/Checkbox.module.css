@@ -1,0 +1,246 @@
+/* Checkbox.module.css */
+
+/* ============================================================
+   Wrapper – to contain the label and messages
+   ============================================================ */
+
+.checkboxWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs, 4px);
+  width: 100%;
+}
+
+/* ============================================================
+   Container Label – improved touch area
+   ============================================================ */
+
+.checkboxContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  user-select: none;
+  transition: all var(--duration-fast) var(--easing-standard);
+  position: relative;
+  padding: var(--space-xxs, 4px) 0; /* increase click area */
+  width: fit-content;
+}
+
+.checkboxContainer:not(.disabled):hover .checkboxControl {
+  border-color: var(--color-input-focus);
+}
+
+/* ============================================================
+   Hidden Native Input (accessible)
+   ============================================================ */
+
+.checkboxInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Custom Checkbox Visual
+   ============================================================ */
+
+.checkboxControl {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid var(--color-input-border);
+  border-radius: var(--radius-sm, 4px);
+  background-color: var(--color-checkbox-bg, #ffffff);
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+/* Size variants */
+.sm .checkboxControl {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+.md .checkboxControl {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.lg .checkboxControl {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+/* ============================================================
+   Focus State
+   ============================================================ */
+
+.checkboxInput:focus-visible + .checkboxControl {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ============================================================
+   Checked State
+   ============================================================ */
+
+.checkboxControl.checked {
+  background-color: var(--color-checkbox-checked, #6e8b6b);
+  border-color: var(--color-checkbox-checked, #6e8b6b);
+}
+
+.checkboxControl.checked .checkIcon {
+  color: var(--color-bg-surface, #ffffff);
+  transition: all var(--duration-fast) var(--easing-standard);
+}
+
+/* Icon size scaling */
+.sm .checkIcon {
+  width: 10px;
+  height: 10px;
+}
+
+.md .checkIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.lg .checkIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================================
+   Indeterminate State
+   ============================================================ */
+
+.checkboxControl.indeterminate {
+  background-color: var(--color-checkbox-checked, #6e8b6b);
+  border-color: var(--color-checkbox-checked, #6e8b6b);
+}
+
+.indeterminateDash {
+  width: 0.6em;
+  height: 2px;
+  background-color: var(--color-bg-surface, #ffffff);
+  border-radius: 1px;
+}
+
+/* Size-specific dash */
+.sm .indeterminateDash {
+  width: 8px;
+  height: 2px;
+}
+.md .indeterminateDash {
+  width: 10px;
+  height: 2px;
+}
+.lg .indeterminateDash {
+  width: 14px;
+  height: 2.5px;
+}
+
+/* ============================================================
+   Disabled State
+   ============================================================ */
+
+.checkboxContainer.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.checkboxContainer.disabled .checkboxControl {
+  background-color: var(--color-input-disabled-bg);
+  border-color: var(--color-input-disabled-border, #d5cbc0);
+}
+
+.checkboxContainer.disabled .checkboxControl.checked {
+  background-color: var(--color-input-disabled-bg);
+  border-color: var(--color-input-disabled-border, #d5cbc0);
+}
+
+.checkboxContainer.disabled .checkIcon {
+  color: var(--color-input-disabled-text, #b5a99c);
+}
+
+.checkboxContainer.disabled .checkboxLabel {
+  color: var(--color-input-disabled-text, #b5a99c);
+}
+
+.checkboxContainer.disabled .requiredStar {
+  color: var(--color-input-disabled-text, #b5a99c);
+}
+
+/* ============================================================
+   Error State
+   ============================================================ */
+
+.checkboxContainer.error .checkboxControl {
+  border-color: var(--color-input-error-border, #a86a6a);
+}
+
+.checkboxContainer.error .checkboxInput:focus-visible + .checkboxControl {
+  outline-color: var(--color-input-error-border, #a86a6a);
+}
+
+.checkboxContainer.error .checkboxControl.checked {
+  background-color: var(--color-input-error-border, #a86a6a);
+  border-color: var(--color-input-error-border, #a86a6a);
+}
+
+/* ============================================================
+   Label – consistent font size across variants
+   ============================================================ */
+
+.checkboxLabel {
+  line-height: 1.4;
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+}
+
+/* Size-specific label font sizes - removed for consistency */
+/* Labels now use the base font size regardless of checkbox size */
+
+/* ============================================================
+   Required Star
+   ============================================================ */
+
+.requiredStar {
+  color: var(--color-error-text);
+  font-weight: var(--font-weight-bold);
+  margin-left: var(--space-xxs, 2px);
+  font-size: 1.2em;
+}
+
+/* ============================================================
+   Error & Helper Text (displayed below)
+   ============================================================ */
+
+.errorText {
+  color: var(--color-error-text);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs, 4px);
+}
+
+.helperText {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xxs, 2px);
+}
+
+/* ============================================================
+   Dark Mode (CSS variables handle it automatically)
+   ============================================================ */
