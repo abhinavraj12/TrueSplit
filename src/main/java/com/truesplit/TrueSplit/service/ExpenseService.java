@@ -45,19 +45,19 @@ public class ExpenseService {
 
         List<String> participants = new ArrayList<>(new LinkedHashSet<>(request.getParticipants()));
 
-        // 1. Validate paidBy is in participants
+        // Validate paidBy is in participants
         if (!participants.contains(request.getPaidBy())) {
             throw new IllegalArgumentException("The payer must be included as a participant.");
         }
 
-        // 2. Validate participants exist
+        // Validate participants exist
         for (String participantId : participants) {
             if (!userRepository.existsById(participantId)) {
                 throw new IllegalArgumentException("One or more participants could not be found.");
             }
         }
 
-        // 3. Validate manual splits if applicable
+        // Validate manual splits if applicable
         List<Expense.ManualSplit> manualSplits = null;
         if ("MANUAL".equals(request.getSplitType())) {
             if (request.getManualSplits() == null || request.getManualSplits().isEmpty()) {
@@ -104,10 +104,10 @@ public class ExpenseService {
             }
         }
 
-        // 4. Generate unique slug
+        //  Generate unique slug
         String slug = slugGenerator.generateUniqueSlug(request.getTitle());
 
-        // 5. Create expense date time
+        // Create expense date time
         ZoneId zoneId = resolveZoneId(request.getTimezone());
         LocalDate date = parseExpenseDate(request.getExpenseDate());
         LocalTime time = request.getExpenseTime() != null ?
@@ -115,7 +115,7 @@ public class ExpenseService {
         Instant expenseDateTime = LocalDateTime.of(date, time).atZone(zoneId).toInstant();
         Instant now = Instant.now();
 
-        // 6. Build expense entity
+        // Build expense entity
         Expense expense = new Expense();
         expense.setTitle(request.getTitle());
         expense.setTitleSlug(slug);
@@ -147,10 +147,10 @@ public class ExpenseService {
         expense.setCreatedAt(now);
         expense.setUpdatedAt(now);
 
-        // 7. Save to database
+        // Save to database
         Expense savedExpense = expenseRepository.save(expense);
 
-        // 8. Convert to response DTO
+        // Convert to response DTO
         return convertToResponse(savedExpense);
     }
 
