@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -109,37 +111,48 @@ public class AuthController {
             session.invalidate();
         }
         deleteCookie(response, "TS_AUTH", "/");
+        deleteCookie(response, "TS_REFRESH", "/");
+        // Also remove older refresh cookies that were scoped to previous auth paths.
         deleteCookie(response, "TS_REFRESH", "/auth");
         deleteCookie(response, "TS_REFRESH", "/auth/refresh");
-        deleteCookie(response, "TS_REFRESH", "/");
+        deleteCookie(response, "TS_REFRESH", "/api/v1/auth");
         return ResponseEntity.ok(ApiResponse.success(Map.of("message", "You have been signed out.")));
     }
 
     private void addAuthCookie(HttpServletResponse response, String token) {
-        Cookie cookie = new Cookie("TS_AUTH", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("TS_AUTH", token)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(24 * 60 * 60)
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     private void addRefreshCookie(HttpServletResponse response, String token) {
-        Cookie cookie = new Cookie("TS_REFRESH", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/auth");
-        cookie.setMaxAge(30 * 24 * 60 * 60);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("TS_REFRESH", token)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(30L * 24 * 60 * 60)
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     private void deleteCookie(HttpServletResponse response, String name, String path) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath(path);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from(name, "")
+                .httpOnly(true)
+                .secure(false)
+                .path(path)
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     private String getCookieValue(HttpServletRequest request, String name) {

@@ -58,9 +58,8 @@ public class SecurityConfig {
                                 "/error**",
                                 
                                 // Standardised API v1 public endpoints
-                                "/api/v1/auth/**",      // Authentication endpoints
-                                "/api/v1/me",           // User profile (requires auth, but permit for health check)
-                                "/api/v1/health"        // Health check endpoint
+                                "/api/v1/auth/**",      // Authentication endpoint
+                                "/api/v1/health"       // Health check endpoint
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
