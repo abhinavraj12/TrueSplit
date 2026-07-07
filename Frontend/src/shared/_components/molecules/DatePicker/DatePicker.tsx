@@ -6,7 +6,7 @@ import { Typography } from '@/shared/_components/atoms/Typography';
 import { Button } from '@/shared/_components/atoms/Button';
 import { Icon } from '@/shared/_components/atoms/Icon';
 import { DatePickerCalendar, HighlightedDate } from './DatePickerCalendar';
-import { formatDate, isSameDay } from '@/shared/lib/utils/date-utils';
+import { isSameDay } from '@/shared/lib/utils/date-utils';
 import styles from './DatePicker.module.css';
 
 export type DatePickerSize = 'sm' | 'md' | 'lg';
@@ -34,12 +34,75 @@ export interface DatePickerProps
   highlightedDates?: (Date | HighlightedDate)[];
 }
 
+/**
+ * Format a date using Intl.DateTimeFormat for reliable, human-friendly output.
+ * Supports standard format strings: 'MMM d, yyyy, h:mm a' -> 'Jul 7, 2026, 3:50 PM'
+ */
+const formatDateDisplay = (date: Date | null, format: string): string => {
+  if (!date) return '';
+
+  // Map format strings to Intl.DateTimeFormat options
+  const formatMap: Record<string, Intl.DateTimeFormatOptions> = {
+    'MMM d, yyyy, h:mm a': {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    },
+    'MMM d, yyyy': {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    },
+    'MMMM d, yyyy': {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    },
+    'MM/dd/yyyy': {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+    },
+    'yyyy-MM-dd': {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    },
+    'MMM dd, yyyy': {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+    },
+    'dd MMM yyyy': {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    },
+  };
+
+  // If the format matches a known pattern, use Intl
+  if (formatMap[format]) {
+    return new Intl.DateTimeFormat('en-US', formatMap[format]).format(date);
+  }
+
+  // Fallback: use a reasonable default
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date);
+};
+
 const DatePickerComponent: React.FC<DatePickerProps> = ({
   label,
   value: controlledValue,
   defaultValue = null,
   onChange,
-  format = 'MMM dd, yyyy',
+  format = 'MMM d, yyyy, h:mm a',
   placeholder = 'Select date...',
   minDate,
   maxDate,
@@ -169,7 +232,8 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
     return () => window.removeEventListener('resize', updatePosition);
   }, [isOpen]);
 
-  const displayedValue = currentValue ? formatDate(currentValue, format) : '';
+  // Use the new formatDateDisplay function
+  const displayedValue = currentValue ? formatDateDisplay(currentValue, format) : '';
   const isError = Boolean(error);
   const errorMessage = typeof error === 'string' ? error : undefined;
   const describedBy = clsx(isError && errorId, helperText && !isError && helperId) || undefined;
@@ -227,7 +291,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
               <FaTimes />
             </Button>
           )}
-          {/* Calendar icon - wrapped in a div for proper centering */}
+          {/* Calendar icon */}
           <div
             className={clsx(styles.calendarIcon, isError && styles.calendarIconError)}
             onClick={handleToggle}

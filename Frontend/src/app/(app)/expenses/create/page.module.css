@@ -1,0 +1,1111 @@
+/* Create Expense – Page Styles */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  padding-bottom: 100px;
+}
+
+.loadingPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+}
+
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 24px;
+  }
+}
+
+.formCard {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 0;
+}
+
+/* Breadcrumb */
+.breadcrumbRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.breadcrumb {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.headerLeft {
+  flex: 0 0 auto;
+}
+
+.headerRight {
+  flex: 0 0 auto;
+}
+
+.backButton {
+  min-height: 40px;
+  padding: 0 12px;
+  font-size: 0.9rem;
+}
+
+.title {
+  font-family: var(--font-family-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userAvatar {
+  border: 2px solid var(--color-border);
+}
+
+/* Field Groups */
+.fieldGroup {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.required {
+  color: var(--color-error-text);
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+/* Amount + Currency (inline) */
+.amountRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.amountWrapper {
+  flex: 2;
+  min-width: 0;
+}
+
+.currencyWrapper {
+  flex: 1;
+  min-width: 120px;
+  max-width: 180px;
+}
+
+.currencySelector {
+  width: 100%;
+}
+
+.amountInput {
+  font-size: 2rem;
+}
+
+/* Divider */
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  margin: 24px 0;
+}
+
+/* Expander */
+.expander {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-link);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.expander span:first-child {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.expanderContent {
+  margin-top: 8px;
+}
+
+/* Receipt Upload */
+.uploadBox {
+  border: 2px dashed var(--color-input-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.uploadBox:hover {
+  border-color: var(--color-input-focus);
+}
+
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.uploadPlaceholder input {
+  display: none;
+}
+
+.uploadText {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.uploadSubtext {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.uploadPreview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.uploadImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.uploadRemove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.uploadRemove:hover {
+  background: var(--color-error-border);
+  color: #ffffff;
+}
+
+.uploadRemove svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Receipt Thumbnail in Header */
+.receiptThumbnailWrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.receiptThumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 2px solid var(--color-border);
+  transition: border-color 0.2s;
+}
+
+.receiptThumbnail:hover {
+  border-color: var(--color-input-focus);
+}
+
+.receiptPreview {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  max-width: 260px;
+  max-height: 340px;
+  min-width: 160px;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.receiptPreviewImage {
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+/* Group Selector */
+.groupSelectorContainer {
+  position: relative;
+  width: 100%;
+}
+
+.groupSelectorTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 44px;
+  background: var(--color-input-bg);
+  border: 2px solid var(--color-input-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.groupSelectorTrigger:hover {
+  border-color: var(--color-input-focus);
+}
+
+.groupSelectorTriggerOpen {
+  border-color: var(--color-input-focus);
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
+}
+
+.groupSelectorValue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+.groupSelectorIcon {
+  color: var(--color-icon-muted);
+  flex-shrink: 0;
+}
+
+.groupSelectorPlaceholder {
+  color: var(--color-placeholder);
+}
+
+.groupMemberBadge {
+  margin-left: 4px;
+  background: var(--color-badge-default-bg);
+  color: var(--color-badge-default-text);
+}
+
+.groupSelectorActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.groupSelectorClear {
+  background: none;
+  border: none;
+  color: var(--color-icon-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+
+.groupSelectorClear:hover {
+  color: var(--color-icon-hover);
+  background: var(--color-surface-hover);
+}
+
+.groupSelectorChevron {
+  color: var(--color-icon-muted);
+  transition: transform 0.2s;
+}
+
+.groupSelectorChevronOpen {
+  transform: rotate(180deg);
+}
+
+.groupSelectorPopover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-dropdown-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-dropdown);
+  max-height: 360px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.groupSelectorSearch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-divider);
+  flex-shrink: 0;
+}
+
+.groupSelectorSearchIcon {
+  color: var(--color-icon-muted);
+}
+
+.groupSelectorSearchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}
+
+.groupSelectorSearchInput::placeholder {
+  color: var(--color-placeholder);
+}
+
+.groupSelectorList {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 0;
+}
+
+.groupSelectorSection {
+  padding: 4px 0;
+}
+
+.groupSelectorSectionTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  padding: 6px 12px;
+}
+
+.groupSelectorItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.groupSelectorItem:hover {
+  background: var(--color-dropdown-hover);
+}
+
+.groupSelectorItemSelected {
+  background: var(--color-dropdown-hover);
+  font-weight: 500;
+}
+
+.groupSelectorItemIcon {
+  color: var(--color-icon-muted);
+  flex-shrink: 0;
+}
+
+.groupSelectorItemName {
+  flex: 1;
+  color: var(--color-text-primary);
+}
+
+.groupSelectorRequestButton {
+  flex-shrink: 0;
+  min-height: 28px;
+  padding: 0 12px;
+  font-size: 0.75rem;
+}
+
+.groupSelectorEmpty {
+  padding: 20px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.groupSelectorEmptyText {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.groupSelectorCreateButton {
+  min-height: 36px;
+  padding: 0 16px;
+}
+
+.groupSelectorCreateGroupOption {
+  padding: 8px 12px;
+  border-top: 1px solid var(--color-divider);
+  margin-top: 4px;
+}
+
+.groupSelectorCreateGroupButton {
+  width: 100%;
+  justify-content: center;
+  color: var(--color-text-link);
+}
+
+.groupSelectorCreateGroupButton:hover {
+  background: var(--color-dropdown-hover);
+}
+
+/* Participants */
+.participantsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 4px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.chipRemove {
+  background: none;
+  border: none;
+  color: var(--color-icon-muted);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.2s;
+}
+
+.chipRemove:hover {
+  color: var(--color-icon-hover);
+}
+
+.youBadge {
+  margin-left: 2px;
+  font-size: 0.65rem;
+  padding: 0 6px;
+  height: 16px;
+  line-height: 16px;
+}
+
+.searchWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.searchInputComponent {
+  width: 100%;
+}
+
+.searchResults {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-dropdown-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-dropdown);
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px 0;
+  min-width: 260px;
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.searchResultItem:hover {
+  background: var(--color-dropdown-hover);
+}
+
+.participantHint {
+  margin-top: 4px;
+  font-size: 0.8rem;
+}
+
+.hintError {
+  color: var(--color-error-text);
+}
+
+.alreadyAddedMessage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
+  border-radius: var(--radius-sm);
+  margin: 4px 8px;
+  font-size: 0.85rem;
+}
+
+.alreadyAddedIcon {
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.groupRestrictionMessage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  color: var(--color-warning-text);
+  background: var(--color-warning-bg);
+  border-radius: var(--radius-sm);
+  margin: 4px 8px;
+  font-size: 0.85rem;
+}
+
+.groupRestrictionIcon {
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.groupRestrictionMessage strong {
+  color: var(--color-text-primary);
+}
+
+/* Invite Section in Search Results */
+.inviteSection {
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-divider);
+  margin-top: 4px;
+}
+
+.inviteHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.inviteIcon {
+  color: var(--color-text-link);
+  font-size: 1rem;
+}
+
+.inviteTitle {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.inviteBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inviteDescription {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.inviteDescription strong {
+  color: var(--color-text-primary);
+}
+
+.inviteInputGroup {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.inviteInputWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  transition: border-color 0.2s;
+}
+
+.inviteInputWrapper:focus-within {
+  border-color: var(--color-input-focus);
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
+}
+
+.inviteInputIcon {
+  color: var(--color-icon-muted);
+  margin-right: 6px;
+  font-size: 0.85rem;
+}
+
+.inviteInput {
+  border: none;
+  background: transparent;
+  padding: 10px 6px;
+  width: 100%;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.inviteInput::placeholder {
+  color: var(--color-placeholder);
+}
+
+.inviteInput:disabled {
+  opacity: 0.6;
+}
+
+.inviteButton {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 0.85rem;
+}
+
+.inviteDisclaimer {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  padding-left: 2px;
+}
+
+.inviteSuccess {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-success-text);
+  font-size: 0.8rem;
+  padding: 4px 0;
+}
+
+.inviteSuccess svg {
+  font-size: 0.9rem;
+}
+
+.inviteError {
+  color: var(--color-error-text);
+  font-size: 0.8rem;
+  padding: 4px 0;
+}
+
+/* Split Toggle */
+.splitToggle {
+  width: 100%;
+}
+
+.splitToggle > div {
+  width: 100%;
+}
+
+.splitToggle button {
+  flex: 1;
+}
+
+/* Split List */
+.splitList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.splitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.splitParticipant {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.splitName {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.payerBadge {
+  font-size: 0.6rem;
+  padding: 0 6px;
+  height: 16px;
+  line-height: 16px;
+  background: var(--color-badge-primary-bg);
+  color: var(--color-badge-primary-text);
+}
+
+.splitAmount {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.splitPercent {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.manualSplitInput {
+  max-width: 140px;
+}
+
+.manualSplitInput input {
+  text-align: right;
+  padding-right: 8px;
+}
+
+.manualSplitRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.manualSplitRow .splitPercent {
+  min-width: 56px;
+  text-align: right;
+}
+
+.splitRowZero {
+  border-color: var(--color-error-border);
+  background: var(--color-error-bg);
+}
+
+.splitRowZero .splitName {
+  color: var(--color-error-text);
+}
+
+.zeroShareWarning {
+  color: var(--color-error-text);
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+
+/* Manual split controls */
+.manualSplitControls {
+  margin-top: 12px;
+}
+
+.manualAllocationStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manualAllocationLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.manualAllocatedFull {
+  color: var(--color-success-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.manualAllocatedRemaining {
+  color: var(--color-warning-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.manualAllocatedOver {
+  color: var(--color-error-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.manualProgressBar {
+  width: 100%;
+  height: 4px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.manualProgressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* Empty split state */
+.emptySplitState {
+  padding: 24px 16px;
+  text-align: center;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--color-border);
+}
+
+.emptySplitText {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* Footer spacer */
+.footerSpacer {
+  height: 20px;
+}
+
+/* Sticky Footer */
+.stickyFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-bg-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 12px 16px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+  z-index: var(--z-index-sticky);
+}
+
+.footerInner {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.createButton {
+  max-width: 640px;
+  margin: 0 auto;
+  display: block;
+  width: 100%;
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .formCard {
+    padding: 16px 0;
+  }
+
+  .title {
+    font-size: 1.25rem;
+    white-space: normal;
+  }
+
+  .amountInput {
+    font-size: 1.5rem;
+  }
+
+  .amountRow {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .currencyWrapper {
+    flex: 1;
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .stickyFooter {
+    padding: 10px 12px;
+  }
+
+  .chipList {
+    gap: 6px;
+  }
+
+  .chip {
+    font-size: 0.8rem;
+    padding: 3px 6px 3px 3px;
+  }
+
+  .searchWrapper {
+    min-width: 100%;
+  }
+
+  .searchResults {
+    min-width: 100%;
+    max-height: 260px;
+  }
+
+  .splitRow {
+    padding: 6px 10px;
+  }
+
+  .manualSplitInput {
+    max-width: 100px;
+  }
+
+  .inviteSection {
+    padding: 12px 16px;
+  }
+
+  .inviteInputGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .inviteButton {
+    width: 100%;
+  }
+
+  .groupSelectorPopover {
+    max-height: 300px;
+  }
+
+  .groupSelectorItem {
+    padding: 10px 12px;
+  }
+
+  .groupSelectorRequestButton {
+    font-size: 0.7rem;
+    padding: 0 10px;
+  }
+
+  .alreadyAddedMessage,
+  .groupRestrictionMessage {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .headerLeft,
+  .headerRight {
+    flex: 0 0 auto;
+  }
+
+  .title {
+    font-size: 1.1rem;
+    order: 2;
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  .backButton {
+    min-height: 36px;
+    padding: 0 8px;
+    font-size: 0.8rem;
+  }
+
+  .uploadBox {
+    min-height: 80px;
+    padding: 12px;
+  }
+
+  .splitRow {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .manualSplitInput {
+    max-width: 80px;
+  }
+
+  .inviteDisclaimer {
+    font-size: 0.7rem;
+  }
+}

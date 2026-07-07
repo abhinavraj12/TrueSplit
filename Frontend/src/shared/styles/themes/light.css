@@ -1,4 +1,4 @@
-/* TrueSplit — Light Mode (Sage & Stone / Warm) */
+/* TrueSplit — Light Mode (Warm Cream + Soft Violet) */
 
 :root {
   /* ---------- Backgrounds & Surfaces ---------- */
@@ -16,8 +16,8 @@
   --color-text-primary: #2C241E;
   --color-text-secondary: #5A5046;
   --color-text-muted: #6F6359;
-  --color-text-link: #6E8B6B;
-  --color-text-link-hover: #5C7A59;
+  --color-text-link: #7C6CFF;
+  --color-text-link-hover: #6A5AD9;
 
   /* ---------- Borders, Dividers & Inputs ---------- */
   --color-border: #E6DDD4;
@@ -25,18 +25,18 @@
 
   --color-input-bg: #FFFFFF;
   --color-input-border: #D5CBC0;
-  --color-input-focus: #6E8B6B;
-  --color-input-error-border: #A86A6A;
-  --color-input-success-border: #4D6B44;
+  --color-input-focus: #8B5CFC;
+  --color-input-error-border: #D45A5A;
+  --color-input-success-border: #4CAF80;
   --color-input-disabled-bg: #F0EBE4;
   --color-input-disabled-text: #B5A99C;
   --color-placeholder: #8A7D71;
 
   /* ---------- Buttons ---------- */
-  --color-btn-primary-bg: #5A7557;
+  --color-btn-primary-bg: #8B5CFC;
   --color-btn-primary-text: #FFFFFF;
-  --color-btn-primary-hover: #4D654A;
-  --color-btn-primary-active: #40563E;
+  --color-btn-primary-hover: #7C3AED;
+  --color-btn-primary-active: #6D28D9;
 
   --color-btn-secondary-bg: #D3C9B4;
   --color-btn-secondary-text: #2C241E;
@@ -47,13 +47,13 @@
   --color-btn-outline-text: #5A5046;
   --color-btn-outline-hover-bg: #F8F1E8;
 
-  --color-btn-danger-bg: #B85353;
-  --color-btn-danger-text: #FFFFFF;
-  --color-btn-danger-hover: #A34444;
+  --color-btn-danger-bg: #E07A7A;
+  --color-btn-danger-text: #0A0A08;
+  --color-btn-danger-hover: #C96A6A;
 
-  --color-btn-success-bg: #4D6B44;
-  --color-btn-success-text: #FFFFFF;
-  --color-btn-success-hover: #3E5A36;
+  --color-btn-success-bg: #6BC0A0;
+  --color-btn-success-text: #0A0A08;
+  --color-btn-success-hover: #5CB08E;
 
   --color-btn-disabled-bg: #F0EBE4;
   --color-btn-disabled-text: #B5A99C;
@@ -69,36 +69,36 @@
   --color-warning-border: #7B4A1A;
 
   --color-error-bg: #F9F0F0;
-  --color-error-text: #A86A6A;
-  --color-error-border: #A86A6A;
+  --color-error-text: #D45A5A;
+  --color-error-border: #D45A5A;
 
   --color-info-bg: #F0F3EC;
-  --color-info-text: #4A6346;
-  --color-info-border: #4A6346;
+  --color-info-text: #7C6CFF;
+  --color-info-border: #7C6CFF;
 
   /* ---------- Money & Balance ---------- */
-  --color-expense-paid: #5A7557;
-  --color-expense-owed: #A86A6A;
-  --color-expense-settled: #89A87D;
-  --color-expense-pending: #A67C3E;
+  --color-expense-paid: #4CAF80;
+  --color-expense-owed: #D45A5A;
+  --color-expense-settled: #8B5CFC;
+  --color-expense-pending: #E8C86A;
 
-  --color-balance-positive: #5A7557;
-  --color-balance-negative: #A86A6A;
+  --color-balance-positive: #4CAF80;
+  --color-balance-negative: #D45A5A;
   --color-balance-neutral: #8A7E72;
 
   /* ---------- Status ---------- */
-  --color-status-active: #5A7557;
-  --color-status-pending: #A67C3E;
+  --color-status-active: #4CAF80;
+  --color-status-pending: #E8C86A;
   --color-status-inactive: #8A7E72;
 
   /* ---------- Navigation ---------- */
   --color-nav-item-hover: #F8F1E8;
-  --color-nav-item-active-bg: #6E8B6B;
+  --color-nav-item-active-bg: #8B5CFC;
   --color-nav-item-active-text: #FFFFFF;
-  --color-nav-item-active-border: #5A7557;
+  --color-nav-item-active-border: #7C3AED;
 
   /* ---------- Tabs ---------- */
-  --color-tab-active-bg: #6E8B6B;
+  --color-tab-active-bg: #8B5CFC;
   --color-tab-active-text: #FFFFFF;
   --color-tab-hover-bg: #F8F1E8;
   --color-tab-text: #5A5046;
@@ -115,15 +115,15 @@
   /* ---------- Checkbox & Radio ---------- */
   --color-checkbox-bg: #FFFFFF;
   --color-checkbox-border: #D5CBC0;
-  --color-checkbox-checked: #6E8B6B;
+  --color-checkbox-checked: #8B5CFC;
 
   --color-radio-bg: #FFFFFF;
   --color-radio-border: #D5CBC0;
-  --color-radio-checked: #6E8B6B;
+  --color-radio-checked: #8B5CFC;
 
   /* ---------- Dropzone ---------- */
   --color-dropzone-bg: #F8F1E8;
-  --color-dropzone-border: #6E8B6B;
+  --color-dropzone-border: #8B5CFC;
 
   /* ---------- Search Highlight ---------- */
   --color-search-highlight: #F4E8C8;
@@ -142,14 +142,14 @@
   --color-toast-warning-bg: #F0E4CE;
   --color-toast-warning-border: #7B4A1A;
   --color-toast-error-bg: #F9F0F0;
-  --color-toast-error-border: #A86A6A;
+  --color-toast-error-border: #D45A5A;
   --color-toast-info-bg: #F0F3EC;
-  --color-toast-info-border: #4A6346;
+  --color-toast-info-border: #7C6CFF;
 
   /* ---------- Notifications ---------- */
   --color-notification-unread-bg: #F8F1E8;
   --color-notification-read-bg: #FFFAF3;
-  --color-notification-dot: #6E8B6B;
+  --color-notification-dot: #8B5CFC;
 
   /* ---------- Tables ---------- */
   --color-table-header-bg: #F8F1E8;
@@ -161,23 +161,23 @@
   --color-badge-default-bg: #E6DDD4;
   --color-badge-default-text: #5A5046;
 
-  --color-badge-primary-bg: #6E8B6B;
+  --color-badge-primary-bg: #8B5CFC;
   --color-badge-primary-text: #FFFFFF;
 
-  --color-badge-success-bg: #5A7557;
+  --color-badge-success-bg: #4CAF80;
   --color-badge-success-text: #FFFFFF;
 
   --color-badge-warning-bg: #DBBE8E;
   --color-badge-warning-text: #2C241E;
 
-  --color-badge-error-bg: #A66060;
+  --color-badge-error-bg: #D45A5A;
   --color-badge-error-text: #FFFFFF;
 
-  --color-badge-info-bg: #4A6346;
+  --color-badge-info-bg: #7C6CFF;
   --color-badge-info-text: #FFFFFF;
 
   /* ---------- Interactive ---------- */
-  --color-focus-ring: #6E8B6B;
+  --color-focus-ring: #8B5CFC;
   --color-selection-highlight: #DDE6D9;
   --color-disabled-bg: #F0EBE4;
   --color-disabled-text: #B5A99C;
@@ -186,22 +186,22 @@
   /* ---------- Icons ---------- */
   --color-icon-default: #5A5046;
   --color-icon-hover: #2C241E;
-  --color-icon-interactive: #6E8B6B;
+  --color-icon-interactive: #8B5CFC;
   --color-icon-muted: #A5988A;
 
   /* ---------- Charts ---------- */
-  --color-chart-1: #6E8B6B;
+  --color-chart-1: #8B5CFC;
   --color-chart-2: #B3A48A;
-  --color-chart-3: #89A87D;
+  --color-chart-3: #4CAF80;
   --color-chart-4: #DBBE8E;
-  --color-chart-5: #CD9E9E;
+  --color-chart-5: #D45A5A;
   --color-chart-6: #7A8E76;
   --color-chart-grid: #E6DDD4;
   --color-chart-axis: #5A5046;
 
   /* ---------- Progress & Skeleton ---------- */
   --color-progress-bg: #E6DDD4;
-  --color-progress-fill: #6E8B6B;
+  --color-progress-fill: #8B5CFC;
   --color-skeleton-base: #C4BAA4;
   --color-skeleton-highlight: #F0EBE4;
 
@@ -214,7 +214,7 @@
   --color-rating-active: #DBBE8E;
   --color-rating-inactive: #E6DDD4;
   --color-switch-off: #D5CBC0;
-  --color-switch-on: #6E8B6B;
+  --color-switch-on: #8B5CFC;
   --color-switch-handle: #FFFFFF;
 
   /* ---------- Avatar ---------- */
@@ -230,13 +230,13 @@
   --shadow-lg: 0 8px 24px rgba(44, 36, 30, 0.12);
 
   --color-highlight-success-bg: rgba(77, 107, 68, 0.15);
-  --color-highlight-success-text: var(--color-success-text);
+  --color-highlight-success-text: #4D6B44;
   --color-highlight-warning-bg: rgba(123, 74, 26, 0.15);
-  --color-highlight-warning-text: var(--color-warning-text);
-  --color-highlight-danger-bg: rgba(168, 106, 106, 0.15);
-  --color-highlight-danger-text: var(--color-error-text);
+  --color-highlight-warning-text: #7B4A1A;
+  --color-highlight-danger-bg: rgba(212, 90, 90, 0.15);
+  --color-highlight-danger-text: #D45A5A;
   --color-highlight-pending-bg: rgba(74, 99, 70, 0.10);
-  --color-highlight-pending-text: var(--color-info-text);
-  --color-highlight-info-bg: rgba(74, 99, 70, 0.12);
-  --color-highlight-info-text: var(--color-info-text);
+  --color-highlight-pending-text: #4A6346;
+  --color-highlight-info-bg: rgba(124, 108, 255, 0.12);
+  --color-highlight-info-text: #7C6CFF;
 }
