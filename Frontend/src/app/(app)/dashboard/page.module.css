@@ -1,0 +1,66 @@
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.loadingState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: var(--color-text-secondary);
+}
+
+.errorState {
+  padding: 2rem;
+  color: var(--color-error-text);
+}
+
+.errorState h2 {
+  color: var(--color-error-text);
+}
+
+.notAuthState {
+  padding: 2rem;
+  color: var(--color-text-secondary);
+}
+
+.avatarPlaceholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-avatar-bg);
+  color: var(--color-avatar-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.avatarPlaceholder img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.userInfo p {
+  color: var(--color-text-primary);
+}
+
+.userInfo strong {
+  color: var(--color-text-secondary);
+}

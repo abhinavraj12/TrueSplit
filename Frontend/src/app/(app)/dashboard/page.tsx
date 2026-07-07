@@ -2,18 +2,15 @@
 
 import { useAuth } from '@/features/auth';
 import { getUserDisplayName, getUserInitials, getUserAvatar } from '@/features/auth';
+import { Button } from '@/shared/_components/atoms/Button';
+import styles from './page.module.css';
 
 export default function DashboardPage() {
   const { user, isLoading, error, logout } = useAuth();
 
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh' 
-      }}>
+      <div className={styles.loadingState}>
         <p>Loading your profile...</p>
       </div>
     );
@@ -21,7 +18,7 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div style={{ padding: '2rem', color: 'red' }}>
+      <div className={styles.errorState}>
         <h2>Error loading profile</h2>
         <p>{error}</p>
       </div>
@@ -30,7 +27,7 @@ export default function DashboardPage() {
 
   if (!user) {
     return (
-      <div style={{ padding: '2rem' }}>
+      <div className={styles.notAuthState}>
         <h2>Not authenticated</h2>
         <p>Please log in again.</p>
       </div>
@@ -42,30 +39,17 @@ export default function DashboardPage() {
   const avatarUrl = getUserAvatar(user);
 
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '2rem', border: '1px solid #ddd', borderRadius: '8px' }}>
+    <div className={styles.container}>
       <h1>Dashboard</h1>
       <p>Welcome, {displayName}!</p>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.5rem 0' }}>
+      <div className={styles.userInfo}>
         {avatarUrl ? (
-          <img 
-            src={avatarUrl} 
-            alt={displayName} 
-            style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover' }} 
-          />
+          <div className={styles.avatarPlaceholder}>
+            <img src={avatarUrl} alt={displayName} />
+          </div>
         ) : (
-          <div style={{ 
-            width: '64px', 
-            height: '64px', 
-            borderRadius: '50%', 
-            backgroundColor: '#6E8B6B', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '1.5rem'
-          }}>
+          <div className={styles.avatarPlaceholder}>
             {initials}
           </div>
         )}
@@ -77,19 +61,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <button 
-        onClick={logout}
-        style={{
-          padding: '0.5rem 1rem',
-          backgroundColor: '#d9534f',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}
-      >
+      <Button variant="danger" onClick={logout}>
         Logout
-      </button>
+      </Button>
     </div>
   );
 }

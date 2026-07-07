@@ -20,7 +20,7 @@ import styles from './LoginForm.module.css';
 
 interface ScrollContextValue {
   scrollY: number;
-  heroProgress: number; // 0 to 1, how much of hero is scrolled
+  heroProgress: number;
 }
 
 const ScrollContext = createContext<ScrollContextValue>({ scrollY: 0, heroProgress: 0 });
@@ -73,7 +73,6 @@ const ScrollProvider = ({ children }: ScrollProviderProps) => {
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', updateScroll, { passive: true });
 
-    // Defer initial update to avoid synchronous setState in effect
     initialRafId.current = requestAnimationFrame(updateScroll);
 
     return () => {
@@ -203,11 +202,11 @@ const HeroSection = () => {
         >
           <div className={styles.avatars}>
             <div className={styles.avatarStack}>
-              <div className={styles.avatar} style={{ background: '#8B5CF6' }}>JD</div>
-              <div className={styles.avatar} style={{ background: '#4F7CFF' }}>AK</div>
-              <div className={styles.avatar} style={{ background: '#6B7280' }}>SM</div>
-              <div className={styles.avatar} style={{ background: '#10B981' }}>RJ</div>
-              <div className={styles.avatar} style={{ background: '#F59E0B' }}>+</div>
+              <div className={styles.avatar} style={{ background: '#8B5CFC' }}>JD</div>
+              <div className={styles.avatar} style={{ background: '#A78BFA' }}>AK</div>
+              <div className={styles.avatar} style={{ background: '#6D28D9' }}>SM</div>
+              <div className={styles.avatar} style={{ background: '#5CB08E' }}>RJ</div>
+              <div className={styles.avatar} style={{ background: '#E8C86A' }}>+</div>
             </div>
             <div className={styles.trustText}>
               <span>Trusted by thousands</span>

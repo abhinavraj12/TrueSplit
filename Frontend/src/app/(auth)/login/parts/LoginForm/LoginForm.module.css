@@ -19,8 +19,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #1A1F19;
-  background-image: radial-gradient(ellipse at 50% 30%, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
+  background: #0A0A08;
+  background-image: radial-gradient(ellipse at 50% 30%, rgba(139, 92, 252, 0.08) 0%, transparent 70%);
   padding: 40px 48px 48px 48px;
   position: relative;
   z-index: 1;
@@ -33,7 +33,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 60%, rgba(26, 31, 25, 0.5) 100%);
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(10, 10, 8, 0.5) 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -47,7 +47,6 @@
   height: 100%;
 }
 
-/* Logo */
 .brand {
   margin-bottom: var(--space-xxl);
   will-change: transform, opacity;
@@ -58,11 +57,10 @@
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #9AA897;
+  color: #B8B8D0;
   font-family: var(--font-family-heading);
 }
 
-/* Hero Typography */
 .heroContent {
   flex: 1;
   display: flex;
@@ -77,24 +75,24 @@
   font-weight: 300;
   line-height: 0.95;
   letter-spacing: -0.03em;
-  color: #ECEEEB;
+  color: #F0F0F5;
   margin: 0 0 var(--space-xl) 0;
   font-family: var(--font-family-heading);
   text-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 4px 16px rgba(0, 0, 0, 0.15);
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 .heroTitleEmphasis {
   font-weight: 800;
   letter-spacing: -0.02em;
   display: inline-block;
-  background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 50%, #6D28D9 100%);
+  background: linear-gradient(135deg, #8B5CFC 0%, #A78BFA 50%, #6D28D9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: none;
-  filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.2));
+  filter: drop-shadow(0 2px 8px rgba(139, 92, 252, 0.25));
 }
 
 .heroSubtext {
@@ -109,18 +107,17 @@
   align-items: center;
   gap: var(--space-sm);
   font-size: var(--font-size-md);
-  color: #A2AFA0;
+  color: #B8B8D0;
   font-weight: 400;
   line-height: 1.5;
 }
 
 .subtextIcon {
   font-size: var(--font-size-xs);
-  color: rgba(139, 92, 246, 0.6);
+  color: rgba(139, 92, 252, 0.6);
   flex-shrink: 0;
 }
 
-/* Trust Section (bottom-left) */
 .trustSection {
   margin-top: auto;
   padding-top: var(--space-xl);
@@ -147,8 +144,8 @@
   justify-content: center;
   font-size: var(--font-size-xs);
   font-weight: 600;
-  color: #FFFFFF;
-  border: 2px solid #1E241D;
+  color: #0A0A08;
+  border: 2px solid #0A0A08;
   margin-right: -8px;
   flex-shrink: 0;
 }
@@ -161,13 +158,13 @@
   display: flex;
   flex-direction: column;
   font-size: var(--font-size-sm);
-  color: #9AA897;
+  color: #B8B8D0;
   line-height: 1.4;
   margin-left: var(--space-sm);
 }
 
 .trustHighlight {
-  color: #A2AFA0;
+  color: #F0F0F5;
 }
 
 /* ============================================
@@ -368,7 +365,7 @@
 
 .featureIcon {
   font-size: 14px;
-  color: #8B5CF6;
+  color: #8B5CFC;
   opacity: 0.7;
   flex-shrink: 0;
   line-height: 1;
@@ -512,11 +509,6 @@
     gap: var(--space-md);
   }
 
-  .primaryButton {
-    min-height: 56px !important;
-    font-size: var(--font-size-md) !important;
-  }
-
   .secondaryButton {
     min-height: 52px !important;
     font-size: var(--font-size-sm) !important;
@@ -588,20 +580,9 @@
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  .primaryButton,
-  .secondaryButton,
   .errorDismiss,
   .legalLink {
     transition: none !important;
-  }
-
-  .primaryButton:hover:not(:disabled),
-  .secondaryButton:hover:not(:disabled) {
-    transform: none !important;
-  }
-
-  .primaryButton:hover:not(:disabled) {
-    box-shadow: 0 2px 8px rgba(44, 36, 30, 0.06) !important;
   }
 
   .heroSection,
