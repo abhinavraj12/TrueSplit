@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CreateExpenseRequest {  // Make sure this is public
+public class CreateExpenseRequest {
     @NotBlank(message = "Title is required")
     @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters")
     private String title;
@@ -39,4 +39,6 @@ public class CreateExpenseRequest {  // Make sure this is public
     private String timezone;
 
     private List<ManualSplitEntry> manualSplits;
+
+    private String groupId; // Optional group ID
 }
