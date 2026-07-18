@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-public class ManualSplitEntry {  // Add 'public' keyword
+public class ManualSplitEntry {
     @NotBlank(message = "User ID is required")
     private String userId;
 
