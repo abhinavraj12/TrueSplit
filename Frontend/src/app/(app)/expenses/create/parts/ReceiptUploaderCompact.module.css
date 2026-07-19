@@ -1,0 +1,257 @@
+/* Container */
+.container {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  transition: border-color 0.2s, background-color 0.2s;
+  max-height: 500px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.container.dragOver {
+  border-color: var(--color-btn-primary-bg);
+  background-color: var(--color-dropzone-bg);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-xs) var(--space-xs);
+  flex-shrink: 0;
+}
+
+.badge {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+}
+
+/* Slim Action Bar */
+.actionBar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--color-input-border);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  min-height: 50px;
+}
+
+.actionBar:hover {
+  border-color: var(--color-input-focus);
+}
+
+.container.dragOver .actionBar {
+  border-color: var(--color-btn-primary-bg);
+  background-color: var(--color-surface-hover);
+}
+
+.actionContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.actionText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.selectButton {
+  padding: 0 var(--space-sm) !important;
+  min-height: 28px !important;
+  font-size: var(--font-size-sm) !important;
+}
+
+.actionSubtext {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* Grid Container */
+.gridContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: var(--space-sm);
+  min-height: 80px;
+}
+
+/* Custom thin scrollbar */
+.gridContainer::-webkit-scrollbar {
+  width: 4px;
+}
+
+.gridContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gridContainer::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 4px;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 60px;
+  color: var(--color-text-muted);
+}
+
+/* Grid – Instagram style */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.gridItem {
+  position: relative;
+}
+
+.gridItemLarge {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.gridItemSmall {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+/* Card – no borders, perfect square, dark background */
+.card {
+  position: relative;
+  background: var(--color-bg-page); /* dark or light, but consistent */
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #1a1a1a; /* solid dark background to hide transparency */
+}
+
+.image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Progress overlay (bottom bar) */
+.progressOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(0,0,0,0.3);
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--color-progress-bg);
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--color-progress-fill);
+  transition: width 0.3s;
+}
+
+/* Remove button – floating on top-right */
+.removeButton {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+  font-size: 12px;
+  z-index: 2;
+}
+
+.removeButton:hover {
+  background: rgba(220, 40, 40, 0.85);
+}
+
+.removeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Filename overlay – dark gradient at bottom */
+.filenameOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 4px 6px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.filename {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .gridItemLarge {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gridItemLarge {
+    grid-column: span 2;
+  }
+}

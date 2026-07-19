@@ -11,6 +11,7 @@ import java.util.List;
 public class RecentExpenseResponse {
     private String id;
     private String title;
+    private String titleSlug;
     private List<ParticipantSummary> participants;
     private Instant time;
     private String pendingAmount;

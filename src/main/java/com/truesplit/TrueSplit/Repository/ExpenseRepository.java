@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public interface ExpenseRepository extends MongoRepository<Expense, String> {
     @Query("{ 'participants': ?0, 'status': 'ACTIVE' }")
     List<Expense> findActiveExpensesByParticipant(String userId);
 
-    @Query("{ '$or': [ { 'createdBy': ?0 }, { 'participants': ?0 } ], 'status': 'ACTIVE' }")
+    @Query("{ '$or': [ { 'createdBy': ?0 }, { 'participants': ?0 } ], 'status': { '$in': ['ACTIVE', 'PENDING', 'SETTLED'] } }")
     Page<Expense> findExpensesByUser(String userId, Pageable pageable);
 
     boolean existsByTitleSlug(String titleSlug);

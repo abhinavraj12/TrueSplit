@@ -7,7 +7,7 @@
 class AuthGuard {
     constructor() {
         this.PROTECTED_ROUTES = ['/dashboard'];
-        this.AUTH_CHECK_ENDPOINT = 'http://localhost:8080/api/me';
+        this.AUTH_CHECK_ENDPOINT = 'http://localhost:9090/api/me';
         this.LOGIN_PAGE = '/auth';
         this.HOME_PAGE = '/';
         
@@ -156,7 +156,7 @@ class AuthGuard {
             }
             
             // Call backend logout endpoint
-            const response = await fetch('http://localhost:8080/auth/logout', {
+            const response = await fetch('http://localhost:9090/auth/logout', {
                 method: 'POST',
                 credentials: 'include', // Important for sending cookies
                 headers: {

@@ -1,9 +1,13 @@
 package com.truesplit.TrueSplit.controller;
 
+import com.truesplit.TrueSplit.Repository.UserRepository;
 import com.truesplit.TrueSplit.dto.request.CreateExpenseRequest;
+import com.truesplit.TrueSplit.dto.request.ParticipantActionDto;
 import com.truesplit.TrueSplit.dto.response.ApiResponse;
 import com.truesplit.TrueSplit.dto.response.ExpenseResponse;
 import com.truesplit.TrueSplit.dto.response.RecentExpenseResponse;
+import com.truesplit.TrueSplit.exception.NotFoundException;
+import com.truesplit.TrueSplit.model.ParticipantStatus;
 import com.truesplit.TrueSplit.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +24,7 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private final UserRepository userRepository;
 
     @PostMapping
     public ResponseEntity<ApiResponse<ExpenseResponse>> createExpense(
@@ -46,5 +51,40 @@ public class ExpenseController {
 
         ExpenseResponse expense = expenseService.getExpense(identifier);
         return ResponseEntity.ok(ApiResponse.success(expense));
+    }
+
+    @PatchMapping("/{expenseId}/participants")
+    public ResponseEntity<ApiResponse<ParticipantStatus>> handleParticipantAction(
+            @PathVariable String expenseId,
+            @Valid @RequestBody ParticipantActionDto dto,
+            Authentication auth) {
+        String userId = getUserId(auth);
+        ParticipantStatus status = expenseService.handleParticipantAction(expenseId, userId, dto);
+        return ResponseEntity.ok(ApiResponse.success(status));
+    }
+
+    @PostMapping("/{expenseId}/settle")
+    public ResponseEntity<ApiResponse<Void>> settleExpense(
+            @PathVariable String expenseId,
+            Authentication auth) {
+        String userId = getUserId(auth);
+        expenseService.settleExpense(expenseId, userId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PatchMapping("/{expenseId}/cancel")
+    public ResponseEntity<ApiResponse<Void>> cancelExpense(
+            @PathVariable String expenseId,
+            Authentication auth) {
+        String userId = getUserId(auth);
+        expenseService.cancelExpense(expenseId, userId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    private String getUserId(Authentication auth) {
+        String email = auth.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found"))
+                .getId();
     }
 }
