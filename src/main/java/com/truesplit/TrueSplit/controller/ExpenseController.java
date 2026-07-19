@@ -72,6 +72,15 @@ public class ExpenseController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
+    @PatchMapping("/{expenseId}/cancel")
+    public ResponseEntity<ApiResponse<Void>> cancelExpense(
+            @PathVariable String expenseId,
+            Authentication auth) {
+        String userId = getUserId(auth);
+        expenseService.cancelExpense(expenseId, userId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
     private String getUserId(Authentication auth) {
         String email = auth.getName();
         return userRepository.findByEmail(email)

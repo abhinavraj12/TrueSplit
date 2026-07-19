@@ -5,6 +5,7 @@ import com.truesplit.TrueSplit.Repository.GroupMemberRepository;
 import com.truesplit.TrueSplit.Repository.ParticipantStatusRepository;
 import com.truesplit.TrueSplit.Repository.UserRepository;
 import com.truesplit.TrueSplit.dto.request.CreateExpenseRequest;
+import com.truesplit.TrueSplit.dto.request.ImageDto;
 import com.truesplit.TrueSplit.dto.request.ParticipantActionDto;
 import com.truesplit.TrueSplit.dto.response.ExpenseResponse;
 import com.truesplit.TrueSplit.dto.response.RecentExpenseResponse;
@@ -45,35 +46,28 @@ public class ExpenseService {
     @Transactional
     public ExpenseResponse createExpense(CreateExpenseRequest request, String currentUserEmail) {
 
-        // Get current user from email
         User currentUser = userRepository.findByEmail(currentUserEmail)
                 .orElseThrow(() -> new NotFoundException("Your account could not be found. Please sign in again."));
         String currentUserId = currentUser.getId();
 
-        // Deduplicate participants
         List<String> participants = new ArrayList<>(new LinkedHashSet<>(request.getParticipants()));
 
-        // Validate paidBy is in participants
         if (!participants.contains(request.getPaidBy())) {
             throw new IllegalArgumentException("The payer must be included as a participant.");
         }
 
-        // Validate participants exist
         for (String participantId : participants) {
             if (!userRepository.existsById(participantId)) {
                 throw new IllegalArgumentException("One or more participants could not be found.");
             }
         }
 
-        // Group validation if groupId is provided
         if (request.getGroupId() != null && !request.getGroupId().isBlank()) {
-            // Check user has permission for that group
             GroupMember gm = groupMemberRepository.findByGroupIdAndUserId(request.getGroupId(), currentUserId)
                     .orElseThrow(() -> new IllegalArgumentException("You are not a member of this group or group not found"));
             if (!gm.isHasPermission()) {
                 throw new SecurityException("You do not have permission to create expenses for this group.");
             }
-            // All participants must be members of the group
             List<String> memberIds = groupMemberRepository.findByGroupId(request.getGroupId())
                     .stream().map(GroupMember::getUserId).collect(Collectors.toList());
             for (String pid : participants) {
@@ -83,7 +77,6 @@ public class ExpenseService {
             }
         }
 
-        // Validate manual splits if applicable
         List<Expense.ManualSplit> manualSplits = null;
         if ("MANUAL".equals(request.getSplitType())) {
             if (request.getManualSplits() == null || request.getManualSplits().isEmpty()) {
@@ -126,10 +119,8 @@ public class ExpenseService {
             }
         }
 
-        // Generate unique slug
         String slug = slugGenerator.generateUniqueSlug(request.getTitle());
 
-        // Create expense date time
         ZoneId zoneId = resolveZoneId(request.getTimezone());
         LocalDate date = parseExpenseDate(request.getExpenseDate());
         LocalTime time = request.getExpenseTime() != null ?
@@ -137,7 +128,6 @@ public class ExpenseService {
         Instant expenseDateTime = LocalDateTime.of(date, time).atZone(zoneId).toInstant();
         Instant now = Instant.now();
 
-        // Build expense entity (without embedded settlements – we'll use separate collection)
         Expense expense = new Expense();
         expense.setTitle(request.getTitle());
         expense.setTitleSlug(slug);
@@ -151,22 +141,18 @@ public class ExpenseService {
         expense.setManualSplits(manualSplits);
         expense.setExpenseDateTime(expenseDateTime);
         expense.setTimezone(zoneId.getId());
-        expense.setStatus("PENDING");  // now pending until all participants accept
+        expense.setStatus("PENDING");
         expense.setImages(new ArrayList<>());
         expense.setCreatedAt(now);
         expense.setUpdatedAt(now);
 
-        // Save expense first to get ID
         Expense savedExpense = expenseRepository.save(expense);
 
-        // Create ParticipantStatus records for each participant
         for (String participantId : participants) {
             ParticipantStatus status = new ParticipantStatus();
             status.setExpenseId(savedExpense.getId());
             status.setUserId(participantId);
-            // Payer automatically accepted
             status.setStatus(participantId.equals(request.getPaidBy()) ? "ACCEPTED" : "PENDING");
-            // Find share amount
             BigDecimal share = manualSplits.stream()
                     .filter(s -> s.getUserId().equals(participantId))
                     .map(s -> s.getAmount().bigDecimalValue())
@@ -179,11 +165,29 @@ public class ExpenseService {
             participantStatusRepository.save(status);
         }
 
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            List<Expense.Image> images = request.getImages().stream()
+                    .map(this::convertToImageEntity)
+                    .collect(Collectors.toList());
+            savedExpense.setImages(images);
+            savedExpense.setUpdatedAt(now);
+            savedExpense = expenseRepository.save(savedExpense);
+        }
+
         // Notify participants (stub)
         // TODO: Send notifications to non-payer participants
 
-        // Convert to response DTO (will load statuses from repository)
         return convertToResponse(savedExpense);
+    }
+
+    private Expense.Image convertToImageEntity(ImageDto dto) {
+        Expense.Image image = new Expense.Image();
+        image.setUrl(dto.getUrl());
+        image.setOriginalName(dto.getOriginalName());
+        image.setSize(dto.getSize() != null ? dto.getSize() : 0L);
+        image.setUploadedAt(Instant.now());
+        image.setThumbnailUrl(dto.getUrl());
+        return image;
     }
 
     @Transactional
@@ -209,7 +213,6 @@ public class ExpenseService {
             status.setUpdatedAt(Instant.now());
             participantStatusRepository.save(status);
 
-            // Check if all participants have accepted
             List<ParticipantStatus> allStatuses = participantStatusRepository.findByExpenseId(expenseId);
             boolean allAccepted = allStatuses.stream().allMatch(s -> "ACCEPTED".equals(s.getStatus()));
             if (allAccepted) {
@@ -217,25 +220,20 @@ public class ExpenseService {
                 expense.setUpdatedAt(Instant.now());
                 expenseRepository.save(expense);
             }
-            // Notify payer (stub)
         } else if ("REJECT".equals(action)) {
             status.setStatus("REJECTED");
             status.setUpdatedAt(Instant.now());
             participantStatusRepository.save(status);
 
-            // Recalculate splits and remove participant
             removeParticipantAndRecalculate(expense, userId);
 
-            // Check if only payer remains -> cancel expense
             List<ParticipantStatus> remaining = participantStatusRepository.findByExpenseId(expenseId)
                     .stream().filter(s -> !"REJECTED".equals(s.getStatus())).collect(Collectors.toList());
             if (remaining.size() == 1 && remaining.get(0).getUserId().equals(expense.getPaidBy())) {
                 expense.setStatus("CANCELLED");
                 expense.setUpdatedAt(Instant.now());
                 expenseRepository.save(expense);
-                // Notify participants (stub)
             }
-            // Notify payer (stub)
         } else {
             throw new IllegalArgumentException("Action must be ACCEPT or REJECT.");
         }
@@ -244,19 +242,16 @@ public class ExpenseService {
     }
 
     private void removeParticipantAndRecalculate(Expense expense, String userId) {
-        // Remove from participants list
         expense.getParticipants().remove(userId);
 
         List<Expense.ManualSplit> currentSplits = expense.getManualSplits();
 
         if ("EQUAL".equals(expense.getSplitType())) {
-            // Recalculate equal splits among remaining participants
             List<String> remaining = expense.getParticipants();
             BigDecimal total = expense.getTotalAmount().bigDecimalValue();
             List<Expense.ManualSplit> newSplits = calculateEqualSplits(total, remaining);
             expense.setManualSplits(newSplits);
 
-            // Update ParticipantStatus for remaining participants
             for (Expense.ManualSplit split : newSplits) {
                 ParticipantStatus ps = participantStatusRepository
                         .findByExpenseIdAndUserId(expense.getId(), split.getUserId())
@@ -266,13 +261,11 @@ public class ExpenseService {
                 participantStatusRepository.save(ps);
             }
         } else {
-            // For MANUAL, add rejected user's share to payer
             BigDecimal rejectedShare = currentSplits.stream()
                     .filter(s -> s.getUserId().equals(userId))
                     .map(s -> s.getAmount().bigDecimalValue())
                     .findFirst().orElse(BigDecimal.ZERO);
 
-            // Increase payer's share
             Expense.ManualSplit payerSplit = currentSplits.stream()
                     .filter(s -> s.getUserId().equals(expense.getPaidBy()))
                     .findFirst()
@@ -280,19 +273,15 @@ public class ExpenseService {
             BigDecimal newPayerShare = payerSplit.getAmount().bigDecimalValue().add(rejectedShare);
             payerSplit.setAmount(new Decimal128(newPayerShare));
 
-            // Remove rejected user's split
             currentSplits.removeIf(s -> s.getUserId().equals(userId));
             expense.setManualSplits(currentSplits);
 
-            // Update payer's ParticipantStatus
             ParticipantStatus payerStatus = participantStatusRepository
                     .findByExpenseIdAndUserId(expense.getId(), expense.getPaidBy())
                     .orElseThrow(() -> new IllegalStateException("Payer status not found."));
             payerStatus.setShareAmount(newPayerShare);
             payerStatus.setUpdatedAt(Instant.now());
             participantStatusRepository.save(payerStatus);
-
-            // Rejected participant status remains REJECTED; we keep it for history.
         }
         expense.setUpdatedAt(Instant.now());
         expenseRepository.save(expense);
@@ -336,6 +325,38 @@ public class ExpenseService {
         expenseRepository.save(expense);
     }
 
+    @Transactional
+    public void cancelExpense(String expenseId, String userId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found."));
+
+        if (!expense.getPaidBy().equals(userId)) {
+            throw new SecurityException("Only the payer can cancel this expense.");
+        }
+
+        if ("SETTLED".equals(expense.getStatus()) || "CANCELLED".equals(expense.getStatus())) {
+            throw new IllegalArgumentException("Expense cannot be cancelled in its current state.");
+        }
+
+        List<ParticipantStatus> statuses = participantStatusRepository.findByExpenseId(expenseId);
+        boolean anySettled = statuses.stream().anyMatch(s -> "SETTLED".equals(s.getStatus()));
+        if (anySettled) {
+            throw new IllegalArgumentException("Cannot cancel expense because one or more participants have already settled.");
+        }
+
+        expense.setStatus("CANCELLED");
+        expense.setUpdatedAt(Instant.now());
+        expenseRepository.save(expense);
+
+        for (ParticipantStatus ps : statuses) {
+            if (!"REJECTED".equals(ps.getStatus())) {
+                ps.setStatus("CANCELLED");
+                ps.setUpdatedAt(Instant.now());
+                participantStatusRepository.save(ps);
+            }
+        }
+    }
+
     public ExpenseResponse getExpense(String identifier) {
         Expense expense;
 
@@ -364,12 +385,10 @@ public class ExpenseService {
     }
 
     private ExpenseResponse convertToResponse(Expense expense) {
-        // Load participant statuses from repository
         List<ParticipantStatus> statuses = participantStatusRepository.findByExpenseId(expense.getId());
         Map<String, ParticipantStatus> statusMap = statuses.stream()
                 .collect(Collectors.toMap(ParticipantStatus::getUserId, s -> s));
 
-        // Load user details
         Map<String, User> userMap = new HashMap<>();
         Set<String> userIds = new HashSet<>();
         userIds.add(expense.getPaidBy());
@@ -391,7 +410,6 @@ public class ExpenseService {
                 .createdAt(expense.getCreatedAt())
                 .updatedAt(expense.getUpdatedAt());
 
-        // Set paid by info
         User paidByUser = userMap.get(expense.getPaidBy());
         if (paidByUser != null) {
             builder.paidBy(ExpenseResponse.PaidByInfo.builder()
@@ -401,7 +419,6 @@ public class ExpenseService {
                     .build());
         }
 
-        // Set created by info
         User createdByUser = userMap.get(expense.getCreatedBy());
         if (createdByUser != null && !Objects.equals(expense.getCreatedBy(), expense.getPaidBy())) {
             builder.createdBy(ExpenseResponse.CreatedByInfo.builder()
@@ -411,7 +428,6 @@ public class ExpenseService {
                     .build());
         }
 
-        // Set participants info
         List<ExpenseResponse.ParticipantInfo> participantInfos = expense.getParticipants().stream()
                 .map(participantId -> {
                     User user = userMap.get(participantId);
@@ -426,7 +442,6 @@ public class ExpenseService {
                 .collect(Collectors.toList());
         builder.participants(participantInfos);
 
-        // Set manual splits if any
         if (expense.getManualSplits() != null) {
             List<ExpenseResponse.ManualSplitInfo> splitInfos = expense.getManualSplits().stream()
                     .map(split -> ExpenseResponse.ManualSplitInfo.builder()
@@ -437,7 +452,6 @@ public class ExpenseService {
             builder.manualSplits(splitInfos);
         }
 
-        // Set participant settlements from statusMap
         if (statusMap != null && !statusMap.isEmpty()) {
             List<ExpenseResponse.ParticipantSettlementInfo> settlementInfos = expense.getParticipants().stream()
                     .map(participantId -> {
@@ -452,6 +466,19 @@ public class ExpenseService {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             builder.participantSettlement(settlementInfos);
+        }
+
+        if (expense.getImages() != null && !expense.getImages().isEmpty()) {
+            List<ExpenseResponse.ImageInfo> imageInfos = expense.getImages().stream()
+                    .map(img -> ExpenseResponse.ImageInfo.builder()
+                            .url(img.getUrl())
+                            .thumbnailUrl(img.getThumbnailUrl())
+                            .originalName(img.getOriginalName())
+                            .size(img.getSize())
+                            .uploadedAt(img.getUploadedAt())
+                            .build())
+                    .collect(Collectors.toList());
+            builder.images(imageInfos);
         }
 
         return builder.build();
@@ -474,6 +501,7 @@ public class ExpenseService {
         return RecentExpenseResponse.builder()
                 .id(expense.getId())
                 .title(expense.getTitle())
+                .titleSlug(expense.getTitleSlug())
                 .participants(participants)
                 .time(expense.getExpenseDateTime())
                 .pendingAmount(calculatePendingAmount(expense, currentUserId).toPlainString())
@@ -482,7 +510,6 @@ public class ExpenseService {
     }
 
     private BigDecimal calculatePendingAmount(Expense expense, String currentUserId) {
-        // Load statuses for this expense
         List<ParticipantStatus> statuses = participantStatusRepository.findByExpenseId(expense.getId());
         Map<String, Boolean> settlementMap = statuses.stream()
                 .collect(Collectors.toMap(

@@ -31,7 +31,7 @@ spring:
                 user-name-attribute: sub
 
 server:
-  port: 8080
+  port: 9090
 
 jwt:
   secret: ${JWT_SECRET}
@@ -43,3 +43,8 @@ otp:
 
 frontend:
   redirect-home: ${FRONTEND_REDIRECT_HOME:http://localhost:4000}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}

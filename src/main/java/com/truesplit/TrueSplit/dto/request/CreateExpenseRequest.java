@@ -40,5 +40,7 @@ public class CreateExpenseRequest {
 
     private List<ManualSplitEntry> manualSplits;
 
-    private String groupId; // Optional group ID
+    private String groupId;
+
+    private List<ImageDto> images;
 }

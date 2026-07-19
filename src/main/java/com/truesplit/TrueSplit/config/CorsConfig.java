@@ -18,7 +18,7 @@ public class CorsConfig {
                                 "http://localhost:4000",   // frontend development
                                 "http://localhost:3000"    // frontend production
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }

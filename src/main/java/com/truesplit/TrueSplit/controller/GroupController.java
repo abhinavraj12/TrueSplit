@@ -77,9 +77,9 @@ public class GroupController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<GroupResponse>>> getUserGroups(Authentication auth) {
+    public ResponseEntity<ApiResponse<GroupService.GroupListResponse>> getUserGroups(Authentication auth) {
         String userId = getUserId(auth);
-        List<GroupResponse> groups = (List<GroupResponse>) groupService.getUserGroups(userId);
+        GroupService.GroupListResponse groups = groupService.getUserGroups(userId);
         return ResponseEntity.ok(ApiResponse.success(groups));
     }
 
