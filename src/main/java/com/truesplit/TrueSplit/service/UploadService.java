@@ -42,14 +42,14 @@ public class UploadService {
             throw new IllegalArgumentException("File size exceeds the 5 MB limit.");
         }
 
-        // 2. Validate file extension
+        // Validate file extension
         String filename = request.getFilename();
         String extension = getFileExtension(filename);
         if (!isAllowedExtension(extension)) {
             throw new IllegalArgumentException("File type not allowed. Allowed types: JPG, PNG, PDF.");
         }
 
-        // 3. Prepare upload parameters
+        // Prepare upload parameters
         Long timestamp = Instant.now().getEpochSecond();
         String folder = "receipts/" + userId;
         String publicId = String.format("%s/%s_%d", folder, UUID.randomUUID().toString(), timestamp);
@@ -59,20 +59,20 @@ public class UploadService {
         params.put("public_id", publicId);
         params.put("timestamp", timestamp);
 
-        // 4. Retrieve API secret from the cloudinary bean
+        // Retrieve API secret from the cloudinary bean
         String apiSecret = cloudinary.config.apiSecret;
         if (apiSecret == null || apiSecret.isEmpty()) {
             throw new IllegalStateException("Cloudinary API secret is not configured. Check your environment variables.");
         }
 
-        // 5. Generate signature using Cloudinary's official SDK method
+        // Generate signature using Cloudinary's official SDK method
         String signature = cloudinary.apiSignRequest(params, apiSecret);
 
-        log.info("Cloud name: {}", cloudinary.config.cloudName);
+        /*log.info("Cloud name: {}", cloudinary.config.cloudName);
         log.info("API key: {}", cloudinary.config.apiKey);
-        log.debug("Signature generated for publicId: {}", publicId);
+        log.debug("Signature generated for publicId: {}", publicId);*/
 
-        // 6. Build and return response
+        // Build and return response
         return UploadSignatureResponse.builder()
                 .cloudName(cloudinary.config.cloudName)
                 .apiKey(cloudinary.config.apiKey)

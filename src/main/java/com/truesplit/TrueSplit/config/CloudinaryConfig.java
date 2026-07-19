@@ -50,8 +50,8 @@ public class CloudinaryConfig {
 
         // Mask secret for logging (only first 6 characters)
         String maskedSecret = apiSecret.length() > 6 ? apiSecret.substring(0, 6) + "..." : "***";
-        log.info("Cloudinary configured: cloudName={}, apiKey={}, apiSecret={} (length: {})",
-                cloudName, apiKey, maskedSecret, apiSecret.length());
+       /* log.info("Cloudinary configured: cloudName={}, apiKey={}, apiSecret={} (length: {})",
+                cloudName, apiKey, maskedSecret, apiSecret.length());*/
 
         return new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", cloudName,
