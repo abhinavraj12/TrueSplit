@@ -63,7 +63,6 @@ export function BottomNav() {
       href: ROUTES.PROFILE,
     },
   ];
-console.log('BottomNav is rendering');
   return (
     <nav className={styles.nav} role="navigation" aria-label="Main navigation">
       <div className={styles.container}>

@@ -2,9 +2,7 @@ package com.truesplit.TrueSplit.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.time.Instant;
 import java.util.List;
 
@@ -67,6 +65,7 @@ public class ExpenseResponse {
     @Builder
     public static class ParticipantSettlementInfo {
         private String userId;
+        private String status;
         private boolean settled;
         private Instant settledAt;
     }

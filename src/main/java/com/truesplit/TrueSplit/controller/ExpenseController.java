@@ -99,6 +99,47 @@ public class ExpenseController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
+    // ============================================================================
+    // New Endpoints for "Mark as Paid" Feature
+    // ============================================================================
+
+    @PostMapping("/{expenseId}/participants/{userId}/request-payment")
+    public ResponseEntity<ApiResponse<Void>> requestPayment(
+            @PathVariable String expenseId,
+            @PathVariable String userId,
+            Authentication auth) {
+        String currentUserId = getUserId(auth);
+        if (!currentUserId.equals(userId)) {
+            throw new SecurityException("You can only request payment for yourself.");
+        }
+        expenseService.requestPayment(expenseId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{expenseId}/participants/{userId}/approve-payment")
+    public ResponseEntity<ApiResponse<Void>> approvePayment(
+            @PathVariable String expenseId,
+            @PathVariable String userId,
+            Authentication auth) {
+        String payerId = getUserId(auth);
+        expenseService.approvePayment(expenseId, payerId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{expenseId}/participants/{userId}/reject-payment")
+    public ResponseEntity<ApiResponse<Void>> rejectPayment(
+            @PathVariable String expenseId,
+            @PathVariable String userId,
+            Authentication auth) {
+        String payerId = getUserId(auth);
+        expenseService.rejectPayment(expenseId, payerId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ============================================================================
+    // Helper Method
+    // ============================================================================
+
     private String getUserId(Authentication auth) {
         String email = auth.getName();
         return userRepository.findByEmail(email)

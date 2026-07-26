@@ -38,9 +38,6 @@ import type {
   SplitType,
 } from '../types/expense.types';
 
-/**
- * Action types for the form reducer
- */
 type FormAction =
   | { type: 'SET_TITLE'; payload: string }
   | { type: 'SET_DESCRIPTION'; payload: string }
@@ -65,9 +62,6 @@ type FormAction =
   | { type: 'RESET_FORM' }
   | { type: 'RESTORE_STATE'; payload: Partial<ExpenseFormState> };
 
-/**
- * Default form state
- */
 const defaultState: ExpenseFormState = {
   title: '',
   description: '',
@@ -87,9 +81,6 @@ const defaultState: ExpenseFormState = {
   isUploading: false,
 };
 
-/**
- * Form reducer for predictable state updates
- */
 function formReducer(state: ExpenseFormState, action: FormAction): ExpenseFormState {
   switch (action.type) {
     case 'SET_TITLE':
@@ -156,25 +147,14 @@ function formReducer(state: ExpenseFormState, action: FormAction): ExpenseFormSt
   }
 }
 
-/**
- * Configuration for concurrent uploads
- */
 const UPLOAD_CONFIG = {
   concurrencyLimit: 5,
   maxFileSizeBytes: MAX_FILE_SIZE_BYTES,
   allowedMimeTypes: ALLOWED_MIME_TYPES,
 };
 
-/**
- * Create a Set of allowed MIME types for efficient membership testing.
- * Explicitly typed as Set<string> to accept any string for has() checks,
- * while still containing only the allowed values at runtime.
- */
 const allowedMimeSet: Set<string> = new Set(ALLOWED_MIME_TYPES);
 
-/**
- * Check if a file is allowed based on size and MIME type
- */
 function isFileAllowed(file: File): { valid: boolean; error?: string } {
   if (file.size > UPLOAD_CONFIG.maxFileSizeBytes) {
     return { valid: false, error: `File "${file.name}" exceeds the 1MB limit.` };
@@ -185,9 +165,6 @@ function isFileAllowed(file: File): { valid: boolean; error?: string } {
   return { valid: true };
 }
 
-/**
- * Return type for the useCreateExpense hook
- */
 interface UseCreateExpenseReturn {
   state: ExpenseFormState;
   setTitle: (title: string) => void;
@@ -227,18 +204,11 @@ interface UseCreateExpenseReturn {
   submitForm: () => Promise<void>;
 }
 
-/**
- * Hook for creating an expense with full form management
- */
 export function useCreateExpense(): UseCreateExpenseReturn {
   const router = useRouter();
   const [state, dispatch] = useReducer(formReducer, defaultState);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  // ============================================================================
-  // Individual field setters
-  // ============================================================================
 
   const setTitle = useCallback((title: string) => {
     dispatch({ type: 'SET_TITLE', payload: title });
@@ -300,14 +270,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
     dispatch({ type: 'REMOVE_IMAGE', payload: index });
   }, []);
 
-  // ============================================================================
-  // File management functions
-  // ============================================================================
-
-  /**
-   * Add multiple files to the pending list with duplicate detection.
-   * Returns the files that were added and those that were skipped.
-   */
   const addFiles = useCallback((files: File[]): { added: File[]; skipped: File[] } => {
     const validFiles: File[] = [];
     const skippedFiles: File[] = [];
@@ -357,10 +319,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
     dispatch({ type: 'RESTORE_STATE', payload: restoredState });
   }, []);
 
-  // ============================================================================
-  // Validation
-  // ============================================================================
-
   const titleError = useMemo(() => validateTitle(state.title), [state.title]);
   const amountError = useMemo(() => validateAmount(state.totalAmount), [state.totalAmount]);
   const participantsError = useMemo(() => validateParticipants(state.participants.map(p => p.id)), [state.participants]);
@@ -396,10 +354,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
     );
   }, [state.title, state.totalAmount, state.participants, state.paidBy, state.expenseDate, state.splitType, state.manualSplits]);
 
-  // ============================================================================
-  // Split calculations
-  // ============================================================================
-
   const participantIds = useMemo(() => state.participants.map(p => p.id), [state.participants]);
 
   const equalShare = useMemo(() => {
@@ -423,14 +377,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
     return Math.abs(remainingAmount) < 0.01;
   }, [remainingAmount, state.totalAmount]);
 
-  // ============================================================================
-  // Upload function for pending files
-  // ============================================================================
-
-  /**
-   * Upload all pending files to Cloudinary with concurrency control.
-   * Returns an array of ImageDto objects for the uploaded files.
-   */
   const uploadPendingFiles = useCallback(async (): Promise<ImageDto[]> => {
     const pendingFiles = state.pendingFiles;
     if (pendingFiles.length === 0) {
@@ -443,7 +389,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
       const results: ImageDto[] = [];
       const errors: string[] = [];
 
-      // Process files with concurrency limit
       const concurrencyLimit = UPLOAD_CONFIG.concurrencyLimit;
       const batches: File[][] = [];
 
@@ -454,14 +399,12 @@ export function useCreateExpense(): UseCreateExpenseReturn {
       for (const batch of batches) {
         const batchPromises = batch.map(async (file) => {
           try {
-            // Get upload signature from backend
             const signatureResponse = await getUploadSignature({
               filename: file.name,
               size: file.size,
               folder: 'receipts',
             });
 
-            // Upload to Cloudinary
             const formData = new FormData();
             formData.append('file', file);
             formData.append('api_key', signatureResponse.apiKey);
@@ -472,7 +415,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
 
             const uploadUrl = signatureResponse.uploadUrl;
 
-            // Use XMLHttpRequest for progress tracking
             return new Promise<ImageDto>((resolve, reject) => {
               const xhr = new XMLHttpRequest();
 
@@ -549,12 +491,7 @@ export function useCreateExpense(): UseCreateExpenseReturn {
     }
   }, [state.pendingFiles]);
 
-  // ============================================================================
-  // Form submission
-  // ============================================================================
-
   const submitForm = useCallback(async () => {
-    // Validate before submission
     if (!isFormValid) {
       setSubmitError('Please fix the highlighted errors before submitting.');
       return;
@@ -564,7 +501,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
     setSubmitError(null);
 
     try {
-      // 1. Upload all pending files first (deferred upload)
       let uploadedImages: ImageDto[] = [];
       try {
         uploadedImages = await uploadPendingFiles();
@@ -576,10 +512,8 @@ export function useCreateExpense(): UseCreateExpenseReturn {
         return;
       }
 
-      // 2. Combine existing images with newly uploaded ones
       const allImages = [...state.images, ...uploadedImages];
 
-      // 3. Build the request payload
       const request: CreateExpenseRequest = {
         title: state.title.trim(),
         description: state.description.trim() || undefined,
@@ -595,7 +529,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
         images: allImages.length > 0 ? allImages : undefined,
       };
 
-      // Add manual splits if MANUAL
       if (state.splitType === 'MANUAL') {
         request.manualSplits = Object.entries(state.manualSplits)
           .filter(([_, amount]) => amount > 0)
@@ -603,7 +536,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
             userId,
             amount: Math.round(amount * 100) / 100,
           }));
-        // Ensure all participants have an entry (even zero)
         const allParticipantIds = state.participants.map(p => p.id);
         const existingUserIds = new Set(request.manualSplits.map(s => s.userId));
         for (const userId of allParticipantIds) {
@@ -613,18 +545,18 @@ export function useCreateExpense(): UseCreateExpenseReturn {
         }
       }
 
-      // 4. Submit to backend
       const expenseResponse = await createExpense(request);
 
-      // 5. Show success toast
+      const redirectPath = expenseResponse.titleSlug
+        ? `/expenses/${expenseResponse.titleSlug}`
+        : `/expenses/${expenseResponse.id}`;
+
       toast.success(EXPENSE_SUCCESS_MESSAGES.CREATED);
 
-      // 6. Clear pending files and reset form state
       dispatch({ type: 'CLEAR_FILES' });
       resetForm();
 
-      // 7. Navigate to the expense detail page
-      router.push(`/expenses/${expenseResponse.id}`);
+      router.push(redirectPath);
 
     } catch (error) {
       const errorMessage =
@@ -641,10 +573,6 @@ export function useCreateExpense(): UseCreateExpenseReturn {
     resetForm,
     uploadPendingFiles,
   ]);
-
-  // ============================================================================
-  // Return
-  // ============================================================================
 
   return {
     state,

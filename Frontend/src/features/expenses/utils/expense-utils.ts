@@ -12,6 +12,8 @@ import {
   MIN_PARTICIPANTS,
   MAX_FILE_SIZE_BYTES,
   ALLOWED_MIME_TYPES,
+  RESERVED_TITLES,
+  EXPENSE_ERROR_MESSAGES,
 } from '../constants/expense.constants';
 
 import type { ExpenseResponse } from '../types/expense.types';
@@ -167,14 +169,21 @@ export function isFullyAllocated(manualSplits: Record<string, number>, totalAmou
  */
 export function validateTitle(title: string): string | null {
   if (!title || title.trim() === '') {
-    return 'Please enter a title.';
+    return EXPENSE_ERROR_MESSAGES.TITLE_REQUIRED;
   }
   if (title.trim().length < MIN_TITLE_LENGTH) {
-    return `Title must be at least ${MIN_TITLE_LENGTH} characters.`;
+    return EXPENSE_ERROR_MESSAGES.TITLE_TOO_SHORT;
   }
   if (title.trim().length > MAX_TITLE_LENGTH) {
-    return `Title cannot exceed ${MAX_TITLE_LENGTH} characters.`;
+    return EXPENSE_ERROR_MESSAGES.TITLE_TOO_LONG;
   }
+
+  const trimmedLower = title.trim().toLowerCase();
+  const reservedSet = new Set<string>(RESERVED_TITLES);
+  if (reservedSet.has(trimmedLower)) {
+    return EXPENSE_ERROR_MESSAGES.TITLE_RESERVED;
+  }
+
   return null;
 }
 
@@ -184,15 +193,15 @@ export function validateTitle(title: string): string | null {
  */
 export function validateAmount(amount: number | null): string | null {
   if (amount === null || amount === undefined) {
-    return 'Please enter an amount.';
+    return EXPENSE_ERROR_MESSAGES.AMOUNT_REQUIRED;
   }
   if (isNaN(amount) || amount <= 0) {
-    return 'Amount must be greater than zero.';
+    return EXPENSE_ERROR_MESSAGES.AMOUNT_POSITIVE;
   }
   // Check for more than 2 decimal places
   const rounded = Math.round(amount * 100) / 100;
   if (Math.abs(amount - rounded) > 0.0001) {
-    return 'Amount cannot have more than 2 decimal places.';
+    return EXPENSE_ERROR_MESSAGES.AMOUNT_INVALID;
   }
   return null;
 }
@@ -203,10 +212,10 @@ export function validateAmount(amount: number | null): string | null {
  */
 export function validateParticipants(participants: string[]): string | null {
   if (!participants || participants.length < MIN_PARTICIPANTS) {
-    return `Please add at least ${MIN_PARTICIPANTS} participants.`;
+    return EXPENSE_ERROR_MESSAGES.PARTICIPANTS_MIN;
   }
   if (participants.length > MAX_PARTICIPANTS) {
-    return `Cannot have more than ${MAX_PARTICIPANTS} participants.`;
+    return EXPENSE_ERROR_MESSAGES.PARTICIPANTS_MAX;
   }
   // Check for duplicates
   const unique = new Set(participants);
@@ -221,7 +230,7 @@ export function validateParticipants(participants: string[]): string | null {
  */
 export function validatePaidBy(paidBy: string, participants: string[]): string | null {
   if (!paidBy) {
-    return 'Please select who paid.';
+    return EXPENSE_ERROR_MESSAGES.PAID_BY_REQUIRED;
   }
   if (!participants.includes(paidBy)) {
     return 'The payer must be included as a participant.';
@@ -235,7 +244,7 @@ export function validatePaidBy(paidBy: string, participants: string[]): string |
  */
 export function validateDate(date: Date | null): string | null {
   if (!date) {
-    return 'Please select a date.';
+    return EXPENSE_ERROR_MESSAGES.DATE_REQUIRED;
   }
   if (!(date instanceof Date) || isNaN(date.getTime())) {
     return 'Please select a valid date.';
@@ -299,10 +308,10 @@ export function generateSlug(title: string): string {
   return title
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
-    .replace(/^-+|-+$/g, ''); // Trim hyphens from start and end
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 // ============================================================================
@@ -463,7 +472,6 @@ export interface GroupedExpenses {
   expenses: ExpenseResponse[];
 }
 
-
 /**
  * Returns a label for a given date relative to today.
  * - If the date is today → "Today · MMM DD"
@@ -505,7 +513,7 @@ export function groupExpensesByDate(expenses: ExpenseResponse[]): GroupedExpense
 
   for (const expense of expenses) {
     const date = new Date(expense.expenseDateTime);
-    const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
+    const dateKey = date.toISOString().split('T')[0];
 
     if (!groups.has(dateKey)) {
       const normalized = new Date(date);
@@ -529,7 +537,6 @@ export function groupExpensesByDate(expenses: ExpenseResponse[]): GroupedExpense
 
   result.sort((a, b) => b.date.getTime() - a.date.getTime());
 
-  // Ensure "Earlier" group is always last (if present)
   const earlierIndex = result.findIndex((g) => g.label === 'Earlier');
   if (earlierIndex > -1) {
     const [earlierGroup] = result.splice(earlierIndex, 1);

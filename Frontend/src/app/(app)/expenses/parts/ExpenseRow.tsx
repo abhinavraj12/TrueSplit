@@ -18,6 +18,7 @@ function getStatusDotClass(status: ExpenseStatus): string {
     ACTIVE: styles.dotActive,
     SETTLED: styles.dotSettled,
     CANCELLED: styles.dotCancelled,
+    PAYMENT_REQUESTED: styles.dotPending,
   };
   return map[status] || styles.dotActive;
 }
@@ -28,6 +29,7 @@ function getStatusDotAriaLabel(status: ExpenseStatus): string {
     ACTIVE: 'Active',
     SETTLED: 'Settled',
     CANCELLED: 'Cancelled',
+    PAYMENT_REQUESTED: 'Waiting for approval',
   };
   return map[status] || 'Unknown status';
 }

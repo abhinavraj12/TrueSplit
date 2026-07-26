@@ -20,8 +20,9 @@ export type CurrencyCode = 'USD' | 'EUR' | 'GBP' | 'INR' | 'JPY' | 'CAD' | 'AUD'
 
 /**
  * Expense status – matches backend Expense.status
+ * Also used for participant status.
  */
-export type ExpenseStatus = 'PENDING' | 'ACTIVE' | 'SETTLED' | 'CANCELLED';
+export type ExpenseStatus = 'PENDING' | 'ACTIVE' | 'SETTLED' | 'CANCELLED' | 'PAYMENT_REQUESTED';
 
 // ============================================================================
 // DTOs for API Requests
@@ -161,6 +162,7 @@ export interface ManualSplitInfo {
 
 export interface ParticipantSettlementInfo {
   userId: string;
+  status: string;
   settled: boolean;
   settledAt?: string;
 }

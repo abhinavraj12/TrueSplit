@@ -108,6 +108,9 @@ export {
   handleParticipantAction,
   settleExpense,
   cancelExpense,
+  requestPayment,
+  approvePayment,
+  rejectPayment,
 } from './services/expense-api';
 
 export { getUploadSignature } from './services/upload-api';

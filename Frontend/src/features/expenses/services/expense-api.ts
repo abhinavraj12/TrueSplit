@@ -88,3 +88,31 @@ export function settleExpense(expenseId: string): Promise<void> {
 export function cancelExpense(expenseId: string): Promise<void> {
   return api.patch<void>(`${BASE_PATH}/${expenseId}/cancel`);
 }
+
+// ============================================================================
+// New API Functions for "Mark as Paid" Feature
+// ============================================================================
+
+/**
+ * Request payment approval from the payer (participant only)
+ * POST /api/v1/expenses/{expenseId}/participants/{userId}/request-payment
+ */
+export function requestPayment(expenseId: string, userId: string): Promise<void> {
+  return api.post<void>(`${BASE_PATH}/${expenseId}/participants/${userId}/request-payment`);
+}
+
+/**
+ * Approve a participant's payment request (payer only)
+ * POST /api/v1/expenses/{expenseId}/participants/{userId}/approve-payment
+ */
+export function approvePayment(expenseId: string, userId: string): Promise<void> {
+  return api.post<void>(`${BASE_PATH}/${expenseId}/participants/${userId}/approve-payment`);
+}
+
+/**
+ * Reject a participant's payment request (payer only)
+ * POST /api/v1/expenses/{expenseId}/participants/{userId}/reject-payment
+ */
+export function rejectPayment(expenseId: string, userId: string): Promise<void> {
+  return api.post<void>(`${BASE_PATH}/${expenseId}/participants/${userId}/reject-payment`);
+}

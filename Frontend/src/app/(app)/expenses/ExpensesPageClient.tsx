@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/features/auth';
 import { usePaginatedExpenses } from '@/features/expenses/hooks/usePaginatedExpenses';
 import { groupExpensesByDate } from '@/features/expenses/utils/expense-utils';
@@ -9,6 +10,7 @@ import { handleParticipantAction, settleExpense } from '@/features/expenses/serv
 import { toast } from '@/shared/_components/molecules/Toast/ToastProvider';
 import { Spinner } from '@/shared/_components/atoms/Spinner';
 import { PageHeader } from '@/shared/_components/molecules/PageHeader';
+import { Tooltip } from '@/shared/_components/atoms/Tooltip';
 import { SearchBar } from './parts/SearchBar';
 import { FilterBar } from './parts/FilterBar';
 import { DateGroup } from './parts/DateGroup';
@@ -168,7 +170,14 @@ export function ExpensesPageClient() {
                 {expenses.length > 0 ? `Showing ${expenses.length}` : ''}
               </span>
             </div>
-            <SearchBar value={searchTerm} onChange={setSearch} />
+            <div className={styles.headerRight}>
+              <SearchBar value={searchTerm} onChange={setSearch} />
+              <Tooltip content="✨ Start a new adventure – split your first expense!" placement="bottom">
+                <Link href="/expenses/create" className={styles.createButton}>
+                  + Create
+                </Link>
+              </Tooltip>
+            </div>
           </div>
 
           <FilterBar activeStatus={status} onChange={setStatus} />

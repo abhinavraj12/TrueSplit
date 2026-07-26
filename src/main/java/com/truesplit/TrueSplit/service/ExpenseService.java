@@ -395,7 +395,6 @@ public class ExpenseService {
     }
 
     public Page<ExpenseResponse> getUserExpenses(String userId, Pageable pageable, String statusFilter, String search) {
-        // Determine statuses
         List<String> statuses;
         if (statusFilter == null || statusFilter.isBlank()) {
             statuses = DEFAULT_STATUSES;
@@ -407,56 +406,42 @@ public class ExpenseService {
             statuses = List.of(trimmed);
         }
 
-        // Base criteria: user created or participant
+        // Build the base query
         Criteria baseCriteria = new Criteria().orOperator(
-                Criteria.where("createdBy").is(userId),
-                Criteria.where("participants").in(userId)
+            Criteria.where("createdBy").is(userId),
+            Criteria.where("participants").in(userId)
         );
 
-        // Status criteria
         Criteria statusCriteria = Criteria.where("status").in(statuses);
 
-        // Combine base and status
+        // Start with the base criteria and status criteria
         Criteria finalCriteria = new Criteria().andOperator(baseCriteria, statusCriteria);
 
         // Add search criteria if provided
         if (search != null && !search.isBlank()) {
-            String searchTerm = search.trim();
-            // Escape regex special characters to treat the term as literal
-            String escapedTerm = Pattern.quote(searchTerm);
-
-            // Find users whose name contains the search term
-            List<String> matchingUserIds = userRepository.findByNameContainingIgnoreCase(searchTerm)
+            String searchRegex = search.trim();
+            String escapedRegex = Pattern.quote(searchRegex);
+            
+            List<String> matchingUserIds = userRepository.findByNameContainingIgnoreCase(searchRegex)
                     .stream()
                     .map(User::getId)
                     .collect(Collectors.toList());
 
-            // Title match criteria
-            Criteria titleCriteria = Criteria.where("title").regex(escapedTerm, "i");
-
-            // Participants match criteria
+            Criteria titleCriteria = Criteria.where("title").regex(escapedRegex, "i");
+            
             Criteria participantsCriteria;
             if (matchingUserIds.isEmpty()) {
-                // No matching users – make this condition always false so only title matches work
                 participantsCriteria = Criteria.where("participants").in(Collections.emptyList());
             } else {
                 participantsCriteria = Criteria.where("participants").in(matchingUserIds);
             }
 
-            // Combine title and participants with OR
             Criteria searchCriteria = new Criteria().orOperator(titleCriteria, participantsCriteria);
-
-            // Add searchCriteria to final query with AND
-            finalCriteria = new Criteria().andOperator(finalCriteria, searchCriteria);
+            finalCriteria = new Criteria().andOperator(baseCriteria, statusCriteria, searchCriteria);
         }
 
-        // Build the query
         Query query = new Query(finalCriteria);
         query.with(pageable);
-
-        // Log the query for debugging (remove in production)
-        log.debug("Search query: {}", search);
-        log.debug("MongoDB query: {}", query);
 
         long total = mongoTemplate.count(query, Expense.class);
         List<Expense> expenses = mongoTemplate.find(query, Expense.class);
@@ -466,6 +451,179 @@ public class ExpenseService {
 
         return new PageImpl<>(responseList, pageable, total);
     }
+
+    // ============================================================================
+    // New Methods for "Mark as Paid" Feature
+    // ============================================================================
+
+    @Transactional
+    public void requestPayment(String expenseId, String userId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found."));
+
+        if (!"ACTIVE".equals(expense.getStatus())) {
+            throw new IllegalArgumentException("This expense is not active. Payments can only be requested for active expenses.");
+        }
+
+        if (expense.getPaidBy().equals(userId)) {
+            throw new IllegalArgumentException("The payer cannot request payment for their own expense.");
+        }
+
+        ParticipantStatus status = participantStatusRepository.findByExpenseIdAndUserId(expenseId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("You are not a participant of this expense."));
+
+        if (!"ACCEPTED".equals(status.getStatus())) {
+            throw new IllegalArgumentException("You can only request payment after accepting the expense.");
+        }
+
+        if ("PAYMENT_REQUESTED".equals(status.getStatus())) {
+            throw new IllegalArgumentException("You have already requested payment approval.");
+        }
+
+        if ("SETTLED".equals(status.getStatus())) {
+            throw new IllegalArgumentException("You have already settled this expense.");
+        }
+
+        status.setStatus("PAYMENT_REQUESTED");
+        status.setUpdatedAt(Instant.now());
+        participantStatusRepository.save(status);
+
+        notifyPayer(expense, userId);
+    }
+
+    @Transactional
+    public void approvePayment(String expenseId, String payerId, String participantId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found."));
+
+        if (!"ACTIVE".equals(expense.getStatus())) {
+            throw new IllegalArgumentException("This expense is not active. Payments can only be approved for active expenses.");
+        }
+
+        if (!expense.getPaidBy().equals(payerId)) {
+            throw new SecurityException("Only the payer can approve payment requests.");
+        }
+
+        if (expense.getPaidBy().equals(participantId)) {
+            throw new IllegalArgumentException("The payer cannot approve their own payment request.");
+        }
+
+        ParticipantStatus status = participantStatusRepository.findByExpenseIdAndUserId(expenseId, participantId)
+                .orElseThrow(() -> new IllegalArgumentException("Participant not found in this expense."));
+
+        if (!"PAYMENT_REQUESTED".equals(status.getStatus())) {
+            throw new IllegalArgumentException("This participant has not requested payment approval.");
+        }
+
+        status.setStatus("SETTLED");
+        status.setSettledAt(Instant.now());
+        status.setUpdatedAt(Instant.now());
+        participantStatusRepository.save(status);
+
+        notifyParticipantApproved(expense, participantId);
+
+        checkAndAutoSettle(expense);
+    }
+
+    @Transactional
+    public void rejectPayment(String expenseId, String payerId, String participantId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found."));
+
+        if (!"ACTIVE".equals(expense.getStatus())) {
+            throw new IllegalArgumentException("This expense is not active. Payments can only be rejected for active expenses.");
+        }
+
+        if (!expense.getPaidBy().equals(payerId)) {
+            throw new SecurityException("Only the payer can reject payment requests.");
+        }
+
+        if (expense.getPaidBy().equals(participantId)) {
+            throw new IllegalArgumentException("The payer cannot reject their own payment request.");
+        }
+
+        ParticipantStatus status = participantStatusRepository.findByExpenseIdAndUserId(expenseId, participantId)
+                .orElseThrow(() -> new IllegalArgumentException("Participant not found in this expense."));
+
+        if (!"PAYMENT_REQUESTED".equals(status.getStatus())) {
+            throw new IllegalArgumentException("This participant has not requested payment approval.");
+        }
+
+        status.setStatus("ACCEPTED");
+        status.setUpdatedAt(Instant.now());
+        participantStatusRepository.save(status);
+
+        notifyParticipantRejected(expense, participantId);
+    }
+
+    private void checkAndAutoSettle(Expense expense) {
+        List<ParticipantStatus> allStatuses = participantStatusRepository.findByExpenseId(expense.getId());
+        String payerId = expense.getPaidBy();
+
+        // Case 1: All participants are already SETTLED → expense is settled
+        boolean allSettled = allStatuses.stream().allMatch(s -> "SETTLED".equals(s.getStatus()));
+        if (allSettled) {
+            expense.setStatus("SETTLED");
+            expense.setUpdatedAt(Instant.now());
+            expenseRepository.save(expense);
+            log.info("Expense {} automatically settled as all participants are settled.", expense.getId());
+            return;
+        }
+
+        // Case 2: All non-payer participants are SETTLED, and the payer is ACCEPTED
+        // → auto-settle the payer and close the expense
+        boolean allNonPayerSettled = allStatuses.stream()
+                .filter(s -> !s.getUserId().equals(payerId))
+                .allMatch(s -> "SETTLED".equals(s.getStatus()));
+
+        boolean payerAccepted = allStatuses.stream()
+                .filter(s -> s.getUserId().equals(payerId))
+                .anyMatch(s -> "ACCEPTED".equals(s.getStatus()));
+
+        if (allNonPayerSettled && payerAccepted) {
+            // Find the payer's ParticipantStatus
+            ParticipantStatus payerStatus = allStatuses.stream()
+                    .filter(s -> s.getUserId().equals(payerId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (payerStatus != null) {
+                payerStatus.setStatus("SETTLED");
+                payerStatus.setSettledAt(Instant.now());
+                payerStatus.setUpdatedAt(Instant.now());
+                participantStatusRepository.save(payerStatus);
+
+                expense.setStatus("SETTLED");
+                expense.setUpdatedAt(Instant.now());
+                expenseRepository.save(expense);
+
+                log.info("Expense {} auto-settled payer {} and closed.", expense.getId(), payerId);
+            }
+        }
+    }
+
+    // ============================================================================
+    // Notification Helpers
+    // ============================================================================
+
+    private void notifyPayer(Expense expense, String participantId) {
+        log.info("Notify payer {} that participant {} requested payment for expense {}", 
+                expense.getPaidBy(), participantId, expense.getId());
+    }
+
+    private void notifyParticipantApproved(Expense expense, String participantId) {
+        log.info("Notify participant {} that their payment was approved for expense {}", 
+                participantId, expense.getId());
+    }
+
+    private void notifyParticipantRejected(Expense expense, String participantId) {
+        log.info("Notify participant {} that their payment was rejected for expense {}", 
+                participantId, expense.getId());
+    }
+
+    // ============================================================================
+    // Private Helper Methods
+    // ============================================================================
 
     private ExpenseResponse convertToResponse(Expense expense) {
         List<ParticipantStatus> statuses = participantStatusRepository.findByExpenseId(expense.getId());
@@ -542,6 +700,7 @@ public class ExpenseService {
                         if (ps == null) return null;
                         return ExpenseResponse.ParticipantSettlementInfo.builder()
                                 .userId(ps.getUserId())
+                                .status(ps.getStatus())
                                 .settled("SETTLED".equals(ps.getStatus()))
                                 .settledAt(ps.getSettledAt())
                                 .build();

@@ -1,58 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { api } from '@/shared/lib/api';
-import { formatCurrency, getCurrencySymbol, settleExpense } from '@/features/expenses';
-import { Button } from '@/shared/_components/atoms/Button';
 import { useAuth } from '@/features/auth';
+import { 
+  getExpense, 
+  handleParticipantAction, 
+  settleExpense, 
+  cancelExpense,
+  requestPayment,
+  approvePayment,
+  rejectPayment
+} from '@/features/expenses/services/expense-api';
 import { toast } from '@/shared/_components/molecules/Toast/ToastProvider';
-
-interface ParticipantInfo {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-}
-
-interface ManualSplitInfo {
-  userId: string;
-  amount: string;
-}
-
-interface ParticipantSettlementInfo {
-  userId: string;
-  settled: boolean;
-  settledAt?: string;
-}
-
-interface ImageInfo {
-  url: string;
-  thumbnailUrl?: string;
-  originalName?: string;
-  size?: number;
-  uploadedAt?: string;
-}
-
-interface ExpenseDetail {
-  id: string;
-  title: string;
-  titleSlug: string;
-  description?: string;
-  totalAmount: string;
-  currency: string;
-  splitType: string;
-  paidBy: { id: string; name: string; email: string };
-  participants: ParticipantInfo[];
-  manualSplits?: ManualSplitInfo[];
-  expenseDateTime: string;
-  status: string;
-  participantSettlement?: ParticipantSettlementInfo[];
-  images?: ImageInfo[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { Spinner } from '@/shared/_components/atoms/Spinner';
+import { PageHeader } from '@/shared/_components/molecules/PageHeader';
+import { ExpenseDetailHeader } from './parts/ExpenseDetailHeader';
+import { DistributionCard } from './parts/DistributionCard';
+import { ParticipantsList } from './parts/ParticipantsList';
+import { ReceiptsGrid } from './parts/ReceiptsGrid';
+import { ActionsBar } from './parts/ActionsBar';
+import type { ExpenseResponse } from '@/features/expenses';
+import styles from './page.module.css';
 
 export default function ExpenseDetailPage() {
   const params = useParams();
@@ -60,16 +29,16 @@ export default function ExpenseDetailPage() {
   const slug = params.slug as string;
   const { user } = useAuth();
 
-  const [expense, setExpense] = useState<ExpenseDetail | null>(null);
+  const [expense, setExpense] = useState<ExpenseResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [settling, setSettling] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
-  const fetchExpense = async () => {
+  const fetchExpense = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.get<ExpenseDetail>(`/expenses/${slug}`);
+      const data = await getExpense(slug);
       setExpense(data);
     } catch (err) {
       setError('Failed to load expense details.');
@@ -77,257 +46,147 @@ export default function ExpenseDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchExpense();
   }, [slug]);
 
-  const goBack = () => {
-    router.push('/expenses');
-  };
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchExpense();
+  }, [fetchExpense]);
 
-  const handleSettleAll = async () => {
+  const handleAction = async (action: 'ACCEPT' | 'REJECT' | 'SETTLE' | 'CANCEL') => {
+      console.log('handleAction called with:', action);
+
     if (!expense) return;
-    setSettling(true);
+    setActionLoading(true);
     try {
-      await settleExpense(expense.id);
-      toast.success('Expense marked as settled.');
-      await fetchExpense(); // refresh data
+      if (action === 'ACCEPT' || action === 'REJECT') {
+        await handleParticipantAction(expense.id, action);
+        toast.success(`Expense ${action.toLowerCase()}ed successfully.`);
+      } else if (action === 'SETTLE') {
+        await settleExpense(expense.id);
+        toast.success('Expense marked as settled.');
+      } else if (action === 'CANCEL') {
+        await cancelExpense(expense.id);
+        toast.success('Expense cancelled.');
+      }
+      await fetchExpense();
     } catch (err) {
-      toast.error('Failed to settle expense. Please try again.');
+      const message = err instanceof Error ? err.message : 'Action failed. Please try again.';
+      toast.error(message);
     } finally {
-      setSettling(false);
+      setActionLoading(false);
     }
   };
 
-  if (loading) {
-    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading expense details...</div>;
-  }
+  const handleRequestPayment = async (userId: string) => {
+    if (!expense) return;
+    setActionLoading(true);
+    try {
+      await requestPayment(expense.id, userId);
+      toast.success('Payment request sent. Waiting for payer approval.');
+      await fetchExpense();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to request payment. Please try again.';
+      toast.error(message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
-  if (error || !expense) {
+  const handleApprovePayment = async (userId: string) => {
+    if (!expense) return;
+    setActionLoading(true);
+    try {
+      await approvePayment(expense.id, userId);
+      toast.success('Payment approved successfully.');
+      await fetchExpense();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to approve payment. Please try again.';
+      toast.error(message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRejectPayment = async (userId: string) => {
+    if (!expense) return;
+    setActionLoading(true);
+    try {
+      await rejectPayment(expense.id, userId);
+      toast.success('Payment request rejected.');
+      await fetchExpense();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to reject payment. Please try again.';
+      toast.error(message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const breadcrumbItems = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Expenses', href: '/expenses' },
+    { label: expense?.title || 'Expense' },
+  ];
+
+  if (loading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <p style={{ color: 'var(--color-error-text)' }}>{error || 'Expense not found.'}</p>
-        <Button variant="ghost" onClick={goBack} style={{ marginTop: '1rem' }}>
-          ← Back to expenses
-        </Button>
+      <div className={styles.loadingState}>
+        <Spinner size="lg" color="primary" />
+        <p>Loading expense details...</p>
       </div>
     );
   }
 
-  const totalAmount = parseFloat(expense.totalAmount);
-  const currencySymbol = getCurrencySymbol(expense.currency || 'INR');
-  const formattedTotal = `${currencySymbol} ${totalAmount.toFixed(2)}`;
-  const expenseDate = new Date(expense.expenseDateTime);
-  const formattedDate = expenseDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const formattedTime = expenseDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-
-  const payerName = expense.paidBy?.name || 'Unknown';
-
-  const shares: Record<string, number> = {};
-  if (expense.manualSplits) {
-    expense.manualSplits.forEach((split) => {
-      shares[split.userId] = parseFloat(split.amount);
-    });
+  if (error || !expense) {
+    return (
+      <div className={styles.errorState}>
+        <h2>Unable to load expense</h2>
+        <p>{error || 'Expense not found.'}</p>
+        <button onClick={() => router.push('/expenses')} className={styles.backButton}>
+          ← Back to expenses
+        </button>
+      </div>
+    );
   }
 
-  // Check if current user is the payer
-  const isPayer = user?.id === expense.paidBy?.id;
-  const allSettled = expense.participantSettlement?.every((ps) => ps.settled) ?? false;
-
   return (
-    <div style={{ padding: '2rem', maxWidth: '700px', margin: '0 auto' }}>
-      <Button variant="ghost" onClick={goBack} style={{ marginBottom: '1rem' }}>
-        ← Back to expenses
-      </Button>
+    <div className={styles.page}>
+      <div className={styles.container}>
+        <PageHeader items={breadcrumbItems} />
 
-      <h1 style={{ marginBottom: '0.5rem' }}>{expense.title}</h1>
-      {expense.description && (
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
-          {expense.description}
-        </p>
-      )}
+        <ExpenseDetailHeader expense={expense} currentUserId={user?.id || ''} />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div>
-          <div style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Amount</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '600' }}>{formattedTotal}</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Status</div>
-          <div style={{ textTransform: 'capitalize' }}>{expense.status.toLowerCase()}</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Date</div>
-          <div>{formattedDate}</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Time</div>
-          <div>{formattedTime}</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Paid by</div>
-          <div>{payerName}</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Split</div>
-          <div>{expense.splitType.toLowerCase()}</div>
-        </div>
-      </div>
-
-      <hr style={{ border: 'none', borderTop: '1px solid var(--color-divider)', margin: '1.5rem 0' }} />
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 style={{ margin: 0 }}>Participants</h3>
-        {isPayer && !allSettled && expense.status !== 'SETTLED' && (
-          <Button
-            variant="success"
-            size="sm"
-            onClick={handleSettleAll}
-            loading={settling}
-            disabled={settling}
-          >
-            Mark as Settled
-          </Button>
-        )}
-        {allSettled && (
-          <span style={{ color: 'var(--color-success-text)', fontWeight: '500' }}>✓ All settled</span>
-        )}
-      </div>
-
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-        {expense.participants.map((participant) => {
-          const share = shares[participant.id] || 0;
-          const isPayerUser = participant.id === expense.paidBy?.id;
-          const settled = expense.participantSettlement?.find(s => s.userId === participant.id)?.settled || false;
-
-          return (
-            <li
-              key={participant.id}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '0.75rem 0',
-                borderBottom: '1px solid var(--color-divider)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                {participant.avatar ? (
-                  <img
-                    src={participant.avatar}
-                    alt={participant.name}
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      background: 'var(--color-avatar-bg)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold',
-                      color: 'var(--color-avatar-text)',
-                    }}
-                  >
-                    {participant.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <span>{participant.name}</span>
-                {isPayerUser && (
-                  <span style={{ marginLeft: '0.25rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                    (payer)
-                  </span>
-                )}
-                <span
-                  style={{
-                    marginLeft: '0.5rem',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    color: settled ? 'var(--color-success-text)' : 'var(--color-error-text)',
-                  }}
-                >
-                  {settled ? '✓ Paid' : 'Unpaid'}
-                </span>
+        <div className={styles.grid}>
+          <div className={styles.leftColumn}>
+            <ParticipantsList 
+              expense={expense} 
+              currentUserId={user?.id || ''}
+              onRequestPayment={handleRequestPayment}
+              onApprovePayment={handleApprovePayment}
+              onRejectPayment={handleRejectPayment}
+              isLoading={actionLoading}
+            />
+            {expense.description && (
+              <div className={styles.descriptionSection}>
+                <h3 className={styles.sectionTitle}>Description</h3>
+                <p className={styles.descriptionText}>{expense.description}</p>
               </div>
-              <div style={{ fontWeight: '500' }}>
-                {currencySymbol} {share.toFixed(2)}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-
-      {/* Receipt Images Section */}
-      {expense.images && expense.images.length > 0 && (
-        <>
-          <hr style={{ border: 'none', borderTop: '1px solid var(--color-divider)', margin: '1.5rem 0' }} />
-          <h3 style={{ marginBottom: '1rem' }}>Receipts</h3>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-              gap: '1rem',
-            }}
-          >
-            {expense.images.map((image, index) => (
-              <div
-                key={index}
-                style={{
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-md)',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
-                }}
-                onClick={() => window.open(image.url, '_blank', 'noopener,noreferrer')}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-              >
-                <Image
-                  src={image.url}
-                  alt={image.originalName || `Receipt ${index + 1}`}
-                  width={300}
-                  height={200}
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    objectFit: 'cover',
-                    aspectRatio: '4/3',
-                  }}
-                  unoptimized
-                />
-                <div
-                  style={{
-                    padding: '0.5rem',
-                    fontSize: '0.75rem',
-                    color: 'var(--color-text-muted)',
-                    textAlign: 'center',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {image.originalName || `Receipt ${index + 1}`}
-                </div>
-              </div>
-            ))}
+            )}
+            <ReceiptsGrid images={expense.images || []} />
           </div>
-        </>
-      )}
-
-      <div style={{ marginTop: '2rem', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
-        Created: {new Date(expense.createdAt).toLocaleString()}
+          <div className={styles.rightColumn}>
+            <DistributionCard expense={expense} currentUserId={user?.id || ''} />
+            <ActionsBar
+              expense={expense}
+              currentUserId={user?.id || ''}
+              onAction={handleAction}
+              onApprovePayment={handleApprovePayment}
+              onRejectPayment={handleRejectPayment}
+              isLoading={actionLoading}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
