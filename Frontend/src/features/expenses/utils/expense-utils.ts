@@ -14,6 +14,8 @@ import {
   ALLOWED_MIME_TYPES,
 } from '../constants/expense.constants';
 
+import type { ExpenseResponse } from '../types/expense.types';
+
 // ============================================================================
 // Currency & Amount Utilities
 // ============================================================================
@@ -441,4 +443,98 @@ export function formatDateDisplay(
   }
 
   return new Intl.DateTimeFormat('en-US', options).format(date);
+}
+
+// ============================================================================
+// Date Grouping – New for Recent Expenses Page
+// ============================================================================
+
+/**
+ * Represents a group of expenses sharing the same date.
+ */
+export interface GroupedExpenses {
+  /** The date of the group (midnight, local time) – used for sorting */
+  date: Date;
+  /** The UTC date key (YYYY-MM-DD) – used as a stable React key */
+  dateKey: string;
+  /** Human-readable label (e.g., "Today · Jul 26", "Yesterday · Jul 25", "Earlier") */
+  label: string;
+  /** Expenses belonging to this date */
+  expenses: ExpenseResponse[];
+}
+
+
+/**
+ * Returns a label for a given date relative to today.
+ * - If the date is today → "Today · MMM DD"
+ * - If the date is yesterday → "Yesterday · MMM DD"
+ * - If the date is within the last 7 days → "MMM DD" (e.g., "Jul 26")
+ * - Otherwise → "Earlier"
+ */
+function getDateLabel(date: Date, today: Date): string {
+  const isToday = date.toDateString() === today.toDateString();
+  const isYesterday = new Date(today.getTime() - 86400000).toDateString() === date.toDateString();
+
+  if (isToday) {
+    return `Today · ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  }
+  if (isYesterday) {
+    return `Yesterday · ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  }
+
+  const diffDays = Math.floor((today.getTime() - date.getTime()) / 86400000);
+  if (diffDays <= 7) {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  return 'Earlier';
+}
+
+/**
+ * Groups a flat list of expenses by date (based on expenseDateTime).
+ * Returns an array of GroupedExpenses sorted chronologically (newest first).
+ */
+export function groupExpensesByDate(expenses: ExpenseResponse[]): GroupedExpenses[] {
+  if (!expenses || expenses.length === 0) {
+    return [];
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const groups = new Map<string, { dateKey: string; date: Date; expenses: ExpenseResponse[] }>();
+
+  for (const expense of expenses) {
+    const date = new Date(expense.expenseDateTime);
+    const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
+
+    if (!groups.has(dateKey)) {
+      const normalized = new Date(date);
+      normalized.setHours(0, 0, 0, 0);
+      groups.set(dateKey, { dateKey, date: normalized, expenses: [] });
+    }
+
+    groups.get(dateKey)!.expenses.push(expense);
+  }
+
+  const result: GroupedExpenses[] = [];
+  for (const [dateKey, group] of groups) {
+    const label = getDateLabel(group.date, today);
+    result.push({
+      dateKey: group.dateKey,
+      date: group.date,
+      label,
+      expenses: group.expenses,
+    });
+  }
+
+  result.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+  // Ensure "Earlier" group is always last (if present)
+  const earlierIndex = result.findIndex((g) => g.label === 'Earlier');
+  if (earlierIndex > -1) {
+    const [earlierGroup] = result.splice(earlierIndex, 1);
+    result.push(earlierGroup);
+  }
+
+  return result;
 }

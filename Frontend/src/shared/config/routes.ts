@@ -32,6 +32,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   GROUPS: '/groups',
   EXPENSES: '/expenses',
+  FRIENDS: '/friends',
   PROFILE: '/profile',
   SETTINGS: '/settings',
 } as const;
@@ -83,7 +84,7 @@ export const PUBLIC_ROUTE_PATTERNS = [
   ROUTES.PRICING,
   ROUTES.ABOUT,
   ROUTES.CONTACT,
-  ROUTES.BLOG,                 // blog listing page
+  ROUTES.BLOG,
   ROUTES.CAREERS,
   ROUTES.HOW_IT_WORKS,
   ROUTES.FAQ,
@@ -96,6 +97,6 @@ export const PUBLIC_ROUTE_PATTERNS = [
   ROUTES.UNAVAILABLE,
 
   // Wildcard patterns (prefix matches)
-  `${ROUTES.BLOG}/*`,          // all blog posts (e.g., /blog/my-post)
-  `${ROUTES.SUPPORT}/*`,       // support articles
+  `${ROUTES.BLOG}/*`,
+  `${ROUTES.SUPPORT}/*`,
 ] as const;

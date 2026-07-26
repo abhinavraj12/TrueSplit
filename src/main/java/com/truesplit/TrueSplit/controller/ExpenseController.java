@@ -11,6 +11,10 @@ import com.truesplit.TrueSplit.model.ParticipantStatus;
 import com.truesplit.TrueSplit.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -42,6 +46,20 @@ public class ExpenseController {
     public ResponseEntity<ApiResponse<List<RecentExpenseResponse>>> getRecentExpenses(Authentication authentication) {
         String currentUserEmail = authentication.getName();
         return ResponseEntity.ok(ApiResponse.success(expenseService.getRecentExpenses(currentUserEmail)));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<ExpenseResponse>>> getExpenses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search,
+            Authentication authentication) {
+
+        String userId = getUserId(authentication);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "expenseDateTime"));
+        Page<ExpenseResponse> expensePage = expenseService.getUserExpenses(userId, pageable, status, search);
+        return ResponseEntity.ok(ApiResponse.success(expensePage));
     }
 
     @GetMapping("/{identifier}")

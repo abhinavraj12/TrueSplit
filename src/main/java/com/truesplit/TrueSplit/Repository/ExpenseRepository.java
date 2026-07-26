@@ -23,5 +23,8 @@ public interface ExpenseRepository extends MongoRepository<Expense, String> {
     @Query("{ '$or': [ { 'createdBy': ?0 }, { 'participants': ?0 } ], 'status': { '$in': ['ACTIVE', 'PENDING', 'SETTLED'] } }")
     Page<Expense> findExpensesByUser(String userId, Pageable pageable);
 
+    @Query("{ '$or': [ { 'createdBy': ?0 }, { 'participants': ?0 } ], 'status': { '$in': ?1 } }")
+    Page<Expense> findByUserIdAndStatusIn(String userId, List<String> statuses, Pageable pageable);
+
     boolean existsByTitleSlug(String titleSlug);
 }

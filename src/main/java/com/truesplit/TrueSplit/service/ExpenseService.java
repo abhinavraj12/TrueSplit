@@ -15,9 +15,16 @@ import com.truesplit.TrueSplit.model.GroupMember;
 import com.truesplit.TrueSplit.model.ParticipantStatus;
 import com.truesplit.TrueSplit.model.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.Decimal128;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +38,12 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
@@ -42,6 +51,10 @@ public class ExpenseService {
     private final ParticipantStatusRepository participantStatusRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final SlugGeneratorService slugGenerator;
+    private final MongoTemplate mongoTemplate;
+
+    private static final List<String> DEFAULT_STATUSES = List.of("PENDING", "ACTIVE", "SETTLED", "CANCELLED");
+    private static final Set<String> VALID_STATUSES = Set.of("PENDING", "ACTIVE", "SETTLED", "CANCELLED");
 
     @Transactional
     public ExpenseResponse createExpense(CreateExpenseRequest request, String currentUserEmail) {
@@ -173,9 +186,6 @@ public class ExpenseService {
             savedExpense.setUpdatedAt(now);
             savedExpense = expenseRepository.save(savedExpense);
         }
-
-        // Notify participants (stub)
-        // TODO: Send notifications to non-payer participants
 
         return convertToResponse(savedExpense);
     }
@@ -382,6 +392,79 @@ public class ExpenseService {
                 .stream()
                 .map(expense -> convertToRecentResponse(expense, currentUser.getId()))
                 .collect(Collectors.toList());
+    }
+
+    public Page<ExpenseResponse> getUserExpenses(String userId, Pageable pageable, String statusFilter, String search) {
+        // Determine statuses
+        List<String> statuses;
+        if (statusFilter == null || statusFilter.isBlank()) {
+            statuses = DEFAULT_STATUSES;
+        } else {
+            String trimmed = statusFilter.trim().toUpperCase();
+            if (!VALID_STATUSES.contains(trimmed)) {
+                throw new IllegalArgumentException("Invalid status filter: " + statusFilter);
+            }
+            statuses = List.of(trimmed);
+        }
+
+        // Base criteria: user created or participant
+        Criteria baseCriteria = new Criteria().orOperator(
+                Criteria.where("createdBy").is(userId),
+                Criteria.where("participants").in(userId)
+        );
+
+        // Status criteria
+        Criteria statusCriteria = Criteria.where("status").in(statuses);
+
+        // Combine base and status
+        Criteria finalCriteria = new Criteria().andOperator(baseCriteria, statusCriteria);
+
+        // Add search criteria if provided
+        if (search != null && !search.isBlank()) {
+            String searchTerm = search.trim();
+            // Escape regex special characters to treat the term as literal
+            String escapedTerm = Pattern.quote(searchTerm);
+
+            // Find users whose name contains the search term
+            List<String> matchingUserIds = userRepository.findByNameContainingIgnoreCase(searchTerm)
+                    .stream()
+                    .map(User::getId)
+                    .collect(Collectors.toList());
+
+            // Title match criteria
+            Criteria titleCriteria = Criteria.where("title").regex(escapedTerm, "i");
+
+            // Participants match criteria
+            Criteria participantsCriteria;
+            if (matchingUserIds.isEmpty()) {
+                // No matching users – make this condition always false so only title matches work
+                participantsCriteria = Criteria.where("participants").in(Collections.emptyList());
+            } else {
+                participantsCriteria = Criteria.where("participants").in(matchingUserIds);
+            }
+
+            // Combine title and participants with OR
+            Criteria searchCriteria = new Criteria().orOperator(titleCriteria, participantsCriteria);
+
+            // Add searchCriteria to final query with AND
+            finalCriteria = new Criteria().andOperator(finalCriteria, searchCriteria);
+        }
+
+        // Build the query
+        Query query = new Query(finalCriteria);
+        query.with(pageable);
+
+        // Log the query for debugging (remove in production)
+        log.debug("Search query: {}", search);
+        log.debug("MongoDB query: {}", query);
+
+        long total = mongoTemplate.count(query, Expense.class);
+        List<Expense> expenses = mongoTemplate.find(query, Expense.class);
+        List<ExpenseResponse> responseList = expenses.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responseList, pageable, total);
     }
 
     private ExpenseResponse convertToResponse(Expense expense) {
