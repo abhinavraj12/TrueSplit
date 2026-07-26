@@ -44,7 +44,7 @@ export const FormHeader: React.FC<FormHeaderProps> = ({
           ← Back
         </Button>
       </div>
-      <h1 className={styles.title}>#{displayTitle}</h1>
+      <h1 className={styles.title}># {displayTitle}</h1>
       <div className={styles.headerRight}>
         {thumbnailUrl ? (
           <div className={styles.receiptThumbnailWrapper}>
