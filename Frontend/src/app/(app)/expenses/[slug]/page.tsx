@@ -3,18 +3,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth';
-import { 
-  getExpense, 
-  handleParticipantAction, 
-  settleExpense, 
-  cancelExpense,
-  requestPayment,
-  approvePayment,
-  rejectPayment
-} from '@/features/expenses/services/expense-api';
+import { getExpense, handleParticipantAction, settleExpense, cancelExpense, requestPayment, approvePayment, rejectPayment } from '@/features/expenses/services/expense-api';
+import { ApiError } from '@/shared/lib/api';
 import { toast } from '@/shared/_components/molecules/Toast/ToastProvider';
-import { Spinner } from '@/shared/_components/atoms/Spinner';
+import { Skeleton } from '@/shared/_components/atoms/Skeleton';
 import { PageHeader } from '@/shared/_components/molecules/PageHeader';
+import { NotFoundContent } from '@/shared/_components/molecules/NotFoundContent/NotFoundContent';
 import { ExpenseDetailHeader } from './parts/ExpenseDetailHeader';
 import { DistributionCard } from './parts/DistributionCard';
 import { ParticipantsList } from './parts/ParticipantsList';
@@ -32,17 +26,25 @@ export default function ExpenseDetailPage() {
   const [expense, setExpense] = useState<ExpenseResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchExpense = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setNotFound(false);
     try {
       const data = await getExpense(slug);
       setExpense(data);
     } catch (err) {
-      setError('Failed to load expense details.');
-      setExpense(null);
+      const isNotFound =
+        err instanceof ApiError && (err.status === 404 || err.code === 'NOT_FOUND');
+      if (isNotFound) {
+        setNotFound(true);
+      } else {
+        setError('Failed to load expense details.');
+        setExpense(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -54,8 +56,6 @@ export default function ExpenseDetailPage() {
   }, [fetchExpense]);
 
   const handleAction = async (action: 'ACCEPT' | 'REJECT' | 'SETTLE' | 'CANCEL') => {
-      console.log('handleAction called with:', action);
-
     if (!expense) return;
     setActionLoading(true);
     try {
@@ -123,17 +123,66 @@ export default function ExpenseDetailPage() {
     }
   };
 
-  const breadcrumbItems = [
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Expenses', href: '/expenses' },
-    { label: expense?.title || 'Expense' },
-  ];
+  // Show not found page
+  if (notFound) {
+    return (
+      <NotFoundContent
+        title="Expense Not Found"
+        description="This expense doesn't exist or has been removed."
+        ctaText="← Back to Expenses"
+        ctaHref="/expenses"
+      />
+    );
+  }
 
   if (loading) {
     return (
-      <div className={styles.loadingState}>
-        <Spinner size="lg" color="primary" />
-        <p>Loading expense details...</p>
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <PageHeader items={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Expenses', href: '/expenses' }, { label: 'Loading...' }]} />
+          <div className={styles.loadingSkeleton}>
+            <div className={styles.skeletonHeader}>
+              <Skeleton variant="text" width="60%" height={32} />
+              <Skeleton variant="text" width="20%" height={24} />
+            </div>
+            <div className={styles.grid}>
+              <div className={styles.leftColumn}>
+                <div className={styles.skeletonSection}>
+                  <Skeleton variant="text" width="30%" height={20} />
+                  <Skeleton variant="text" width="100%" height={16} />
+                  <Skeleton variant="text" width="100%" height={16} />
+                  <Skeleton variant="text" width="80%" height={16} />
+                </div>
+                <div className={styles.skeletonSection}>
+                  <Skeleton variant="text" width="30%" height={20} />
+                  <Skeleton variant="text" width="100%" height={16} />
+                  <Skeleton variant="text" width="100%" height={16} />
+                </div>
+                <div className={styles.skeletonSection}>
+                  <Skeleton variant="text" width="30%" height={20} />
+                  <div className={styles.skeletonReceiptGrid}>
+                    <Skeleton variant="custom" width={100} height={100} />
+                    <Skeleton variant="custom" width={100} height={100} />
+                    <Skeleton variant="custom" width={100} height={100} />
+                  </div>
+                </div>
+              </div>
+              <div className={styles.rightColumn}>
+                <div className={styles.skeletonSection}>
+                  <Skeleton variant="text" width="30%" height={20} />
+                  <Skeleton variant="custom" width="100%" height={180} />
+                  <Skeleton variant="text" width="100%" height={16} />
+                  <Skeleton variant="text" width="80%" height={16} />
+                </div>
+                <div className={styles.skeletonSection}>
+                  <Skeleton variant="text" width="30%" height={20} />
+                  <Skeleton variant="text" width="100%" height={40} />
+                  <Skeleton variant="text" width="100%" height={40} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -150,6 +199,12 @@ export default function ExpenseDetailPage() {
     );
   }
 
+  const breadcrumbItems = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Expenses', href: '/expenses' },
+    { label: expense.title },
+  ];
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
@@ -159,8 +214,8 @@ export default function ExpenseDetailPage() {
 
         <div className={styles.grid}>
           <div className={styles.leftColumn}>
-            <ParticipantsList 
-              expense={expense} 
+            <ParticipantsList
+              expense={expense}
               currentUserId={user?.id || ''}
               onRequestPayment={handleRequestPayment}
               onApprovePayment={handleApprovePayment}
