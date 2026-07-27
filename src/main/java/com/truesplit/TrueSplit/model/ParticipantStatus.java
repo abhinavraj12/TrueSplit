@@ -15,7 +15,7 @@ public class ParticipantStatus {
     private String id;
     private String expenseId;
     private String userId;
-    private String status; // PENDING, ACCEPTED, REJECTED, SETTLED
+    private String status; // PENDING, ACCEPTED, REJECTED, PAYMENT_REQUESTED, SETTLED, CANCELLED
     private BigDecimal shareAmount;
     private Instant settledAt;
     private Instant createdAt;

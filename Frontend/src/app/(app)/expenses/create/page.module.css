@@ -107,11 +107,17 @@
   margin-left: 2px;
 }
 
+.fieldError {
+  color: var(--color-error-text);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
 /* Amount + Currency (inline) */
 .amountRow {
   display: flex;
   gap: 12px;
-  align-items: stretch; /* ← stretch so both columns have the same height */
+  align-items: stretch;
 }
 
 .amountWrapper {
@@ -119,7 +125,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* ← push the input to the bottom */
+  justify-content: flex-end;
 }
 
 .currencyWrapper {
@@ -128,7 +134,7 @@
   max-width: 180px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* ← push the selector to the bottom */
+  justify-content: flex-end;
 }
 
 .currencySelector {
@@ -947,27 +953,25 @@
   font-size: 0.9rem;
 }
 
-/* Footer spacer */
-.footerSpacer {
-  height: 20px;
+/* Form Actions - Inline button at the bottom of the form */
+/* Form Actions - Inline button at the bottom of the form */
+.formActions {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-divider);
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Sticky Footer */
-.stickyFooter {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--color-bg-surface);
-  border-top: 1px solid var(--color-border);
-  padding: 12px 16px;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-  z-index: var(--z-index-sticky);
-}
-
-.footerInner {
-  max-width: 1024px;
-  margin: 0 auto;
+.formError {
+  color: var(--color-error-text);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: var(--color-error-bg);
+  border-radius: var(--radius-sm);
 }
 
 .createButton {
@@ -977,8 +981,17 @@
   width: 100%;
 }
 
+/* Footer spacer - no longer needed but kept for compatibility */
+.footerSpacer {
+  display: none;
+}
+
 /* Mobile adjustments */
 @media (max-width: 767px) {
+  .page {
+    padding-bottom: 80px;
+  }
+
   .container {
     padding: 0 12px;
   }
@@ -1006,10 +1019,6 @@
     flex: 1;
     min-width: 100%;
     max-width: 100%;
-  }
-
-  .stickyFooter {
-    padding: 10px 12px;
   }
 
   .chipList {
@@ -1071,9 +1080,18 @@
     padding: 10px 12px;
     flex-wrap: wrap;
   }
+
+  .formActions {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .page {
+    padding-bottom: 70px;
+  }
+
   .header {
     margin-bottom: 16px;
     flex-wrap: wrap;

@@ -28,6 +28,8 @@ export type {
   ParticipantActionRequest,
   ExpenseFormState,
   UploadState,
+  GetExpensesParams,
+  PaginatedResponse,
 } from './types/expense.types';
 
 // ============================================================================
@@ -90,6 +92,8 @@ export {
   toISOTimeString,
   getUserTimezone,
   formatDateDisplay,
+  groupExpensesByDate,
+  type GroupedExpenses,
 } from './utils/expense-utils';
 
 // ============================================================================
@@ -100,9 +104,13 @@ export {
   createExpense,
   getRecentExpenses,
   getExpense,
+  getExpenses,
   handleParticipantAction,
   settleExpense,
   cancelExpense,
+  requestPayment,
+  approvePayment,
+  rejectPayment,
 } from './services/expense-api';
 
 export { getUploadSignature } from './services/upload-api';
@@ -113,3 +121,4 @@ export { getUploadSignature } from './services/upload-api';
 
 export { useUpload } from './hooks/useUpload';
 export { useCreateExpense } from './hooks/useCreateExpense';
+export { usePaginatedExpenses } from './hooks/usePaginatedExpenses';

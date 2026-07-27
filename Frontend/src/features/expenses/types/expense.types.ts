@@ -20,8 +20,9 @@ export type CurrencyCode = 'USD' | 'EUR' | 'GBP' | 'INR' | 'JPY' | 'CAD' | 'AUD'
 
 /**
  * Expense status – matches backend Expense.status
+ * Also used for participant status.
  */
-export type ExpenseStatus = 'PENDING' | 'ACTIVE' | 'SETTLED' | 'CANCELLED';
+export type ExpenseStatus = 'PENDING' | 'ACTIVE' | 'SETTLED' | 'CANCELLED' | 'PAYMENT_REQUESTED';
 
 // ============================================================================
 // DTOs for API Requests
@@ -161,6 +162,7 @@ export interface ManualSplitInfo {
 
 export interface ParticipantSettlementInfo {
   userId: string;
+  status: string;
   settled: boolean;
   settledAt?: string;
 }
@@ -202,6 +204,46 @@ export interface ParticipantSummary {
  */
 export interface ParticipantActionRequest {
   action: 'ACCEPT' | 'REJECT';
+}
+
+// ============================================================================
+// Paginated List – New Types for Recent Expenses Page
+// ============================================================================
+
+/**
+ * Query parameters for GET /api/v1/expenses
+ */
+export interface GetExpensesParams {
+  /** Page number (0‑based) */
+  page: number;
+  /** Number of items per page */
+  size: number;
+  /** Optional status filter */
+  status?: ExpenseStatus;
+  /** Optional search term for title or participant names */
+  search?: string;
+}
+
+/**
+ * Paginated response wrapper – matches Spring Data Page structure
+ */
+export interface PaginatedResponse<T> {
+  /** The list of items on the current page */
+  content: T[];
+  /** Total number of pages */
+  totalPages: number;
+  /** Total number of elements across all pages */
+  totalElements: number;
+  /** Number of items per page */
+  size: number;
+  /** Current page number (0‑based) */
+  number: number;
+  /** Whether this is the first page */
+  first: boolean;
+  /** Whether this is the last page */
+  last: boolean;
+  /** Whether the page is empty */
+  empty: boolean;
 }
 
 // ============================================================================

@@ -1,16 +1,17 @@
 /**
  * Layout for authenticated pages (dashboard, groups, expenses, etc.).
- * Currently a placeholder – will be expanded as features are built.
+ * Includes a floating bottom navigation bar for mobile devices.
  */
 
-export default function AppLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+
+import { BottomNav } from '@/shared/_components/molecules/BottomNav';
+import styles from './layout.module.css';
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="app-layout">
-      <main>{children}</main>
+    <div className={styles.layout}>
+      <main className={styles.main}>{children}</main>
+      <BottomNav />
     </div>
   );
 }

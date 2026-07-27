@@ -65,6 +65,8 @@ export const API_ENDPOINTS = {
     RECENT: '/expenses/recent',
     /** Get a single expense by ID or slug */
     GET_BY_ID_OR_SLUG: (identifier: string) => `/expenses/${identifier}`,
+    /** Get paginated, filterable list of expenses */
+    LIST: '/expenses',
   },
 
   /** Health check */

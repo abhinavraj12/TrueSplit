@@ -80,6 +80,66 @@ export const MIN_PARTICIPANTS = 2;
 export const CURRENCY_DECIMAL_PLACES = 2;
 
 // ============================================================================
+// Reserved Titles (cannot be used as expense titles)
+// ============================================================================
+
+/**
+ * Reserved titles that cannot be used as expense names.
+ * These conflict with application routes or system terms.
+ */
+export const RESERVED_TITLES = [
+  // Route names
+  'create',
+  'edit',
+  'delete',
+  'settings',
+  'profile',
+  'dashboard',
+  'expenses',
+  'groups',
+  'friends',
+  'login',
+  'logout',
+  'signup',
+  'register',
+  'home',
+  'index',
+  'search',
+  'notifications',
+  'messages',
+  'inbox',
+
+  // System-related
+  'admin',
+  'api',
+  'auth',
+  'help',
+  'support',
+  'privacy',
+  'terms',
+  'about',
+  'contact',
+  'faq',
+  'blog',
+  'careers',
+  'pricing',
+  'features',
+  'how-it-works',
+
+  // URL-related (case-insensitive)
+  'new',
+  'recent',
+  'list',
+  'view',
+  'page',
+  'all',
+  'none',
+  'default',
+  'main',
+  'root',
+] as const;
+
+// ============================================================================
 // Default Values
 // ============================================================================
 
@@ -183,6 +243,7 @@ export const EXPENSE_ERROR_MESSAGES = {
   TITLE_REQUIRED: 'Please enter a title.',
   TITLE_TOO_SHORT: `Title must be at least ${MIN_TITLE_LENGTH} characters.`,
   TITLE_TOO_LONG: `Title cannot exceed ${MAX_TITLE_LENGTH} characters.`,
+  TITLE_RESERVED: 'That title is already taken. Please choose something another ✨',
   AMOUNT_REQUIRED: 'Please enter an amount.',
   AMOUNT_POSITIVE: 'Amount must be greater than zero.',
   AMOUNT_INVALID: 'Please enter a valid amount.',

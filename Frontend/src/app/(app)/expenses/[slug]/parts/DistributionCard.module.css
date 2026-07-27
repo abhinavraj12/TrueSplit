@@ -1,0 +1,124 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  width: 100%;
+}
+
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.tooltip {
+  background: var(--color-tooltip-bg, #ffffff);
+  color: var(--color-tooltip-text, #1e1c1a);
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-tooltip-border, #e5e5e5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 80px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.tooltipName {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-tooltip-text, #1e1c1a);
+}
+
+.tooltipValue {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-tooltip-text, #1e1c1a);
+}
+
+.tooltipPercent {
+  font-size: 0.7rem;
+  color: var(--color-tooltip-text, #1e1c1a);
+  opacity: 0.7;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-divider);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.summaryLabel {
+  color: var(--color-text-secondary);
+}
+
+.summaryValue {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.statusValue {
+  text-transform: capitalize;
+}
+
+@media (max-width: 480px) {
+  .chartWrapper {
+    min-height: 160px;
+  }
+
+  .noData {
+    height: 160px;
+  }
+
+  .summaryRow {
+    font-size: 0.85rem;
+  }
+
+  .tooltip {
+    padding: 0.4rem 0.6rem;
+    min-width: 60px;
+  }
+
+  .tooltipName {
+    font-size: 0.7rem;
+  }
+
+  .tooltipValue {
+    font-size: 0.8rem;
+  }
+
+  .tooltipPercent {
+    font-size: 0.6rem;
+  }
+}

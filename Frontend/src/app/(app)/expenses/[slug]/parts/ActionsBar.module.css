@@ -1,0 +1,138 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statusMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.statusIcon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.statusMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.statusIcon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.pendingList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pendingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-divider);
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pendingItem:last-child {
+  border-bottom: none;
+}
+
+.pendingName {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  flex: 1;
+  min-width: 80px;
+}
+
+.pendingAmount {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.pendingActions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+@media (max-width: 480px) {
+  .pendingItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    padding: 0.75rem 0;
+  }
+
+  .pendingActions {
+    justify-content: flex-end;
+  }
+
+  .pendingName {
+    font-size: 0.85rem;
+  }
+
+  .pendingAmount {
+    font-size: 0.85rem;
+  }
+
+  .statusMessage {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .statusMessage {
+    font-size: 0.85rem;
+  }
+}

@@ -1,11 +1,5 @@
-import React from 'react'
+import NotFoundContent from "@/shared/_components/molecules/NotFoundContent/NotFoundContent";
 
-const page = () => {
-  return (
-    <div>
-      
-    </div>
-  )
+export default function NotFound() {
+  return <NotFoundContent />;
 }
-
-export default page

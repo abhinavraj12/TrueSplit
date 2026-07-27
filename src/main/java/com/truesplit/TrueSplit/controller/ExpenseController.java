@@ -11,6 +11,10 @@ import com.truesplit.TrueSplit.model.ParticipantStatus;
 import com.truesplit.TrueSplit.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -42,6 +46,20 @@ public class ExpenseController {
     public ResponseEntity<ApiResponse<List<RecentExpenseResponse>>> getRecentExpenses(Authentication authentication) {
         String currentUserEmail = authentication.getName();
         return ResponseEntity.ok(ApiResponse.success(expenseService.getRecentExpenses(currentUserEmail)));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<ExpenseResponse>>> getExpenses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search,
+            Authentication authentication) {
+
+        String userId = getUserId(authentication);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "expenseDateTime"));
+        Page<ExpenseResponse> expensePage = expenseService.getUserExpenses(userId, pageable, status, search);
+        return ResponseEntity.ok(ApiResponse.success(expensePage));
     }
 
     @GetMapping("/{identifier}")
@@ -80,6 +98,47 @@ public class ExpenseController {
         expenseService.cancelExpense(expenseId, userId);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
+
+    // ============================================================================
+    // New Endpoints for "Mark as Paid" Feature
+    // ============================================================================
+
+    @PostMapping("/{expenseId}/participants/{userId}/request-payment")
+    public ResponseEntity<ApiResponse<Void>> requestPayment(
+            @PathVariable String expenseId,
+            @PathVariable String userId,
+            Authentication auth) {
+        String currentUserId = getUserId(auth);
+        if (!currentUserId.equals(userId)) {
+            throw new SecurityException("You can only request payment for yourself.");
+        }
+        expenseService.requestPayment(expenseId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{expenseId}/participants/{userId}/approve-payment")
+    public ResponseEntity<ApiResponse<Void>> approvePayment(
+            @PathVariable String expenseId,
+            @PathVariable String userId,
+            Authentication auth) {
+        String payerId = getUserId(auth);
+        expenseService.approvePayment(expenseId, payerId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{expenseId}/participants/{userId}/reject-payment")
+    public ResponseEntity<ApiResponse<Void>> rejectPayment(
+            @PathVariable String expenseId,
+            @PathVariable String userId,
+            Authentication auth) {
+        String payerId = getUserId(auth);
+        expenseService.rejectPayment(expenseId, payerId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ============================================================================
+    // Helper Method
+    // ============================================================================
 
     private String getUserId(Authentication auth) {
         String email = auth.getName();
