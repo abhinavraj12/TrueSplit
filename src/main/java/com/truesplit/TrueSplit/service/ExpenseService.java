@@ -237,9 +237,23 @@ public class ExpenseService {
 
             removeParticipantAndRecalculate(expense, userId);
 
-            List<ParticipantStatus> remaining = participantStatusRepository.findByExpenseId(expenseId)
-                    .stream().filter(s -> !"REJECTED".equals(s.getStatus())).collect(Collectors.toList());
-            if (remaining.size() == 1 && remaining.get(0).getUserId().equals(expense.getPaidBy())) {
+            // After rejection, check if all remaining participants have accepted
+            List<ParticipantStatus> remainingStatuses = participantStatusRepository.findByExpenseId(expenseId)
+                    .stream()
+                    .filter(s -> !"REJECTED".equals(s.getStatus()))
+                    .collect(Collectors.toList());
+
+            boolean allRemainingAccepted = remainingStatuses.stream()
+                    .allMatch(s -> "ACCEPTED".equals(s.getStatus()));
+
+            if (allRemainingAccepted && remainingStatuses.size() > 1) {
+                expense.setStatus("ACTIVE");
+                expense.setUpdatedAt(Instant.now());
+                expenseRepository.save(expense);
+            }
+
+            // If only the payer remains, cancel the expense
+            if (remainingStatuses.size() == 1 && remainingStatuses.get(0).getUserId().equals(expense.getPaidBy())) {
                 expense.setStatus("CANCELLED");
                 expense.setUpdatedAt(Instant.now());
                 expenseRepository.save(expense);

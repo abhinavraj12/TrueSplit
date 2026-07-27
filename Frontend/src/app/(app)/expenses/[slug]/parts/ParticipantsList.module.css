@@ -121,6 +121,13 @@
   font-weight: 500;
 }
 
+.waitingIndicator {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  margin-left: 0.25rem;
+}
+
 
 @media (max-width: 480px) {
   .row {

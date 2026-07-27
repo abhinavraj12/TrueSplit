@@ -34,13 +34,13 @@ const STATUS_LABEL_MAP: Record<string, string> = {
   CANCELLED: 'Cancelled',
 };
 
-export function ParticipantsList({ 
-  expense, 
-  currentUserId, 
-  onRequestPayment, 
-  onApprovePayment, 
+export function ParticipantsList({
+  expense,
+  currentUserId,
+  onRequestPayment,
+  onApprovePayment,
   onRejectPayment,
-  isLoading = false 
+  isLoading = false
 }: ParticipantsListProps) {
   const currencySymbol = getCurrencySymbol(expense.currency || 'INR');
   const isPayer = expense.paidBy.id === currentUserId;
@@ -53,7 +53,7 @@ export function ParticipantsList({
     });
   }
 
-  // Build a map of user ID -> status (from participantSettlement if available)
+  // Build a map of user ID -> status (from participantSettlement)
   const statusMap = new Map<string, string>();
   if (expense.participantSettlement) {
     expense.participantSettlement.forEach((ps) => {
@@ -86,6 +86,11 @@ export function ParticipantsList({
     }
   };
 
+  // Check if there are any pending participants (for waiting indicator)
+  const hasPendingOthers = expense.participantSettlement?.some(
+    (ps) => ps.userId !== currentUserId && ps.status === 'PENDING'
+  ) ?? false;
+
   return (
     <div className={styles.section}>
       <h3 className={styles.title}>Participants</h3>
@@ -94,13 +99,10 @@ export function ParticipantsList({
           const share = shareMap.get(participant.id) || 0;
           const isCurrentUser = participant.id === currentUserId;
           const isPayerUser = participant.id === expense.paidBy.id;
-          
-          // Determine status
+
+          // Get status from participantSettlement
           let status = statusMap.get(participant.id) || 'PENDING';
-          // If expense is ACTIVE and not settled, status is PENDING
-          if (expense.status === 'ACTIVE' && status === 'PENDING') {
-            status = 'PENDING';
-          }
+
           // If expense is SETTLED, all participants are SETTLED
           if (expense.status === 'SETTLED') {
             status = 'SETTLED';
@@ -112,6 +114,9 @@ export function ParticipantsList({
 
           const statusVariant = STATUS_VARIANT_MAP[status] || 'default';
           const statusLabel = STATUS_LABEL_MAP[status] || status;
+
+          // Show waiting indicator if participant has accepted but expense is still PENDING
+          const showWaitingIndicator = status === 'ACCEPTED' && expense.status === 'PENDING' && hasPendingOthers;
 
           // Determine which actions to show
           let actions: React.ReactNode = null;
@@ -196,6 +201,9 @@ export function ParticipantsList({
                   )}
                   {isCurrentUser && !isPayerUser && (
                     <span className={styles.youBadge}>You</span>
+                  )}
+                  {showWaitingIndicator && (
+                    <span className={styles.waitingIndicator}>(Waiting for others)</span>
                   )}
                 </div>
                 <div className={styles.shareRow}>

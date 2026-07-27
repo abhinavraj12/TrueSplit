@@ -64,6 +64,13 @@ export class ApiError extends Error {
   }
 
   getUserMessage(): string {
+    // If the error code is not one of the generic ones, show the exact backend message
+    const genericCodes = ['UNAUTHORIZED', 'FORBIDDEN', 'NOT_FOUND', 'BAD_REQUEST', 'SERVER_ERROR'];
+    if (!genericCodes.includes(this.code)) {
+      return this.message;
+    }
+
+    // Fallback messages for generic codes
     const messages: Record<string, string> = {
       UNAUTHORIZED: 'Please sign in to continue.',
       FORBIDDEN: 'You don’t have access to do that.',
