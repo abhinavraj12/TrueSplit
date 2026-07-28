@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://viralkid00_db_user:aY9e1e4gr6DYQu8R@trusplit.jxmcyd9.mongodb.net/trusplit
+      uri: mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@trusplit.jxmcyd9.mongodb.net/trusplit
   mail:
     host: smtp.gmail.com
     port: 587
