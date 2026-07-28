@@ -12,6 +12,7 @@ interface ActionsBarProps {
   onAction?: (action: 'ACCEPT' | 'REJECT' | 'SETTLE' | 'CANCEL') => void;
   onApprovePayment?: (userId: string) => void;
   onRejectPayment?: (userId: string) => void;
+  onApproveAll?: () => void;
   isLoading?: boolean;
 }
 
@@ -21,6 +22,7 @@ export function ActionsBar({
   onAction,
   onApprovePayment,
   onRejectPayment,
+  onApproveAll,
   isLoading = false
 }: ActionsBarProps) {
   const isPayer = expense.paidBy.id === currentUserId;
@@ -132,7 +134,7 @@ export function ActionsBar({
       if (hasPendingRequests) {
         return (
           <div className={styles.section}>
-            <h3 className={styles.title}>Pending Approvals</h3>
+            <h3 className={styles.title}>Pending Payment Approvals</h3>
             <div className={styles.pendingList}>
               {pendingRequests.map((request) => (
                 <div key={request.userId} className={styles.pendingItem}>
@@ -163,6 +165,20 @@ export function ActionsBar({
                 </div>
               ))}
             </div>
+            {onApproveAll && (
+              <div className={styles.approveAllContainer}>
+                <Button
+                  variant="success"
+                  size="md"
+                  fullWidth
+                  onClick={onApproveAll}
+                  loading={isLoading}
+                  disabled={isLoading}
+                >
+                  Approve All
+                </Button>
+              </div>
+            )}
           </div>
         );
       }

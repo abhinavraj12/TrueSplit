@@ -99,10 +99,6 @@ public class ExpenseController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    // ============================================================================
-    // New Endpoints for "Mark as Paid" Feature
-    // ============================================================================
-
     @PostMapping("/{expenseId}/participants/{userId}/request-payment")
     public ResponseEntity<ApiResponse<Void>> requestPayment(
             @PathVariable String expenseId,
@@ -136,9 +132,27 @@ public class ExpenseController {
         return ResponseEntity.noContent().build();
     }
 
-    // ============================================================================
-    // Helper Method
-    // ============================================================================
+    @PostMapping("/{expenseId}/participants/approve-all")
+    public ResponseEntity<ApiResponse<Void>> approveAllPayments(
+            @PathVariable String expenseId,
+            Authentication auth) {
+        String payerId = getUserId(auth);
+        expenseService.approveAllPayments(expenseId, payerId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{expenseId}/participants/{userId}/cancel-request")
+    public ResponseEntity<ApiResponse<Void>> cancelPaymentRequest(
+            @PathVariable String expenseId,
+            @PathVariable String userId,
+            Authentication auth) {
+        String currentUserId = getUserId(auth);
+        if (!currentUserId.equals(userId)) {
+            throw new SecurityException("You can only cancel your own payment request.");
+        }
+        expenseService.cancelPaymentRequest(expenseId, userId);
+        return ResponseEntity.noContent().build();
+    }
 
     private String getUserId(Authentication auth) {
         String email = auth.getName();

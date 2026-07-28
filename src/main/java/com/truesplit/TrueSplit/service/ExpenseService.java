@@ -570,6 +570,70 @@ public class ExpenseService {
         notifyParticipantRejected(expense, participantId);
     }
 
+    @Transactional
+    public void approveAllPayments(String expenseId, String payerId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found."));
+
+        if (!"ACTIVE".equals(expense.getStatus())) {
+            throw new IllegalArgumentException("This expense is not active. Payments can only be approved for active expenses.");
+        }
+
+        if (!expense.getPaidBy().equals(payerId)) {
+            throw new SecurityException("Only the payer can approve payment requests.");
+        }
+
+        List<ParticipantStatus> pendingRequests = participantStatusRepository
+                .findByExpenseIdAndStatus(expenseId, "PAYMENT_REQUESTED");
+
+        if (pendingRequests.isEmpty()) {
+            throw new IllegalArgumentException("No pending payment requests to approve.");
+        }
+
+        for (ParticipantStatus status : pendingRequests) {
+            // Skip if already settled (defensive)
+            if (!"PAYMENT_REQUESTED".equals(status.getStatus())) {
+                continue;
+            }
+            status.setStatus("SETTLED");
+            status.setSettledAt(Instant.now());
+            status.setUpdatedAt(Instant.now());
+            participantStatusRepository.save(status);
+        }
+
+        // Check if all participants are now settled
+        checkAndAutoSettle(expense);
+    }
+
+    @Transactional
+    public void cancelPaymentRequest(String expenseId, String userId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found."));
+
+        if (!"ACTIVE".equals(expense.getStatus())) {
+            throw new IllegalArgumentException("This expense is not active. Payment requests can only be cancelled for active expenses.");
+        }
+
+        if (expense.getPaidBy().equals(userId)) {
+            throw new IllegalArgumentException("The payer cannot cancel a payment request.");
+        }
+
+        ParticipantStatus status = participantStatusRepository.findByExpenseIdAndUserId(expenseId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("You are not a participant of this expense."));
+
+        if (!"PAYMENT_REQUESTED".equals(status.getStatus())) {
+            throw new IllegalArgumentException("You do not have a pending payment request to cancel.");
+        }
+
+        // Revert to ACCEPTED
+        status.setStatus("ACCEPTED");
+        status.setUpdatedAt(Instant.now());
+        participantStatusRepository.save(status);
+
+        // Notify payer? Optional – we'll skip for now.
+    }
+
+
     private void checkAndAutoSettle(Expense expense) {
         List<ParticipantStatus> allStatuses = participantStatusRepository.findByExpenseId(expense.getId());
         String payerId = expense.getPaidBy();

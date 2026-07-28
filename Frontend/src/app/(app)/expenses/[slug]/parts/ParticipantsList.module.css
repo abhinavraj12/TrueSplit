@@ -21,11 +21,10 @@
 
 .row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--color-divider);
-  transition: background 0.15s ease;
 }
 
 .row:last-child {
@@ -38,15 +37,23 @@
 
 .avatarWrapper {
   flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
 .info {
   flex: 1;
   min-width: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.topRow {
+  display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .nameRow {
@@ -61,6 +68,39 @@
   font-weight: 400;
   font-size: 0.95rem;
   color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.share {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
 }
 
 .payerBadge {
@@ -84,50 +124,12 @@
   border: 1px solid var(--color-border);
 }
 
-.shareRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.share {
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-}
-
-
-.actionRow {
-  margin-top: 0.25rem;
-  display: flex;
-  gap: 0.25rem;
-}
-
-.actions {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.waitingMessage {
-  font-size: 0.75rem;
-  color: var(--color-warning-text);
-  font-weight: 500;
-}
-
-.settledMessage {
-  font-size: 0.75rem;
-  color: var(--color-success-text);
-  font-weight: 500;
-}
-
 .waitingIndicator {
   font-size: 0.65rem;
   color: var(--color-text-muted);
   font-weight: 400;
   margin-left: 0.25rem;
 }
-
 
 @media (max-width: 480px) {
   .row {
@@ -142,12 +144,34 @@
     font-size: 0.8rem;
   }
 
-  .info {
+  .bottomRow {
+    flex-direction: row;
     flex-wrap: wrap;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
   }
 
-  .shareRow {
+  .actions {
+    display: inline-flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .topRow {
+    flex-wrap: wrap;
+  }
+
+  .nameRow {
+    max-width: 65%;
+  }
+
+  .share {
     margin-left: auto;
+  }
+
+  .actions button {
+    min-height: 28px !important;
+    padding: 0 0.6rem !important;
+    font-size: 0.7rem !important;
   }
 }

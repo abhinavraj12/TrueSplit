@@ -89,10 +89,6 @@ export function cancelExpense(expenseId: string): Promise<void> {
   return api.patch<void>(`${BASE_PATH}/${expenseId}/cancel`);
 }
 
-// ============================================================================
-// New API Functions for "Mark as Paid" Feature
-// ============================================================================
-
 /**
  * Request payment approval from the payer (participant only)
  * POST /api/v1/expenses/{expenseId}/participants/{userId}/request-payment
@@ -115,4 +111,20 @@ export function approvePayment(expenseId: string, userId: string): Promise<void>
  */
 export function rejectPayment(expenseId: string, userId: string): Promise<void> {
   return api.post<void>(`${BASE_PATH}/${expenseId}/participants/${userId}/reject-payment`);
+}
+
+/**
+ * Approve all pending payment requests (payer only)
+ * POST /api/v1/expenses/{expenseId}/participants/approve-all
+ */
+export function approveAllPayments(expenseId: string): Promise<void> {
+  return api.post<void>(`${BASE_PATH}/${expenseId}/participants/approve-all`);
+}
+
+/**
+ * Cancel a participant's own payment request (participant only)
+ * POST /api/v1/expenses/{expenseId}/participants/{userId}/cancel-request
+ */
+export function cancelPaymentRequest(expenseId: string, userId: string): Promise<void> {
+  return api.post<void>(`${BASE_PATH}/${expenseId}/participants/${userId}/cancel-request`);
 }

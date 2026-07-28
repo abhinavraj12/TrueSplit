@@ -3,7 +3,17 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth';
-import { getExpense, handleParticipantAction, settleExpense, cancelExpense, requestPayment, approvePayment, rejectPayment } from '@/features/expenses/services/expense-api';
+import {
+  getExpense,
+  handleParticipantAction,
+  settleExpense,
+  cancelExpense,
+  requestPayment,
+  approvePayment,
+  rejectPayment,
+  approveAllPayments,
+  cancelPaymentRequest
+} from '@/features/expenses/services/expense-api';
 import { ApiError } from '@/shared/lib/api';
 import { toast } from '@/shared/_components/molecules/Toast/ToastProvider';
 import { Skeleton } from '@/shared/_components/atoms/Skeleton';
@@ -123,6 +133,36 @@ export default function ExpenseDetailPage() {
     }
   };
 
+  const handleApproveAll = async () => {
+    if (!expense) return;
+    setActionLoading(true);
+    try {
+      await approveAllPayments(expense.id);
+      toast.success('All payments approved successfully.');
+      await fetchExpense();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to approve all payments. Please try again.';
+      toast.error(message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancelRequest = async (userId: string) => {
+    if (!expense) return;
+    setActionLoading(true);
+    try {
+      await cancelPaymentRequest(expense.id, userId);
+      toast.success('Payment request cancelled.');
+      await fetchExpense();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to cancel request. Please try again.';
+      toast.error(message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // Show not found page
   if (notFound) {
     return (
@@ -220,6 +260,7 @@ export default function ExpenseDetailPage() {
               onRequestPayment={handleRequestPayment}
               onApprovePayment={handleApprovePayment}
               onRejectPayment={handleRejectPayment}
+              onCancelRequest={handleCancelRequest}
               isLoading={actionLoading}
             />
             {expense.description && (
@@ -238,6 +279,7 @@ export default function ExpenseDetailPage() {
               onAction={handleAction}
               onApprovePayment={handleApprovePayment}
               onRejectPayment={handleRejectPayment}
+              onApproveAll={handleApproveAll}
               isLoading={actionLoading}
             />
           </div>
