@@ -12,16 +12,18 @@ interface ActionsBarProps {
   onAction?: (action: 'ACCEPT' | 'REJECT' | 'SETTLE' | 'CANCEL') => void;
   onApprovePayment?: (userId: string) => void;
   onRejectPayment?: (userId: string) => void;
+  onApproveAll?: () => void;
   isLoading?: boolean;
 }
 
-export function ActionsBar({ 
-  expense, 
-  currentUserId, 
-  onAction, 
-  onApprovePayment, 
+export function ActionsBar({
+  expense,
+  currentUserId,
+  onAction,
+  onApprovePayment,
   onRejectPayment,
-  isLoading = false 
+  onApproveAll,
+  isLoading = false
 }: ActionsBarProps) {
   const isPayer = expense.paidBy.id === currentUserId;
   const isParticipant = expense.participants.some((p) => p.id === currentUserId);
@@ -31,7 +33,6 @@ export function ActionsBar({
   const isPending = expense.status === 'PENDING';
   const currencySymbol = getCurrencySymbol(expense.currency || 'INR');
 
-  // Get current user's status
   let userStatus: string | null = null;
   if (expense.participantSettlement) {
     const settlement = expense.participantSettlement.find((s) => s.userId === currentUserId);
@@ -40,14 +41,12 @@ export function ActionsBar({
     }
   }
 
-  // Check if there are any PAYMENT_REQUESTED participants
   const hasPendingRequests = useMemo(() => {
     return expense.participantSettlement?.some(
       (ps) => ps.userId !== expense.paidBy.id && ps.status === 'PAYMENT_REQUESTED'
     ) ?? false;
   }, [expense]);
 
-  // Check if all non-payer participants are SETTLED
   const allNonPayerSettled = useMemo(() => {
     const nonPayers = expense.participantSettlement?.filter(
       (ps) => ps.userId !== expense.paidBy.id
@@ -55,7 +54,6 @@ export function ActionsBar({
     return nonPayers.length > 0 && nonPayers.every((ps) => ps.status === 'SETTLED');
   }, [expense]);
 
-  // Get pending requests list (for payer)
   const pendingRequests = useMemo(() => {
     if (!expense.participantSettlement) return [];
     return expense.participantSettlement
@@ -70,6 +68,10 @@ export function ActionsBar({
         };
       });
   }, [expense]);
+
+  const hasPendingOthers = expense.participantSettlement?.some(
+    (ps) => ps.userId !== currentUserId && ps.status === 'PENDING'
+  ) ?? false;
 
   // --- IF SETTLED OR CANCELLED ---
   if (isSettled) {
@@ -98,7 +100,6 @@ export function ActionsBar({
 
   // --- PAYER VIEW (ACTIVE or PENDING) ---
   if (isPayer) {
-    // Payer on PENDING expense: show Settle and Cancel
     if (isPending) {
       return (
         <div className={styles.section}>
@@ -129,13 +130,11 @@ export function ActionsBar({
       );
     }
 
-    // Payer on ACTIVE expense
     if (isActive) {
-      // If there are pending requests → show approvals
       if (hasPendingRequests) {
         return (
           <div className={styles.section}>
-            <h3 className={styles.title}>Pending Approvals</h3>
+            <h3 className={styles.title}>Pending Payment Approvals</h3>
             <div className={styles.pendingList}>
               {pendingRequests.map((request) => (
                 <div key={request.userId} className={styles.pendingItem}>
@@ -166,13 +165,25 @@ export function ActionsBar({
                 </div>
               ))}
             </div>
+            {onApproveAll && (
+              <div className={styles.approveAllContainer}>
+                <Button
+                  variant="success"
+                  size="md"
+                  fullWidth
+                  onClick={onApproveAll}
+                  loading={isLoading}
+                  disabled={isLoading}
+                >
+                  Approve All
+                </Button>
+              </div>
+            )}
           </div>
         );
       }
 
-      // No pending requests – check if all non-payers have settled
       if (allNonPayerSettled) {
-        // All participants have paid, payer can settle
         return (
           <div className={styles.section}>
             <h3 className={styles.title}>Payment Status</h3>
@@ -196,7 +207,6 @@ export function ActionsBar({
         );
       }
 
-      // Otherwise, waiting for participants
       return (
         <div className={styles.section}>
           <h3 className={styles.title}>Payment Status</h3>
@@ -211,9 +221,40 @@ export function ActionsBar({
 
   // --- PARTICIPANT VIEW (non-payer) ---
   if (isParticipant && !isPayer) {
-    // Participant on PENDING expense: show Accept / Reject
+    // Participant on PENDING expense
     if (isPending) {
-      const hasAccepted = userStatus === 'SETTLED';
+      // If user already accepted, show status message
+      if (userStatus === 'ACCEPTED') {
+        return (
+          <div className={styles.section}>
+            <h3 className={styles.title}>Your Status</h3>
+            <div className={styles.statusMessage}>
+              <span className={styles.statusIcon}>✅</span>
+              <span>You have accepted this bill.</span>
+            </div>
+            {hasPendingOthers && (
+              <div className={styles.statusMessage}>
+                <span className={styles.statusIcon}>⏳</span>
+                <span>Waiting for other participants to accept.</span>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      if (userStatus === 'SETTLED') {
+        return (
+          <div className={styles.section}>
+            <h3 className={styles.title}>Your Status</h3>
+            <div className={styles.statusMessage}>
+              <span className={styles.statusIcon}>✅</span>
+              <span>You have already settled this expense.</span>
+            </div>
+          </div>
+        );
+      }
+
+      // User is PENDING – show Accept/Reject buttons
       return (
         <div className={styles.section}>
           <h3 className={styles.title}>Actions</h3>
@@ -224,9 +265,9 @@ export function ActionsBar({
               fullWidth
               onClick={() => onAction?.('ACCEPT')}
               loading={isLoading}
-              disabled={isLoading || hasAccepted}
+              disabled={isLoading}
             >
-              {hasAccepted ? 'Already Accepted' : 'Accept'}
+              Accept the Bill
             </Button>
             <Button
               variant="danger"
@@ -234,17 +275,11 @@ export function ActionsBar({
               fullWidth
               onClick={() => onAction?.('REJECT')}
               loading={isLoading}
-              disabled={isLoading || hasAccepted}
+              disabled={isLoading}
             >
-              {hasAccepted ? 'Already Accepted' : 'Reject'}
+              Reject
             </Button>
           </div>
-          {hasAccepted && (
-            <div className={styles.statusMessage}>
-              <span className={styles.statusIcon}>✅</span>
-              <span>You have already accepted this expense.</span>
-            </div>
-          )}
         </div>
       );
     }
@@ -275,7 +310,6 @@ export function ActionsBar({
         );
       }
 
-      // User has accepted but not settled
       return (
         <div className={styles.section}>
           <h3 className={styles.title}>Payment Status</h3>

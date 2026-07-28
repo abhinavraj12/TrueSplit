@@ -388,13 +388,7 @@ export default function CreateExpense() {
     } catch (error) {
       setInviteStatus('idle');
       if (error instanceof ApiError) {
-        if (error.code === 'NOT_FOUND') {
-          toast.error('User not found. Please sign up for the app first, then you can send a friend request.');
-        } else if (error.code === 'CONFLICT') {
-          toast.error('Friend request already sent or you are already friends.');
-        } else {
-          toast.error(error.getUserMessage());
-        }
+        toast.error(error.getUserMessage());
       } else {
         toast.error('Something went wrong. Please try again.');
       }

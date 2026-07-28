@@ -13,6 +13,7 @@ interface ParticipantsListProps {
   onRequestPayment?: (userId: string) => void;
   onApprovePayment?: (userId: string) => void;
   onRejectPayment?: (userId: string) => void;
+  onCancelRequest?: (userId: string) => void;
   isLoading?: boolean;
 }
 
@@ -34,13 +35,14 @@ const STATUS_LABEL_MAP: Record<string, string> = {
   CANCELLED: 'Cancelled',
 };
 
-export function ParticipantsList({ 
-  expense, 
-  currentUserId, 
-  onRequestPayment, 
-  onApprovePayment, 
+export function ParticipantsList({
+  expense,
+  currentUserId,
+  onRequestPayment,
+  onApprovePayment,
   onRejectPayment,
-  isLoading = false 
+  onCancelRequest,
+  isLoading = false
 }: ParticipantsListProps) {
   const currencySymbol = getCurrencySymbol(expense.currency || 'INR');
   const isPayer = expense.paidBy.id === currentUserId;
@@ -53,7 +55,7 @@ export function ParticipantsList({
     });
   }
 
-  // Build a map of user ID -> status (from participantSettlement if available)
+  // Build a map of user ID -> status (from participantSettlement)
   const statusMap = new Map<string, string>();
   if (expense.participantSettlement) {
     expense.participantSettlement.forEach((ps) => {
@@ -86,6 +88,17 @@ export function ParticipantsList({
     }
   };
 
+  const handleCancelRequest = (userId: string) => {
+    if (onCancelRequest) {
+      onCancelRequest(userId);
+    }
+  };
+
+  // Check if there are any pending participants (for waiting indicator)
+  const hasPendingOthers = expense.participantSettlement?.some(
+    (ps) => ps.userId !== currentUserId && ps.status === 'PENDING'
+  ) ?? false;
+
   return (
     <div className={styles.section}>
       <h3 className={styles.title}>Participants</h3>
@@ -94,13 +107,10 @@ export function ParticipantsList({
           const share = shareMap.get(participant.id) || 0;
           const isCurrentUser = participant.id === currentUserId;
           const isPayerUser = participant.id === expense.paidBy.id;
-          
-          // Determine status
+
+          // Get status from participantSettlement
           let status = statusMap.get(participant.id) || 'PENDING';
-          // If expense is ACTIVE and not settled, status is PENDING
-          if (expense.status === 'ACTIVE' && status === 'PENDING') {
-            status = 'PENDING';
-          }
+
           // If expense is SETTLED, all participants are SETTLED
           if (expense.status === 'SETTLED') {
             status = 'SETTLED';
@@ -113,7 +123,10 @@ export function ParticipantsList({
           const statusVariant = STATUS_VARIANT_MAP[status] || 'default';
           const statusLabel = STATUS_LABEL_MAP[status] || status;
 
-          // Determine which actions to show
+          // Show waiting indicator if participant has accepted but expense is still PENDING
+          const showWaitingIndicator = status === 'ACCEPTED' && expense.status === 'PENDING' && hasPendingOthers;
+
+          // Determine actions
           let actions: React.ReactNode = null;
 
           // Payer view: show approve/reject for PAYMENT_REQUESTED participants
@@ -157,11 +170,21 @@ export function ParticipantsList({
               </div>
             );
           }
-          // If status is PAYMENT_REQUESTED and current user is the participant, show waiting message
+          // If status is PAYMENT_REQUESTED and current user is the participant
           else if (isCurrentUser && status === 'PAYMENT_REQUESTED') {
             actions = (
-              <div className={styles.waitingMessage}>
-                ⏳ Waiting for approval
+              <div className={styles.actions}>
+                {onCancelRequest && (
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => handleCancelRequest(participant.id)}
+                    loading={isLoading}
+                    disabled={isLoading}
+                  >
+                    Cancel Request
+                  </Button>
+                )}
               </div>
             );
           }
@@ -187,30 +210,35 @@ export function ParticipantsList({
                 />
               </div>
               <div className={styles.info}>
-                <div className={styles.nameRow}>
-                  <span className={styles.name}>
-                    {isCurrentUser ? 'You' : participant.name}
-                  </span>
-                  {isPayerUser && (
-                    <span className={styles.payerBadge}>Payer</span>
-                  )}
-                  {isCurrentUser && !isPayerUser && (
-                    <span className={styles.youBadge}>You</span>
-                  )}
-                </div>
-                <div className={styles.shareRow}>
+                <div className={styles.topRow}>
+                  <div className={styles.nameRow}>
+                    <span className={styles.name}>
+                      {isCurrentUser ? 'You' : participant.name}
+                    </span>
+                    {isPayerUser && (
+                      <span className={styles.payerBadge}>Payer</span>
+                    )}
+                    {isCurrentUser && !isPayerUser && (
+                      <span className={styles.youBadge}>You</span>
+                    )}
+                    {showWaitingIndicator && (
+                      <span className={styles.waitingIndicator}>(Waiting for others)</span>
+                    )}
+                  </div>
                   <span className={styles.share}>
                     {currencySymbol} {share.toFixed(2)}
                   </span>
+                </div>
+                <div className={styles.bottomRow}>
                   <Badge variant={statusVariant} size="sm">
                     {statusLabel}
                   </Badge>
+                  {actions && (
+                    <div className={styles.actionRow}>
+                      {actions}
+                    </div>
+                  )}
                 </div>
-                {actions && (
-                  <div className={styles.actionRow}>
-                    {actions}
-                  </div>
-                )}
               </div>
             </div>
           );
