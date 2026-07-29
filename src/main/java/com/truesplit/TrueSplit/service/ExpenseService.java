@@ -285,28 +285,57 @@ public class ExpenseService {
                 participantStatusRepository.save(ps);
             }
         } else {
+            // Get the rejected participant's share
             BigDecimal rejectedShare = currentSplits.stream()
                     .filter(s -> s.getUserId().equals(userId))
                     .map(s -> s.getAmount().bigDecimalValue())
-                    .findFirst().orElse(BigDecimal.ZERO);
-
-            Expense.ManualSplit payerSplit = currentSplits.stream()
-                    .filter(s -> s.getUserId().equals(expense.getPaidBy()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Payer split not found."));
-            BigDecimal newPayerShare = payerSplit.getAmount().bigDecimalValue().add(rejectedShare);
-            payerSplit.setAmount(new Decimal128(newPayerShare));
+                    .orElse(BigDecimal.ZERO);
 
+            // Remove the rejected participant from the splits list
             currentSplits.removeIf(s -> s.getUserId().equals(userId));
             expense.setManualSplits(currentSplits);
 
-            ParticipantStatus payerStatus = participantStatusRepository
-                    .findByExpenseIdAndUserId(expense.getId(), expense.getPaidBy())
-                    .orElseThrow(() -> new IllegalStateException("Payer status not found."));
-            payerStatus.setShareAmount(newPayerShare);
-            payerStatus.setUpdatedAt(Instant.now());
-            participantStatusRepository.save(payerStatus);
+            List<String> remainingParticipants = expense.getParticipants();
+            int remainingCount = remainingParticipants.size();
+
+            if (remainingCount == 0) {
+                // Should never happen because at least the payer remains
+                return;
+            }
+
+            // Equal distribution of the rejected amount among remaining participants
+            BigDecimal extra = rejectedShare.divide(BigDecimal.valueOf(remainingCount), 2, RoundingMode.HALF_UP);
+            BigDecimal remainder = rejectedShare.subtract(extra.multiply(BigDecimal.valueOf(remainingCount)));
+
+            for (int i = 0; i < remainingParticipants.size(); i++) {
+                String participantId = remainingParticipants.get(i);
+
+                // Find the existing manual split for this participant
+                Expense.ManualSplit split = currentSplits.stream()
+                        .filter(s -> s.getUserId().equals(participantId))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("Split not found for participant: " + participantId));
+
+                // Add extra share (last participant gets the rounding remainder)
+                BigDecimal addAmount = (i == remainingParticipants.size() - 1) ? extra.add(remainder) : extra;
+                BigDecimal newShare = split.getAmount().bigDecimalValue().add(addAmount);
+                split.setAmount(new Decimal128(newShare));
+
+                // Update ParticipantStatus
+                ParticipantStatus ps = participantStatusRepository
+                        .findByExpenseIdAndUserId(expense.getId(), participantId)
+                        .orElseThrow(() -> new IllegalStateException("Participant status not found for: " + participantId));
+                ps.setShareAmount(newShare);
+                ps.setUpdatedAt(Instant.now());
+                participantStatusRepository.save(ps);
+            }
+
+            // Update the expense with modified splits
+            expense.setManualSplits(currentSplits);
         }
+
+        // Update expense timestamp and save
         expense.setUpdatedAt(Instant.now());
         expenseRepository.save(expense);
     }
