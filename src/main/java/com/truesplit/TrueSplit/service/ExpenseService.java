@@ -274,20 +274,37 @@ public class ExpenseService {
 
         List<Expense.ManualSplit> currentSplits = expense.getManualSplits();
 
+        // ─── EQUAL Split ──────────────────────────────────────────────────────
         if ("EQUAL".equals(expense.getSplitType())) {
-            List<String> remaining = expense.getParticipants();
-            BigDecimal total = expense.getTotalAmount().bigDecimalValue();
-            List<Expense.ManualSplit> newSplits = calculateEqualSplits(total, remaining);
-            expense.setManualSplits(newSplits);
+            // 1. Get the rejected participant's share
+            BigDecimal rejectedShare = currentSplits.stream()
+                    .filter(s -> s.getUserId().equals(userId))
+                    .map(s -> s.getAmount().bigDecimalValue())
+                    .findFirst()
+                    .orElse(BigDecimal.ZERO);
 
-            for (Expense.ManualSplit split : newSplits) {
-                ParticipantStatus ps = participantStatusRepository
-                        .findByExpenseIdAndUserId(expense.getId(), split.getUserId())
-                        .orElseThrow(() -> new IllegalStateException("Participant status not found."));
-                ps.setShareAmount(split.getAmount().bigDecimalValue());
-                ps.setUpdatedAt(Instant.now());
-                participantStatusRepository.save(ps);
-            }
+            // 2. Remove rejected participant from splits
+            currentSplits.removeIf(s -> s.getUserId().equals(userId));
+
+            // 3. Add rejected share to the payer's share
+            Expense.ManualSplit payerSplit = currentSplits.stream()
+                    .filter(s -> s.getUserId().equals(expense.getPaidBy()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Payer split not found."));
+            BigDecimal newPayerShare = payerSplit.getAmount().bigDecimalValue().add(rejectedShare);
+            payerSplit.setAmount(new Decimal128(newPayerShare));
+
+            // 4. Update payer's ParticipantStatus
+            ParticipantStatus payerStatus = participantStatusRepository
+                    .findByExpenseIdAndUserId(expense.getId(), expense.getPaidBy())
+                    .orElseThrow(() -> new IllegalStateException("Payer status not found."));
+            payerStatus.setShareAmount(newPayerShare);
+            payerStatus.setUpdatedAt(Instant.now());
+            participantStatusRepository.save(payerStatus);
+
+            // 5. Save updated splits
+            expense.setManualSplits(currentSplits);
+
         } else {
             BigDecimal rejectedShare = currentSplits.stream()
                     .filter(s -> s.getUserId().equals(userId))
