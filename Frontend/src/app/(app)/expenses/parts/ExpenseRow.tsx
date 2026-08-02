@@ -35,14 +35,17 @@ function getStatusDotAriaLabel(status: ExpenseStatus): string {
 }
 
 function getUserShare(expense: ExpenseResponse, userId: string): number {
+  // Safely check if manualSplits exists and is an array
   if (expense.manualSplits && expense.manualSplits.length > 0) {
     const split = expense.manualSplits.find((s) => s.userId === userId);
     if (split) {
-      return parseFloat(split.amount);
+      return parseFloat(split.amount) || 0;
     }
   }
-  const total = parseFloat(expense.totalAmount);
-  const count = expense.participants.length;
+
+  const total = parseFloat(expense.totalAmount) || 0;
+  // Safely access participants array
+  const count = expense.participants?.length ?? 0;
   if (count === 0) return 0;
   return Math.round((total / count) * 100) / 100;
 }
@@ -57,8 +60,8 @@ function getActionState(
   color?: string;
 } {
   const status = expense.status;
-  const isPayer = expense.paidBy.id === userId;
-  const isParticipant = expense.participants.some((p) => p.id === userId);
+  const isPayer = expense.paidBy?.id === userId;
+  const isParticipant = expense.participants?.some((p) => p.id === userId) ?? false;
 
   if (!isParticipant) {
     return { label: '', action: null, interactive: false };
@@ -82,7 +85,7 @@ function getActionState(
   // Participant (not payer)
   if (status === 'PENDING') {
     const share = getUserShare(expense, userId);
-    const currencySymbol = expense.currency === 'INR' ? '₹' : expense.currency === 'USD' ? '$' : expense.currency;
+    const currencySymbol = expense.currency === 'INR' ? '₹' : expense.currency === 'USD' ? '$' : expense.currency || '';
     return {
       label: `Accept ${currencySymbol}${share.toFixed(2)}`,
       action: 'ACCEPT',
@@ -98,9 +101,11 @@ function getActionState(
 }
 
 function getParticipantDisplay(expense: ExpenseResponse, currentUserId: string): string {
-  const names = expense.participants.map((p) => {
+  // Ensure participants is an array
+  const participants = expense.participants ?? [];
+  const names = participants.map((p) => {
     if (p.id === currentUserId) return 'You';
-    return p.name;
+    return p.name || 'Unknown';
   });
 
   let result = names.join(', ');
@@ -113,13 +118,16 @@ function getParticipantDisplay(expense: ExpenseResponse, currentUserId: string):
 export function ExpenseRow({ expense, currentUserId, onAction }: ExpenseRowProps) {
   const router = useRouter();
 
+  // If expense is completely missing, render nothing (optional safety)
+  if (!expense) return null;
+
   const statusDotClass = getStatusDotClass(expense.status);
   const statusAriaLabel = getStatusDotAriaLabel(expense.status);
   const participantNames = getParticipantDisplay(expense, currentUserId);
-  const paidByName = expense.paidBy.name;
-  const timeAgo = relativeTime(expense.expenseDateTime);
-  const totalAmount = parseFloat(expense.totalAmount);
-  const currencySymbol = expense.currency === 'INR' ? '₹' : expense.currency === 'USD' ? '$' : expense.currency;
+  const paidByName = expense.paidBy?.name ?? 'Unknown';
+  const timeAgo = expense.expenseDateTime ? relativeTime(expense.expenseDateTime) : 'Just now';
+  const totalAmount = parseFloat(expense.totalAmount) || 0;
+  const currencySymbol = expense.currency === 'INR' ? '₹' : expense.currency === 'USD' ? '$' : expense.currency || '';
 
   const actionState = getActionState(expense, currentUserId);
 
@@ -139,8 +147,10 @@ export function ExpenseRow({ expense, currentUserId, onAction }: ExpenseRowProps
   };
 
   const maxAvatars = 3;
-  const visibleParticipants = expense.participants.slice(0, maxAvatars);
-  const extraCount = expense.participants.length - maxAvatars;
+  // Safely get participants
+  const participants = expense.participants ?? [];
+  const visibleParticipants = participants.slice(0, maxAvatars);
+  const extraCount = participants.length - maxAvatars;
 
   return (
     <div className={styles.row} onClick={handleRowClick} role="button" tabIndex={0}>
@@ -151,15 +161,15 @@ export function ExpenseRow({ expense, currentUserId, onAction }: ExpenseRowProps
       <div className={styles.content}>
         <div className={styles.topLine}>
           <Link href={detailPath} className={styles.title}>
-            {expense.title}
+            {expense.title || 'Untitled Expense'}
           </Link>
           <div className={styles.avatarStack}>
             {visibleParticipants.map((participant) => (
               <div key={participant.id} className={styles.avatarItem}>
                 {participant.avatar ? (
-                  <img src={participant.avatar} alt={participant.name} />
+                  <img src={participant.avatar} alt={participant.name || 'Participant'} />
                 ) : (
-                  participant.name.charAt(0).toUpperCase()
+                  (participant.name?.charAt(0) || '?').toUpperCase()
                 )}
               </div>
             ))}

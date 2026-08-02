@@ -223,9 +223,13 @@ public class ExpenseService {
             status.setUpdatedAt(Instant.now());
             participantStatusRepository.save(status);
 
+            // Check if all remaining (non-rejected) participants have accepted
             List<ParticipantStatus> allStatuses = participantStatusRepository.findByExpenseId(expenseId);
-            boolean allAccepted = allStatuses.stream().allMatch(s -> "ACCEPTED".equals(s.getStatus()));
-            if (allAccepted) {
+            boolean allRemainingAccepted = allStatuses.stream()
+                    .filter(s -> !"REJECTED".equals(s.getStatus()))
+                    .allMatch(s -> "ACCEPTED".equals(s.getStatus()));
+
+            if (allRemainingAccepted) {
                 expense.setStatus("ACTIVE");
                 expense.setUpdatedAt(Instant.now());
                 expenseRepository.save(expense);
@@ -270,20 +274,37 @@ public class ExpenseService {
 
         List<Expense.ManualSplit> currentSplits = expense.getManualSplits();
 
+        // ─── EQUAL Split ──────────────────────────────────────────────────────
         if ("EQUAL".equals(expense.getSplitType())) {
-            List<String> remaining = expense.getParticipants();
-            BigDecimal total = expense.getTotalAmount().bigDecimalValue();
-            List<Expense.ManualSplit> newSplits = calculateEqualSplits(total, remaining);
-            expense.setManualSplits(newSplits);
+            // 1. Get the rejected participant's share
+            BigDecimal rejectedShare = currentSplits.stream()
+                    .filter(s -> s.getUserId().equals(userId))
+                    .map(s -> s.getAmount().bigDecimalValue())
+                    .findFirst()
+                    .orElse(BigDecimal.ZERO);
 
-            for (Expense.ManualSplit split : newSplits) {
-                ParticipantStatus ps = participantStatusRepository
-                        .findByExpenseIdAndUserId(expense.getId(), split.getUserId())
-                        .orElseThrow(() -> new IllegalStateException("Participant status not found."));
-                ps.setShareAmount(split.getAmount().bigDecimalValue());
-                ps.setUpdatedAt(Instant.now());
-                participantStatusRepository.save(ps);
-            }
+            // 2. Remove rejected participant from splits
+            currentSplits.removeIf(s -> s.getUserId().equals(userId));
+
+            // 3. Add rejected share to the payer's share
+            Expense.ManualSplit payerSplit = currentSplits.stream()
+                    .filter(s -> s.getUserId().equals(expense.getPaidBy()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Payer split not found."));
+            BigDecimal newPayerShare = payerSplit.getAmount().bigDecimalValue().add(rejectedShare);
+            payerSplit.setAmount(new Decimal128(newPayerShare));
+
+            // 4. Update payer's ParticipantStatus
+            ParticipantStatus payerStatus = participantStatusRepository
+                    .findByExpenseIdAndUserId(expense.getId(), expense.getPaidBy())
+                    .orElseThrow(() -> new IllegalStateException("Payer status not found."));
+            payerStatus.setShareAmount(newPayerShare);
+            payerStatus.setUpdatedAt(Instant.now());
+            participantStatusRepository.save(payerStatus);
+
+            // 5. Save updated splits
+            expense.setManualSplits(currentSplits);
+
         } else {
             BigDecimal rejectedShare = currentSplits.stream()
                     .filter(s -> s.getUserId().equals(userId))
@@ -420,7 +441,6 @@ public class ExpenseService {
             statuses = List.of(trimmed);
         }
 
-        // Build the base query
         Criteria baseCriteria = new Criteria().orOperator(
             Criteria.where("createdBy").is(userId),
             Criteria.where("participants").in(userId)
@@ -428,10 +448,8 @@ public class ExpenseService {
 
         Criteria statusCriteria = Criteria.where("status").in(statuses);
 
-        // Start with the base criteria and status criteria
         Criteria finalCriteria = new Criteria().andOperator(baseCriteria, statusCriteria);
 
-        // Add search criteria if provided
         if (search != null && !search.isBlank()) {
             String searchRegex = search.trim();
             String escapedRegex = Pattern.quote(searchRegex);
@@ -465,10 +483,6 @@ public class ExpenseService {
 
         return new PageImpl<>(responseList, pageable, total);
     }
-
-    // ============================================================================
-    // New Methods for "Mark as Paid" Feature
-    // ============================================================================
 
     @Transactional
     public void requestPayment(String expenseId, String userId) {
@@ -591,7 +605,6 @@ public class ExpenseService {
         }
 
         for (ParticipantStatus status : pendingRequests) {
-            // Skip if already settled (defensive)
             if (!"PAYMENT_REQUESTED".equals(status.getStatus())) {
                 continue;
             }
@@ -601,7 +614,6 @@ public class ExpenseService {
             participantStatusRepository.save(status);
         }
 
-        // Check if all participants are now settled
         checkAndAutoSettle(expense);
     }
 
@@ -625,32 +637,30 @@ public class ExpenseService {
             throw new IllegalArgumentException("You do not have a pending payment request to cancel.");
         }
 
-        // Revert to ACCEPTED
         status.setStatus("ACCEPTED");
         status.setUpdatedAt(Instant.now());
         participantStatusRepository.save(status);
-
-        // Notify payer? Optional – we'll skip for now.
     }
-
 
     private void checkAndAutoSettle(Expense expense) {
         List<ParticipantStatus> allStatuses = participantStatusRepository.findByExpenseId(expense.getId());
         String payerId = expense.getPaidBy();
 
-        // Case 1: All participants are already SETTLED → expense is settled
-        boolean allSettled = allStatuses.stream().allMatch(s -> "SETTLED".equals(s.getStatus()));
-        if (allSettled) {
+        // Case 1: All remaining (non-rejected) participants are SETTLED → expense is settled
+        boolean allRemainingSettled = allStatuses.stream()
+                .filter(s -> !"REJECTED".equals(s.getStatus()))
+                .allMatch(s -> "SETTLED".equals(s.getStatus()));
+        if (allRemainingSettled) {
             expense.setStatus("SETTLED");
             expense.setUpdatedAt(Instant.now());
             expenseRepository.save(expense);
-            log.info("Expense {} automatically settled as all participants are settled.", expense.getId());
+            log.info("Expense {} automatically settled as all remaining participants are settled.", expense.getId());
             return;
         }
 
-        // Case 2: All non-payer participants are SETTLED, and the payer is ACCEPTED
-        // → auto-settle the payer and close the expense
+        // Case 2: All non-payer participants (excluding rejected) are SETTLED, and the payer is ACCEPTED
         boolean allNonPayerSettled = allStatuses.stream()
+                .filter(s -> !"REJECTED".equals(s.getStatus()))
                 .filter(s -> !s.getUserId().equals(payerId))
                 .allMatch(s -> "SETTLED".equals(s.getStatus()));
 
@@ -659,7 +669,6 @@ public class ExpenseService {
                 .anyMatch(s -> "ACCEPTED".equals(s.getStatus()));
 
         if (allNonPayerSettled && payerAccepted) {
-            // Find the payer's ParticipantStatus
             ParticipantStatus payerStatus = allStatuses.stream()
                     .filter(s -> s.getUserId().equals(payerId))
                     .findFirst()
@@ -680,10 +689,6 @@ public class ExpenseService {
         }
     }
 
-    // ============================================================================
-    // Notification Helpers
-    // ============================================================================
-
     private void notifyPayer(Expense expense, String participantId) {
         log.info("Notify payer {} that participant {} requested payment for expense {}", 
                 expense.getPaidBy(), participantId, expense.getId());
@@ -698,10 +703,6 @@ public class ExpenseService {
         log.info("Notify participant {} that their payment was rejected for expense {}", 
                 participantId, expense.getId());
     }
-
-    // ============================================================================
-    // Private Helper Methods
-    // ============================================================================
 
     private ExpenseResponse convertToResponse(Expense expense) {
         List<ParticipantStatus> statuses = participantStatusRepository.findByExpenseId(expense.getId());
